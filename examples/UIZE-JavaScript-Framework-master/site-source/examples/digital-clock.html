@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Digital Clock | JavaScript Examples | UIZE JavaScript Framework</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="keywords" content="widget Uize.Widgets.DigitalClock.Hms.Widget Uize.Widgets.SegmentDisplay.Seven.Widget"/>
+	<meta name="description" content="See how to easily create a JavaScript digital clock widget in UIZE, that shows hours, minutes, and seconds, using UIZE's seven segment display widget."/>
+	<link rel="alternate" type="application/rss+xml" title="UIZE JavaScript Framework - Latest News" href="http://www.uize.com/latest-news.rss"/>
+	<link rel="stylesheet" href="../css/page.css"/>
+	<link rel="stylesheet" href="../css/page.example.css"/>
+
+	<style type="text/css">
+		.digitalClock {
+			padding:15px;
+			background:#000 url(../images/title-bg.gif) repeat-x left top;
+			margin:auto;
+			width:740px;
+			border-width:7px;
+			border-style:solid;
+			border-radius:40px;
+			-moz-border-radius:40px;
+			-webkit-border-radius:40px;
+		}
+	</style>
+</head>
+
+<body>
+
+<script type="text/javascript" src="../js/Uize.js"></script>
+
+<h1 class="header">
+	<a id="page-homeLink" href="../index.html" title="UIZE JavaScript Framework home"></a>
+	<a href="../index.html" class="homeLinkText" title="UIZE JavaScript Framework home">UIZE JavaScript Framework</a>
+</h1>
+
+<div class="main">
+	<h1 class="document-title">
+		<a href="../javascript-examples.html" class="breadcrumb breadcrumbWithArrow">JAVASCRIPT EXAMPLES</a>
+		Digital Clock
+		<div class="pageActionsShell">
+			<div id="page-actions" class="pageActions"><a href="source-code/digital-clock.html" class="buttonLink">SOURCE</a></div>
+		</div>
+	</h1>
+
+	<!-- explanation copy -->
+
+	<div class="explanation">
+		<p>In this example, an instance of the <a href="../reference/Uize.Widgets.DigitalClock.Hms.Widget.html"><code>Uize.Widgets.DigitalClock.Hms.Widget</code></a> widget class is being wired up to create a classic LED style digital clock, with two digit display for hours, minutes, and seconds.</p>
+
+		<p>The <code>Uize.Widgets.DigitalClock.Hms.Widget</code> widget relies on the <a href="../reference/Uize.Widgets.SegmentDisplay.Seven.Widget.html"><code>Uize.Widgets.SegmentDisplay.Seven.Widget</code></a> widget class for displaying the digits of the time. The widget creates six seven segment display widgets - two for the hours display, two for the minutes display, and two for the seconds display.</p>
+
+		<p>After the clock widget is created, a timer/interval is started that updates the clock's time every second. Now, because the clock is always updated to the current time when the updater function is triggered by the timer, the clock remains accurate and doesn't drift. The timer may be unreliable as a result of load on the computer, but the worst that will happen is that the clock may not update for a while before once again updating to the correct time.</p>
+	</div>
+
+	<!-- UI for seven segment displays that make up the digital clock -->
+		<div id="page-digitalClock" class="digitalClock insetBorderColor"></div>
+</div>
+
+<!-- JavaScript code to make the static slider HTML "come alive" -->
+
+<script type="text/javascript">
+
+Uize.require (
+	[
+		'UizeSite.Page.Example.library',
+		'UizeSite.Page.Example',
+		'Uize.Widgets.DigitalClock.Hms.Widget'
+	],
+	function () {
+		'use strict';
+
+		/*** create the example page widget ***/
+			var page = window.page = UizeSite.Page.Example ();
+
+		/*** add the digital clock widget ***/
+			page.addChild ('digitalClock',Uize.Widgets.DigitalClock.Hms.Widget,{built:false});
+
+		/*** wire up the page widget ***/
+			page.wireUi ();
+	}
+);
+
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,11 @@
+.`` {
+	display: inline-block;
+	position: relative;
+}
+
+.`colon` {
+	position: absolute;
+	box-sizing: border-box;
+	width: 100%;
+}
+

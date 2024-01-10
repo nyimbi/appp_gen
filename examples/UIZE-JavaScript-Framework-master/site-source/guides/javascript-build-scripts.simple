@@ -1,0 +1,312 @@
+Introduction
+	UIZE provides a system for developing build scripts that can be run either with [[http://nodejs.org/][NodeJS]] (all Node supported platforms) or WSH ([[http://en.wikipedia.org/wiki/Windows_Script_Host][Windows Script Host]]), for automating build tasks.
+
+	What the Build Scripts Do
+		UIZE comes with a versatile and extensible build system that is integrated into the dev server, allowing files to be built as part of a deploy process but also dynamically as needed during development.
+
+		Among other things, the various UIZE build scripts...
+
+		- *compress JavaScript modules* into smaller, obfuscated files using the UIZE's [[all-about-scrunching.html][Scruncher]]
+		- *compile CSS modules* from =.csst= (CSS template) files that can use variables and functions
+		- *compile JST (JavaScript template) modules* from =.js.jst= files in the module folder
+		- *build packages* that include JavaScript modules, CSS modules, and HTML template modules
+		- *copy unprocessed static files* (such as image assets) from a project's source path to a corresponding location under the project's built path
+		- [[The Built-in UIZE Build Scripts][and more...]]
+
+	Types of Build Scripts
+		Build scripts can be divided into two main types...
+
+		- *Build Scripts for Building Files* - these build scripts build the files for the production deployment of your project (such as the =Uize.Build.Files.JsModules= build script that builds all the JavaScript modules for your project)
+		- *Development Tool Build Scripts* - these build scripts are tools for use during development (such as the =Uize.Build.Widget= build script that makes it easy to stub out all the modules for new V2 widgets)
+
+	Where the Build Scripts are Located
+		By convention, all of UIZE's built-in build scripts are located under the =Uize.Build= namespace.
+
+		There is no requirement for build script modules to be located in any special place. If you write build scripts specific to yout own project, you might choose to follow your own convention. It wouldn't be unreasaonable to place them under a namespace like =MyNamespace.Build=. For example, all the build scripts specific to the UIZE Web site are located under the =UizeSite.Build= namespace - these are build scripts specific to the Web site, so they are not part of the UIZE core (you're not likely to use them in your own project, for example).
+
+	Running the Build Scripts
+		The build scripts can be run either with NodeJS (all Node supported platforms) or WSH (Windows Script Host).
+
+		Once you have your project set up, you can run the build scripts by following the following steps for either NodeJS or WSH (Windows Script Host)...
+
+		NodeJS
+			To run the build scripts in NodeJS, perform the following steps...
+
+			+. Open a bash (or equivalent) window.
+			+. Set your project's root folder as the working directory (=cd= as necessary).
+			+. Enter a command to execute, of the form...
+
+			.......................................................................
+			node [path_to_uize]build.js [build_module_name] [optional_build_params]
+			.......................................................................
+
+			EXAMPLE
+			....................................................................
+			node ../UIZE-JavaScript-Framework/build.js Uize.Build.All test=false
+			....................................................................
+
+			In the above example, we're running the =Uize.Build.All= build script, which builds the entire project, and opting to not run the unit tests afterwards by specifying the value =false= for the script's optional =test= parameter. Notice how we're specifying a relative path to the =build.js= file - here the project we are working on is a peer folder to the =UIZE-JavaScript-Framework= folder that contains the downloaded UIZE code.
+
+		WSH
+			To run the build scripts in WSH (Windows Script Host), perform the following steps...
+
+			+. Open a bash (or equivalent) window.
+			+. Set your project's root folder as the working directory (=cd= as necessary).
+			+. Enter a command to execute, of the form...
+
+			..........................................................................
+			cscript [path_to_uize]build.js [build_module_name] [optional_build_params]
+			..........................................................................
+
+			EXAMPLE
+			.......................................................................
+			cscript ../UIZE-JavaScript-Framework/build.js Uize.Build.All test=false
+			.......................................................................
+
+			In the above example, we're running the =Uize.Build.All= build script, which builds the entire project, and opting to not run the unit tests afterwards by specifying the value =false= for the script's optional =test= parameter. Notice how we're specifying a relative path to the =build.js= file - here the project we are working on is a peer folder to the =UIZE-JavaScript-Framework= folder that contains the downloaded UIZE code.
+
+			WSH AND ANTI-VIRUS SOFTWARE
+
+			Depending on the configuration of the Windows machine you use, there may be anti-virus software installed that may be a bit overzealous in preventing any scripts from running using WSH. You may be prompted by such software to agree to let the script be run. Depending on the anti-virus software, you may be given the option to grant permission for a given build script for all future execution, without having to be prompted each time. If such permission is granted, such software may prompt again in future if the script's contents is modified (a hash of the contents may be stored by the software for the sake of detecting modifications).
+
+	The Build Script Bootstrapping (build.js)
+		When `running the build scripts`, you are actually getting either NodeJS or WSH to execute the =build.js= bootstrapping file.
+
+		The code in the =build.js= file detects the JavaScript environment (NodeJS or WSH) and then sets up the module loader appropriately for the environment. Once this is done, it loads and executes the build script module specified as the parameter after the =build.js= script path. The build script module is executed by calling its =perform= static method and passing it a params object that contains the `UIZE config options` with any build parameters, that may be specified as name-value pairs after the build module name, merged in.
+
+	### Project Setup
+		Must Have the UIZE Config Options
+			Be sure to copy the =uize-config.json= file along with the desired build scripts (for more info, see the section `UIZE Config Options`).
+
+	### Features of the Build System
+		Build Inversion
+			.
+			- IOC (Inversion of Control), pull vs push, starts with a request
+
+		Builds Incrementally
+			.
+
+		Dependency-based Invalidation
+			.
+
+		Integrated into Dev Server
+			.
+
+		Built for Speed
+			.
+
+		Extremely Versatile / Configurable
+			.
+
+Build Script Log Files
+	The majority of the build scripts will output a log file to provide a summary of the work they have done.
+
+	Log files are written to the *logs* folder under the root folder of your project and are, by convention, named after the build module that writes them, with a =.log= file extension appended. They are overwritten each time their associated build script is run, so if you care about them (unlikely) then you should make copies before running the script.
+
+The Built-in UIZE Build Scripts
+	UIZE comes bundled with a number of convenient, ready-to-go build scripts that will immediately be useful to your UIZE-enhanced project.
+
+	Build Scripts for Building Files
+		UIZE comes bundled with the following build scripts for building files...
+
+		- =Uize.Build.Files.JsModules= - builds JavaScript modules (optionally compressed) from source JavaScript modules, JST JavaScript template (=.js.jst=) files, CSS template (=.csst=) files, and namespace folders
+		- =Uize.Build.Files.JstDerivedPages= - builds pages that are derived from JST (=.[extension].jst=) files, provided that the source files are not =.js.jst= files
+		- =Uize.Build.Files.UnprocessedFiles= - copies unprocessed static / asset files from the source path to corresponding locations under the built path
+
+	Development Tool Build Scripts
+		UIZE comes bundled with the following development tool build scripts...
+
+		- =Uize.Build.AuditStrings= - produces a report with summaries for all string literals contained inside JavaScript files, assessing their likelihood of internationalizability
+		- =Uize.Build.FolderOrganizeJsModules= - converts all the JavaScript modules under a specified namespace to being folder organized, to ease migration from flat organization
+		- =Uize.Build.ListJsModules= - outputs a log file that lists all the JavaScript modules in a project (a refactoring aid)
+		- =Uize.Build.NeatenJsFiles= - removes trailing whitespace from all the JavaScript files in a project
+		- =Uize.Build.Test= - runs the one or more specified unit tests
+		- =Uize.Build.Deps= - traces all the dependencies for the specified module and outputs the list to the console
+		- =Uize.Build.UpdateCopyrightNotices= - updates the copyright notices in the head comments for all JavaScript modules in a project
+		- =Uize.Build.WebServer= - runs the UIZE dev server
+		- =Uize.Build.Widget= - builds stubs of all the files for a new V2 widget
+
+UIZE Config Options
+	You may have to configure the build scripts to work in your project's environment by modifying the UIZE config options.
+
+	The UIZE config options are set inside the =uize-config.json= file that sits at the root of your project. This file contains a JSON format object with properties for the various supported UIZE config options.
+
+	The following UIZE config options are supported by the build scripts...
+
+	builtPath
+		A string, specifying the path (relative to the root folder of your project) for saving the files built by the build process.
+
+	buildSequence
+		A string array, specifying the names and order of execution of the build scripts that should be executed by the =Uize.Build.All= build script.
+
+		See also the related =testSequence= config option.
+
+	folderOrgNamespaces
+		An array, specifying all the namespaces under which modules are organized by folders and subfolders, rather than as flat lists of files.
+
+	headComments
+		An object that is a hash of JavaScript template modules per namespace, indicating the template module to use when adding head comments to generated modules for a namespace.
+
+		When a JavaScript module is generated by build scripts (such as the =Uize.Build.Widget= build script), a head comment will be added if there is a head comment JST module specified for the module's namespace in the =headComments= config option. If no head comment module is specified for the namespace of the module that is being generated, then no head comment will be added.
+
+		Template Inputs Properties
+			When a head comment template is processed, it will be provided with the following input properties...
+
+			- =creationYear= - the creation year (e.g. =2013=) for the generated module
+			- =moduleName= - the name of the module being generated
+
+		NOTES
+		- see also the related =scrunchedHeadComments= config option
+
+	isDev
+		A boolean (or string value that is either ='true'= or ='false'=), specifying whether or not the build scripts should build files for dev mode.
+
+		For example, when the =isDev= config option is set to =true=, JavaScript modules will be built without compressing them so as to facilitate easier debugging. Different build scripts can observe the =isDev= option in different ways, and some may not even be influenced by this option at all.
+
+	memoryPath
+		A string, specifying the path (relative to the root folder of your project) that will be used when producing URLs for in-memory, partial build results.
+
+		Memory Path Mustn't Conflict With Real Path
+			Files that are built and that are "saved" to folders under the memory path will not actually be saved to the file system.
+
+			However, because the memory URLs must co-habit with real file system URLs for the sake of virtualization by abstracted file system gatekeeper methods, the path should not conflict with a real path that you wish to use in your project's folder structure. This is usually not a problem - just choose a path and reserve it for in-memory build products.
+
+	modulesFolder
+		A string, specifying the name of the folder in your project within which your JavaScript modules developed for UIZE will be located.
+
+	scrunchedHeadComments
+		An object that is a hash of JavaScript template modules per namespace, indicating the template module to use when adding head comments to scrunched modules for a namespace.
+
+		When a JavaScript module is compressed by the Scruncher, its head comment will be removed (along with all other comments in the file) if there is a head comment JST module specified for the module's namespace in the =scrunchedHeadComments= config option.
+
+		Intended for Minimal Notices
+			Having a scrunched head comment module defined for a namespace allows us to have more compact scrunched modules while still providing a head comment for basic legal notices.
+
+			A scrunched head comment should be more lightweight than the head comments that exist in the source versions of your modules.
+
+		To Have No Head Comment
+			If you don't define a scrunched head comment for your namespace, then the head comments inside your modules will be left in.
+
+			Therefore, if you want to have no head comments at all with the scrunched versions of your modules, you should use the =scrunchedHeadComments= option to define a scrunched head comment module that is deliberately empty.
+
+		Template Inputs Properties
+			When a scrunched head comment template is processed, it will be provided with the following input properties...
+
+			- =buildDate= - the date when the module is built, formatted as ISO8601 date string
+			- =moduleName= - the name of the module, so that the replacement head comment isn't totally generic
+
+		NOTES
+		- see also the related =headComments= config option
+
+	servicesSetup
+		A string, specifying the name of the module that should be loaded to perform the services setup when building your project.
+
+		The services setup module can register any number of service to service adapter mappings for a project. For the build process, the adapter for the file builder service is registered.
+
+	sourcePath
+		A string, specifyiong the path (relative to the root folder of your project) that will be used for loading the source files needed for building the in-memory, temp, or built files.
+
+	staleBefore
+		A string, specifying the date before which built files are considered to be stale.
+
+		If the last modified date for a built file is older than the specified =staleBefore= date, then the built file is considered stale and it as if the file wasn't ever built.
+
+		Stale Before Now
+			Specifying the special value ='now'= for this config option has the effect of forcing invalidation of all existing built files, thereby forcing a rebuild for any of them.
+
+			This can be a useful last resort when a file is not being automatically rebuilt as expected and it is not clear why.
+
+	staticFilePathMatcher
+		A regular expression that will be used by the =Uize.Build.FileBuilders.UnprocessedFiles= file builder to copy unprocessed source files directly to the built folder.
+
+		Because the unprocessed files file builder is typically registered as one of the earliest file builders (in order to improve build performance), one should take care to specify a regular expression that is guaranteed to not accidentally catch some files that you would like to have handled by dedicated file builders. Usually, the regular expression will catch files with certain file extensions, like =.gif=, =.jpg=, =.png=, etc.
+
+	tempPath
+		A string, specifying the path (relative to the root folder of your project) that will be used for saving temporary, partial build results.
+
+		Unlike in-memory partil build results that are saved to the memory path (see the =memoryPath= config option), temp files are saved to the file system and are persistent across build processes.
+
+	testSequence
+		A string array, specifying execution statements for the test suites that should be executed by the =Uize.Build.All= build script.
+
+		The test suites that are specified by this config option are executed by the =Uize.Build.All= build script after all the build scripts specified by the =buildSequence= config option are executed.
+
+		Execution Statements
+			Unlike the =buildSequence= config option, which is an array of names of build script modules that should be executed, the =testSequence= option is an array of execution statements, of the form...
+
+			...................................................
+			build.js MyNamespace.RunMyTestSuite foo=bar baz=qux
+			...................................................
+
+			Any number of name-value pairs can be specified for parameters that your test suite build modules accept.
+
+	uizePath
+		A string, specifying the path (relative to the root folder of your project) to the source files for the UIZE modules.
+
+		Since the build scripts are run with your project's root folder as the working directory, and since your project will not contain the source code for the UIZE JavaScript Framework, this config option allows the build scripts to obtain the UIZE source files.
+
+		This is important for two main reasons...
+
+		- The build scripts rely heavily upon UIZE modules, so the =build.js= bootstrapping module needs to know how to locate and load them, relative to the root folder of your project, so that the build scripts can actually run successfully.
+		- Since your project is likely to be using UIZE modules, the UIZE modules will be loading from the source location and stitched into the build result for your project. This allows you to maintain the UIZE source separately, outside of your own project, but have the needed parts built into a production ready version of your project.
+
+### Writing Your Own Build Scripts
+	There's no saying that you need to be limited to the collection of convenient build scripts that are included with the UIZE JavaScript Framework download.
+
+	Adapting the Existing Build Scripts
+		Any build script provided as part of the UIZE JavaScript Framework download that is useful to your Web sites or projects can be adapted to suit your needs.
+
+		Not all of the provided build scripts will necessarily be useful to you, of course, since some of them are intended primarily for the UIZE Web site. But, if a build script is potentially useful but not perfectly suited to the folder structure of your own projects, just change it. And some of the build scripts are already configurable with `UIZE config options`.
+
+	Roll Your Own
+		If you can't adapt an existing build script to meet your needs, or hack it to meet slightly different needs, then you may just want to create your own specialized build script from scratch.
+
+		More creative applications of build scripts include things such as using a data set to drive the generation of hundreds (or thousands, even) of static files, such as HTML pages or XML files. The [[http://www.tomkidding.com][tomkidding.com]] Web site uses a build script, for example, to generate hundreds of HTML pages for paintings, drawings, sketches, graphic art, photography, photomontages, etc. from an artworks database. A benefit of building static HTML files is that there is no dependency on a server side database technology, and there are performance benefits that improve scalability under traffic load, since Web servers are well optimized to deliver static HTML pages to the client, and caching systems throughout the Internet are more likely to persist the static pages.
+
+	Structure of a Build Script
+		.
+
+		EXAMPLE
+		........................................................................................
+		........................................................................................
+
+	Build-compatible UIZE Modules
+		In addition to using the build script specific modules under the =Uize.Build= namespace, build scripts can also use any of the other UIZE modules that are build-compatible.
+
+		Compatible Modules
+			UIZE modules that *ARE* build-compatible include...
+
+			- =Uize.Array= (and all submodules)
+			- =Uize.Build= (and all submodules)
+			- =Uize.Class= (and all submodules)
+			- =Uize.Color= (and all submodules)
+			- =Uize.Curve= (and all submodules)
+			- =Uize.Data= (and all submodules)
+			- =Uize.Date= (and all submodules)
+			- =Uize.Doc= (and all submodules)
+			- =Uize.Fade= (and all submodules, but *only for non-time based fades*)
+			- =Uize.Json=
+			- =Uize.Service= (and all submodules)
+			- =Uize.Services= (and all submodules, but only build-compatible service adapters)
+			- =Uize.Str= (and all submodules)
+			- =Uize.Template= (and all submodules)
+			- =Uize.Templates= (and all submodules)
+			- =Uize.Test= (and all submodules)
+			- =Uize.Url=
+			- =Uize.Util= (and all submodules, except =Uize.Util.Cycle=)
+			- =Uize.Xml=
+
+		Incompatible Modules
+			UIZE modules that are *NOT* compatible with Windows Script Host are those modules that assume a browser context, and include such modules as...
+
+			- =Uize.Comm= (and all submodules)
+			- =Uize.Util.Browser.Cookies=
+			- =Uize.Fx= (and all submodules)
+			- =Uize.Dom= (and all submodules)
+			- =Uize.Tooltip=
+			- =Uize.Util.Cycle=
+			- =Uize.Widget= (and all submodules)
+
+	Start Hacking
+		Needless to say, there are any number of ways to utilize build scripts. All it takes is a little imagination. Crack open any one of the bundled build scripts to get an idea of where to start.
+

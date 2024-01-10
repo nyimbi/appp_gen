@@ -1,0 +1,52 @@
+<%@ required ('Uize.Widgets.CssUtil'); %>
+<%
+	var _cssUtil = Uize.Widgets.CssUtil;
+%>
+.`` {
+	margin-bottom: 10px;
+	font-family: <%= _cssUtil.font.family %>
+}
+
+.`contents` {
+	border: 1px solid <%= _cssUtil.chrome.bgColor %>;
+	border-radius: 3px;
+	overflow: hidden;
+	box-shadow: 0 0 7px rgba(0,0,0,.2);
+}
+
+.`heading` {
+	font-weight: bold;
+	box-sizing: border-box;
+	background: <%= _cssUtil.chrome.bgColor %>;
+}
+
+.`body` {
+	background: #fff;
+}
+
+/*** styling for different sizes ***/
+<%
+	Uize.forEach (
+		_cssUtil.sizes,
+		function (_size,_sizeName) {
+			var
+				_sizeFont = _size.font,
+				_sizeOuter = _size.outer,
+				_paddingSides = 2 + _size.sizeNo * 2,
+				_paddingTop = Math.floor ((_sizeOuter - _sizeFont) / 2)
+			;
+%>	/*** <%= _sizeName %> ***/
+		.`<%= _sizeName %>` .`body` {
+			font-size: <%= _sizeFont %>px;
+			padding: <%= _paddingSides %>px;
+		}
+		.`<%= _sizeName %>` .`heading` {
+			font-size: <%= _sizeFont %>px;
+			line-height: <%= _sizeFont %>px;
+			padding: <%= _paddingTop %>px <%= _paddingSides %>px <%= _sizeOuter - _sizeFont - _paddingTop %>px <%= _paddingSides %>px;
+			min-height: <%= _sizeOuter %>px;
+		}
+<%		}
+	);
+%>
+

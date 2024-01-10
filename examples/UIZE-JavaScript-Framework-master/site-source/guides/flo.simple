@@ -1,0 +1,96 @@
+Introduction
+	The flo object facilitates writing mixed synchronous/asynchronous code using control flow structures familiar to anyone who knows how to write synchronous code (i.e. anyone who can program).
+
+	The flo library provides a simple foundation for writing code that mixes synchronous and asynchronous execution, affording the benefits of synchronous coding control flow constructs to asynchronous code.
+
+### An Example
+	.
+
+	- function with loop, containing nested loop, with continue inside an if that's nested inside a switch, and with a return somewhere
+
+Static Properties
+	abort
+		.
+
+	break
+		.
+
+	continue
+		.
+
+The Design Philosophy Behind Flo
+
+	Synchronous and Asynchronous, in Harmony
+		.
+		. equal partners... as such, it is the philosophy of flo that asynchronous coding be affored with an equivalent set of control flow structures as synchronous coding.
+
+		A Little More Overhead
+			Because asynchronous statements are wrapped in functions, there is more overhead to writing flo code than regular synchronous code.
+
+			The key point, however, is that this allows us to apply approaches learned for synchronous coding to writing algorithms that may involve some asynchronous execution. That's not to say that there aren't cases where rethinking approaches may actually be appropriate and advantageous, particularly where it may be desirable to leverage parallel computing techniques, but that's somewhat orthogonal - asynchronous should not be conflated with parallelism, even though asynchronousness lends itself to concurrent approaches to some coding problems.
+
+	How Flo Came About
+		Flo was born out of frustration with promises, callbacks, and various async utility libraries (we won't name names).
+
+		Up until now, all approaches have failed to address the fundamental problem of not being able to write asynchronous code with the full set of control flow constructs that programmers have learned and come to rely so heavily upon in writing their synchronous code. Why? Is it an ideological matter? Is it technically impossible? Regardless of the reason(s), it had not been tackled for JavaScript.
+
+		Flo isn't intended to replace higher level constructs like needs / providers, conditions, observable tasks, promises, etc. Flo is intended to be orthogonal and complementary. Indeed, Flo can be a solid foundation upon which to implement many of these higher level constructs and still have them perform well when code is either synchronous or asynchronous in execution.
+
+	### Flat Code Society
+		.
+
+		The goal should not be to remove visual structure and indentation from code.
+
+		It's unfortunate that the callback approach can turn what are logically consecutive / sequential steps into something that calls for nested levels of indentation. This is a desirable side effect to address, but in wishing to address this unpleasantness we shouldn't throw the baby out with the bath water. We shouldn't, as a knee jerk response to callback nesting, go too far in the other direction and strive to eliminate all nesting and visual structure from our code. Besides callback nesting, indentation is not a property unique to asynchronous coding - synchronous code can become too indented for some people's tastes. When indentation becomes too much, code can be factored out into functions.
+
+	Where's the Dubya?
+		Flow.js got the dubya, so flo.js was forced to go without.
+
+		All the better, because it's even cooler than if it was named phlo (how phat would that have been?!?!) and it's one less letter to type.
+
+	Continuation, not Callback
+		In the flo philosophy, we prefer to think in terms of continuation functions rather than callbacks.
+
+		When one thinks in terms of callbacks, one thinks of execution flowing back through a callback tunnel. With flo, there is a flo manager and calling the =next= continuation function has the effect of returning control to this flo manager so that it can advance the statement pointer. This subtlety is especially important when multiple statements are chained together and they actually turn out to be synchronous in execution rather than asynchronous.
+
+	Don't Blow the Stack
+		Flo is designed to avoid blowing the stack in the event of an asynchronous process used inside an iteration loop becoming synchronous.
+
+		A common problem with using a callback pattern and then assuming that every function being called will execute asynchronously before calling their callback is that the call stack can grow quite large - even potentially overflowing - when the processes that were assumed to be asynchronous become synchronous (let's say as a result of memoizing or the use of some other form of in-memory caching system). When this occurs, a typical - and rather lame - workaround is to put the implementations for such functions inside a timeout or similar mechanism to force them to always be asynchronous. This is lame because it prevents getting all the performance benefits of tight, synchronous execution. Forcing execution down the asynchronous path can suck mightily for performance.
+
+		Flo avoids this problem by detecting whether `flo statements` call the continuation function synchronously and running through as many consecutive synchronous `flo statements` as possible in a single turn of the event loop without layering onto the call stack. With the continuation function approach and a flo manager, synchronous execution is detected and the continuation function can merely increment a counter in the flo manager's synchronous while loop rather than immediately calling the next function and thereby piling calls onto the call stack.
+
+		Flo takes a gentler approach to allowing synchronous and asynchronous execution to be intermingled, while still giving programmaers the tools they need to construct robust control flow logic that can handle any step in a flo becoming asynchronous (or synchronous) at some point in the future.
+
+	B'bye, Errbacks
+		.
+
+		Errbacks Suck
+			Making callback functions be responsible for passing errors along is about as retarded as making regular functions in synchronous coding be resposible for passing thrown errors along.
+
+			Error callbacks (errbacks, as some like to call them) are an ugly stopgap measure, necessitated by the fact that nobody spent enough time thinking hard about better alternative approaches.
+
+		Throwing and Catching
+			Flo introduces a superior alternative approach. And, surprise, surprise, it resembles an approach that will be very familiar to coders - throwing and catching errors.
+
+			Wait, what!?!?? You can't catch errors thrown inside something that's executed asynchronously, right?
+
+		No More Error Marshalling
+			.
+
+	Optimized for Speed
+		Flo is built around the assumption that performance is paramount and that any serious application will eventually require intense performance optimization.
+
+		Asynchronous Becomes Synchronous
+			Inevitably, performance optimization of an application will likely involve adding layers of in-memory caching to reduce the cost of performing asynchronous operations that access services.
+
+			In cases where in-memory caching is used to preempt asynchronous processes, the resultant effect should be as close to a simple synchronous function call with return value as possible. That means that the overhead associated with a control flow manager that is designed to deal with code execution being asynchronous should be as minimal as possible in order to achieve blazingly fast execution of as many processes in as little time as possible.
+
+			This line of thinking pretty much rules out the option of constructing objects like promises on every potentially synchronous or asynchronous step in a sequence or iteration. In particular, it also rules out the possibility of forcing every process that might execute synchronously to effectively execute asynchronously through use of mechanisms like =setTimeout= (in the browser) or =nextTick= (in NodeJS) - that would just be heavy handed and irresponsible.
+
+		Synchronous Becomes Asynchronous
+			.
+
+		Synchronous vs Asynchronous May be Dynamic
+			.
+

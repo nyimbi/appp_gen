@@ -1,0 +1,179 @@
+Deprecated Uize.Node Modules Killed
+	Still to do...
+
+	- write news announcement
+
+NEW MODULE: Uize.Json.MultiLineStringLiteral
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Templates.Text.Tables.Breakdown
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Templates.Text.Tables.Histogram
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Str.Search
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Str.SegmentHighlighter
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Str.CharClass
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Loc.FileFormats.JavaProperties
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Loc.FileFormats.MacStrings
+	Still to do...
+
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Loc.FileFormats.AndroidStrings
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Event.Bus
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Util.RegExpComposition
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Loc.Plurals.RuleParser
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Util.Matchers.ModuleNameMatcher
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Loc.Plurals.Util
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+New Localization Plurals Modules
+	Still to do...
+
+	- polish documentation created by build script
+	- write news announcement
+
+NEW MODULE: Uize.Math.LogicalPos
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- write news announcement
+
+NEW MODULE: Uize.Class.mTreeInheritance
+	Still to do...
+
+	- write unit tests
+	- write documentation
+	- update documentation in Uize.Widget class to refer to reference for =Uize.Class.mTreeInheritance= module
+	- write news announcement
+
+NEW METHOD: Uize.Array.Util.sum
+	.
+
+Shorter This Reference
+	Switched all modules over to using "m" for capturing a reference to this.
+
+	Because "_this" is scrunched to "a_a" (for example) in most modules, using simply unscrunched "m" will reduce size, especially given how pervasive "_this" is. Furthermore, typing "m." is much smoother and more natural than typing "_this.", and it will also reduce clutter / noise in the source. All in all, "m." wins at all levels. It beats "self.", "me.", "my.", "_." (which I've seen in some code), and most anything else in terms of typing friction.
+
+NEW MODULE: Uize.Build.Search
+	Still to do...
+
+	- finish implementation (see todo document for the module)
+	- write documentation
+	- write news announcement
+
+Major Build Process Improvements
+
+	- _Uize.Build.CompileJstModules.js subsumed by WSH-Uize.Build.Files.JsModules
+	- built code no longer in the source tree
+	- build process can now be run with either WSH or NodeJS
+
+New Uize.modulePathResolver Method
+	Announce.
+
+Improved Uize.recordMatches, Uize.findRecord, and Uize.findRecordNo Methods
+	- match parameter can now be a value matcher function
+
+	Behavior Change in the =Uize.findRecordNo= Method
+		Now, if a matching record cannot be found in the specified records array, then the optionally specified default value will be coerced to a number and constrained to the range of =-1= to the length of the records array minus one (i.e. the index of the last record in the array).
+
+		Therefore, it will not be possible to have the =Uize.findRecordNo= return a value that is not the valid index for a record in the records array, unless the value is =-1= as a valid way to indicate no match.
+
+NEW MODULE: Uize.Util.Oop
+	Announce.
+
+Support for Dynamic Loading of HTML
+	The =Uize.Widget.Page= module has been improved with the addition of two new methods for facilitating the dynamic loading of HTML: the =loadHtmlIntoNode= instance method and the =loadHtml= hook method.
+
+NEW MODULE: Uize.Widget.SegmentDisplay.Seven
+	Announce this new widget.
+
+NEW MODULE: Uize.Widget.SegmentDisplay
+	Announce this new widget.
+
+NEW MODULE: Uize.Widgets.ColorInfo.Widget
+	Announce this new widget.
+
+NEW MODULE: Uize.Widget.EdgeHugger
+	Announce this new widget.
+
+NEW PERFORMANCE TEST: Loop Optimization Approaches
+	Announce (but refactor as performance test module first).
+
+BROWSER BUG: Text Area Borked After Hiding and Getting Offset Dim
+	Announce bug that Tim discovered.
+

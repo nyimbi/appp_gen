@@ -1,0 +1,6 @@
+*.log
+/temp
+/site-built
+/site-temp
+/logs
+/loc/

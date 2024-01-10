@@ -1,0 +1,5 @@
+.`icon` {
+	background-image: url(selector-icon.jpg);
+	opacity: .7;
+}
+

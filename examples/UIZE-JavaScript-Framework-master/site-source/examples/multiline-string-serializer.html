@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Multi-line String Serializer | JavaScript Tools | UIZE JavaScript Framework</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="keywords" content="tool Uize.Json.MultiLineStringLiteral Uize.Widgets.Tools.MultiLineStringSerializer.Widget"/>
+	<meta name="description" content="Take multi-line strings and serialize them to multi-line JavaScript string literal expressions using string concatenation."/>
+	<link rel="alternate" type="application/rss+xml" title="UIZE JavaScript Framework - Latest News" href="http://www.uize.com/latest-news.rss"/>
+	<link rel="stylesheet" href="../css/page.css"/>
+	<link rel="stylesheet" href="../css/page.example.css"/>
+</head>
+
+<body>
+
+<script type="text/javascript" src="../js/Uize.js"></script>
+
+<h1 class="header">
+	<a id="page-homeLink" href="../index.html" title="UIZE JavaScript Framework home"></a>
+	<a href="../index.html" class="homeLinkText" title="UIZE JavaScript Framework home">UIZE JavaScript Framework</a>
+</h1>
+
+<div class="main">
+	<h1 class="document-title">
+		<a href="../javascript-examples.html" class="breadcrumb breadcrumbWithArrow">JAVASCRIPT EXAMPLES</a>
+		Multi-line String Serializer
+		<div class="pageActionsShell">
+			<div id="page-actions" class="pageActions"><a href="source-code/multiline-string-serializer.html" class="buttonLink">SOURCE</a></div>
+		</div>
+	</h1>
+
+	<!-- explanation copy -->
+
+	<div class="explanation">
+		<p>The <b>Multi-line String Serializer</b> tool (which makes use of the <a href="../reference/Uize.Json.MultiLineStringLiteral.html"><code>Uize.Json.MultiLineStringLiteral</code></a> and <a href="../reference/Uize.Widgets.Tools.MultiLineStringSerializer.Widget.html"><code>Uize.Widgets.Tools.MultiLineStringSerializer.Widget</code></a> modules) lets you serialize multi-line text strings to multi-line JavaScript string literal expressions that use string concatenation.</p>
+
+		<p>Paste some multi-line text into the <b>"Multi-line Text"</b> pane to see the text serialized to a multi-line JavaScript string literal expression in the <b>"Multi-line JavaScript Expression"</b> pane.</p>
+
+		<p>You can also enter a multi-line JavaScript string literal expression in the <b>"Multi-line JavaScript Expression"</b> pane to see the plain text version of that expression in the <b>"Multi-line Text"</b> pane.</p>
+	</div>
+
+	<div id="page-multiLineStringSerializer"></div>
+</div>
+
+<script type="text/javascript">
+
+Uize.require (
+	[
+		'UizeSite.Page.Example',
+		'Uize.Widgets.Tools.MultiLineStringSerializer.Widget'
+	],
+	function () {
+		'use strict';
+
+		/*** create the example page widget ***/
+			var page = window.page = UizeSite.Page.Example ();
+
+		/*** add the pseudo-localizer widget ***/
+			page.addChild (
+				'multiLineStringSerializer',
+				Uize.Widgets.Tools.MultiLineStringSerializer.Widget,
+				{
+					built:false,
+					source:[
+						'This is some multi-line text',
+						'that should be turned into a',
+						'multi-line JavaScript string literal',
+						'expression that allows text blocks',
+						'to be conveniently processed for',
+						'inclusion into JavaScript source code.',
+						'',
+						'You can also convert in the other',
+						'direction by first entering a multi-line',
+						'JavaScript string literal expression',
+						'in the other pane.'
+					].join ('\n')
+				}
+			);
+
+		/*** wire up the page widget ***/
+			page.wireUi ();
+	}
+);
+
+</script>
+
+</body></html>
+

@@ -1,0 +1,45 @@
+<div>
+	<table class="settings">
+		<tr>
+			<td id="presetsLabel"></td>
+			<td>
+				<child name="presetPretty"/>
+				<child name="presetCompact"/>
+				<child name="presetPaddedAndSorted"/>
+			</td>
+		</tr>
+		<tr>
+			<td id="indentCharsLabel"></td>
+			<td><child name="indentChars"/></td>
+		</tr>
+		<tr>
+			<td id="linebreakCharsLabel"></td>
+			<td><textarea id="linebreakChars"></textarea></td>
+		</tr>
+		<tr>
+			<td id="quoteCharLabel"></td>
+			<td><child name="quoteChar"/></td>
+		</tr>
+		<tr>
+			<td id="keyDelimiterLabel"></td>
+			<td><child name="keyDelimiter"/></td>
+		</tr>
+		<tr>
+			<td id="padKeysLabel"></td>
+			<td><child name="padKeys"/></td>
+		</tr>
+		<tr>
+			<td id="keyAlignLabel"></td>
+			<td><child name="keyAlign"/></td>
+		</tr>
+		<tr>
+			<td id="whenToQuoteKeysLabel"></td>
+			<td><child name="whenToQuoteKeys"/></td>
+		</tr>
+		<tr>
+			<td id="sortKeysLabel"></td>
+			<td><child name="sortKeys"/></td>
+		</tr>
+	</table>
+	<child name="sourceVsResult" class="monospace"/>
+</div>

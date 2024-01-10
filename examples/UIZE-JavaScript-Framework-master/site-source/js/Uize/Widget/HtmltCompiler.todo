@@ -1,0 +1,153 @@
+This is a TO DO document for the =Uize.Widget.HtmltCompiler= module.
+
+Add Support for Subclassing
+	Provide a mechanism whereby htmlt templates can extend other htmlt templates.
+
+	Consider the following widget classes...
+
+	- MyNamespace.Widgets.MyWidget.Html
+	- MyNamespace.Widgets.MyWidgetSubclass.Html
+
+	SUPERCLASS
+	.......................
+	<div>
+		<div id="foo"></div>
+		<div id="bar"></div>
+	</div>
+	.......................
+
+	SUBCLASS
+	..................................................
+	<extend class="MyNamespace.Widgets.MyWidget.Html">
+		<inject where="foo" how="outer replace">
+			<div id="foo">
+				<div id="qux"/>
+			</div>
+		</inject>
+	</extend>
+	..................................................
+
+	Injection Modes
+		Content can be injected into the DOM of the superclass using any of the following injection modes...
+
+		- inner bottom (default) | bottom
+		- inner top | top
+		- outer bottom | after
+		- outer top | before
+		- inner replace | content
+		- outer replace | replace
+
+	Challenges
+		Supporting subclassing presents a few challenges, including...
+
+		Testability of the Compiler
+			A special provision needs to be put in place in order for the HtmltCompiler module to be testable in unit tests, since the module can't on its own resolve loading of the superclass htmlt.
+
+			An appropriate way needs to be devised to structure the code in order to maintain a clean / clear interface and appropriate demarcation of responsibilities. In a way, this problem is similar to the problem of bindings and class features. The compiler expects the widget class with which the htmlt is associated to be supplied at the time the template is compiled. Therefore, it might be reasonable as well to supply the compiler with the htmlt markup for the superclass' template.
+
+		Determining the Template to Extend
+			The file builder for htmlt templates should ideally be able to determine the superclass htmlt template that is being extended without having to parse or compile an htmlt template.
+
+			This requirement is at odds with an approach where the superclass template that is to be extended by an htmlt template is declared inside the markup of the template. For one thing, this would require first parsing the htmlt template, discovering that it extends another htmlt template, then loading that template and proceeding with the compilation. Furthermore, the file builder should be able to determine the dependencies for a template with less computation and ideally without fully parsing the template, for the sake of the currentness determination for the template.
+
+		Refactoring Robustness
+			Theoretically, it should be possible to simply define an htmlt template for a widget class and not be concerned about which class in the inheritance chain actually explicitly defines the htmlt that would be extended.
+
+			Furthermore, the subclass should not be affected by changes in the class hierarchy up the inheritance chain.
+
+		Multiple Subclassing
+			It should be possible for an htmlt template to extend an htmlt template that is, itself, extending some other htmlt template.
+
+			In other words, it should be possible to have multiple levels of htmlt subclassing.
+
+Improve Child Widget Syntax
+	Provide a more versatile syntax for declaring child widgets that allows the values of state properties to be specified using JSON formatted data...
+
+	TYPICAL
+	......................................................
+	<child prop1Name="prop1Value" prop2Name="prop2Value"/>
+	......................................................
+
+	JSON
+	..........................
+	<child>
+	{
+		prop1Name:'prop1Value',
+		prop2Name:'prop2Value'
+	}
+	</child>
+	..........................
+
+	PROPERTY TAGS
+	..................................................
+	<child>
+		<property name="prop1Name" value="prop1Value"/>
+		<property name="prop2Name" value="prop2Value"/>
+	</child>
+	..................................................
+
+	PROPERTY TAGS CONTAINING JSON
+	.....................................................
+	<child>
+		<property name="prop1Name">"prop1Value"</property>
+		<property name="prop2Name">"prop2Value"</property>
+	</child>
+	.....................................................
+
+	CUSTOM PROPERTY TAGS
+	..................................
+	<child>
+		<prop1Name value="prop1Value"/>
+		<prop2Name value="prop2Value"/>
+	</child>
+	..................................
+
+	CUSTOM PROPERTY TAGS CONTAINING JSON
+	......................................
+	<child>
+		<prop1Name>"prop1Value"</prop1Name>
+		<prop2Name>"prop2Value"</prop2Name>
+	</child>
+	......................................
+
+Achieve Parity for Bindings
+	Achieve parity for style bindings compiled to template code.
+
+	Implement Support for value Binding
+		How this binding type is compiled with have to be affected by the node type, since the current runtime binding logic leverages the =setNodeValue= method, and this method is an abstraction that provides different handling for different node types.
+
+		Nodes Without Value Interface
+			For nodes without a value interface (such as =div= tag or =span= tag nodes), the value binding type will be compiled to an innerHTML replacement with literal value display (i.e. entity-escaped HTML delimiters).
+
+		Nodes With Value Interface
+			For some of the node types that can have this binding, it will not be easy to achieve a compiled template equivalent.
+
+			One example is a radio button list, where the binding on one node ID is actually affecting multiple nodes in a group of related nodes. Another example is a select tag, where the binding to the select tag would actually need to be compiled to bindings to the select tag's various child option tags. In both such cases, the target of the binding is not a single node, and so replacement expressions would have to be injected into one or more associated nodes.
+
+			It may also just be that some runtime bindings will simply have no compiled htmlt equivalent and will not be handled in the compiled templates. This may be ok if the runtime code synchronizes the UI state to the widget's state upon initial update of the UI.
+
+Issues
+	Improve Style Binding Support for Pre-existing Properties
+		The current implementation of the style binding type supports pre-existing style properties by concatenating any pre-existing values of style attributes to the style bindings expressions.
+
+		If a pre-existing value for a style attribute contains a particular style property and there is also a binding to that property, then the resulting generated HTML from the compiled htmlt template will contain two occurrences of the property - firstly, the pre-existing property value and, secondly, the value from the binding. This works because the second value overrides the first value.
+
+		While the current approach works, it is inelegant. A better approach would be to parse the pre-existing style properties from the style attribute of a node to which there is one or more style type bindings. Then, any pre-xisting stype property values for which there are bindings would be removed from the parsed set of style properties. The resulting set would then be re-serialized to be concatenated with the style bindings expressions.
+
+	Fix Encoding Issue
+		Fix the issue where HTML entities that are being decoded to extended characters are not being re-encoded to HTML entities when the XML is serialized.
+
+		Perhaps there should be a few encoding options for the Uize.Util.Html.Encode.encode method...
+
+		- encode all characters possible to entities
+		- encode for attribute value target
+		- encode for text node target
+		- encoding all extended characters
+
+Miscellaneous
+	Other things to do include...
+
+	- attribute bindings vs. property bindings
+		- reconcile attribute bindings and property bindings (is this possible?)
+		- will need to map property bindings to attribute binding equivalents
+

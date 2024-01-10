@@ -1,0 +1,337 @@
+<%@
+	input ({overviewOfFeatures:'string'});
+%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>UIZE JavaScript Framework | AJAX, RIA, widgets, JSON, OOP, Class Inheritance, XMLHttpRequest, DOM manipulation, and all that stuff</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="keywords" content="UIZE JavaScript Framework"/>
+	<meta name="description" content="UIZE (pronounced &quot;you eyes&quot;) is a powerful, open source, object oriented JavaScript framework - supporting widgets, AJAX, DOM, templates, and more."/>
+	<meta name="verify-v1" content="qI/BGPY/WVnloHZD2XchAVELieGlCyY8u+oztOWs+cI="/>
+	<link rel="alternate" type="application/rss+xml" title="UIZE JavaScript Framework - Latest News" href="http://www.uize.com/latest-news.rss"/>
+	<link rel="stylesheet" href="css/page.css"/>
+	<link rel="stylesheet" href="css/page.simpledoc.css"/>
+	<script type="text/javascript" src="js/Uize.js"></script>
+	<style type="text/css">
+		body {
+			margin: 0;
+		}
+		.clearLeft {
+			clear: left;
+		}
+		/*** overrides for black text across the board ***/
+			a, a:link, a:visited, a:hover, a:active, code {
+				color: #000;
+			}
+
+		/*** homepage header ***/
+			.homeHeader {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 130px;
+				border-bottom: 1px solid rgba(0,0,0,.1);
+				box-shadow: 0 2px 20px rgba(0,0,0,.05);
+				z-index: 1;
+			}
+
+		/*** mantle ***/
+			.mantleBg {
+				position: absolute;
+				width: 100%;
+				height: 100px;
+				background: #000 url(images/mantle6-bg.jpg) repeat-x left top;
+				box-shadow: 0 2px 5px rgba(0,0,0,.3);
+				z-index: 1;
+			}
+			.mantle, .mantle img {
+				width: 900px;
+				height: 100px;
+			}
+			.mantle {
+				position: relative;
+				margin: auto;
+			}
+			.mantle img {
+				position: absolute;
+			}
+
+			/*** header links ***/
+				.headerLinks {
+					position: absolute;
+					top: 100px;
+					left: 0;
+					right: 0;
+					height: 15px;
+					background: #fff;
+					text-align: center;
+					font-weight: bold;
+				}
+				.headerLinks,
+				.headerLinks a,
+				.headerLinks a:link,
+				.headerLinks a:visited,
+				.headerLinks a:hover,
+				.headerLinks a:active {
+					font-size: 12px;
+					color: #000;
+					border: none;
+					letter-spacing: 1px;
+					padding: 8px 15px;
+					padding-bottom: 7px;
+				}
+				.headerLinks a:hover,
+				.headerLinks a:active {
+					color: #fff;
+					background: #000;
+				}
+
+			/*** home link ***/
+				#page-homeLink,
+				#page-homeLink:link,
+				#page-homeLink:visited,
+				#page-homeLink:hover,
+				#page-homeLink:active,
+				.siteMenu {
+					position: absolute;
+					display: block;
+					left: 11px;
+					top: 17px;
+					width: 69px;
+					height: 68px;
+					background: url(images/blank.gif);
+					border: none;
+				}
+				#page_siteMenu {
+					width: 69px;
+					height: 68px;
+					background: url(images/blank.gif);
+				}
+
+			/*** fork me ribbon ***/
+				.forkMeOnGithub, .forkMeOnGithub:link, .forkMeOnGithub:visited, .forkMeOnGithub:hover, .forkMeOnGithub:active {
+					display: block;
+					position: absolute;
+					top: 0;
+					right: 0;
+					border: none;
+					background: url(images/forkme_right_darkblue_121621.png) left top no-repeat;
+					width: 149px;
+					height: 149px;
+					text-decoration: none;
+					z-index: 1;
+				}
+
+		/*** intro ***/
+			.intro {
+				position: absolute;
+				top: 130px;
+				left: 0;
+				right: 0;
+				z-index: 0;
+			}
+			.introContent {
+				padding-top: 20px;
+				height: 420px;
+				border-bottom: 1px solid #aaa;
+				box-shadow: 0 5px 25px rgba(0,0,0,.2);
+
+				/*** gradient ***/
+					background: rgb(238,238,238); /* Old browsers */
+					/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+					background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VlZWVlZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjY2NjY2MiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+					background: -moz-linear-gradient(top,  rgba(238,238,238,1) 0%, rgba(204,204,204,1) 100%); /* FF3.6+ */
+					background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(238,238,238,1)), color-stop(100%,rgba(204,204,204,1))); /* Chrome,Safari4+ */
+					background: -webkit-linear-gradient(top,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* Chrome10+,Safari5.1+ */
+					background: -o-linear-gradient(top,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* Opera 11.10+ */
+					background: -ms-linear-gradient(top,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* IE10+ */
+					background: linear-gradient(to bottom,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* W3C */
+					filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=0 ); /* IE6-8 */
+			}
+			.introContent h1 {
+				position: relative;
+				font-size: 20px;
+				width: 760px;
+				margin: 12px auto;
+				padding: 30px 20px;
+				text-align: center;
+				color: #444;
+			}
+			.introContent h1 .quote {
+				position: absolute;
+				font-style: italic;
+				font-size: 60px;
+				color: #bbb;
+			}
+			.introContent h1 .leftQuote {
+				top: 0;
+				left: 0;
+			}
+			.introContent h1 .rightQuote {
+				bottom: 0;
+				right: 0;
+			}
+			.introFeaturesLists table {
+				position: relative;
+				border: none;
+				border-collapse: collapse:
+				margin: 0;
+				padding: 10px;
+			}
+			.introFeaturesList li {
+				margin-top: 10px;
+				font-size: 18px;
+				list-style-image: url(images/icons/check-mark.gif);
+			}
+			.introFeaturesList li a,
+			.introFeaturesList li a:link,
+			.introFeaturesList li a:visited,
+			.introFeaturesList li a:hover,
+			.introFeaturesList li a:active {
+				color: #000;
+				text-decoration: none;
+				border-bottom: 2px solid transparent;
+			}
+			.introFeaturesList li a:hover,
+			.introFeaturesList li a:active {
+				border-bottom: 2px solid #ffa200;
+			}
+
+		/*** share strip ***/
+			.shareStrip {
+				position: fixed;
+				top: 175px;
+				right: 20px;
+				background: #eee;
+			}
+
+		/*** main ***/
+			.main {
+				padding-top: 590px;
+			}
+
+		/*** SimpleDoc overrides ***/
+			.headingNumber {
+				display: none;
+			}
+			.heading1 {
+				background: #728088;
+				color: #fff;
+				font-size: 21px;
+				padding: 9px 12px;
+				text-shadow: 3px 2px 8px rgba(0,0,0,.2);
+				box-shadow: 5px 5px 10px -2px rgba(0,0,0,.4);
+				border: none;
+				border-left: 20px solid #000;
+			}
+
+	</style>
+</head>
+
+<body>
+
+<div class="homeHeader">
+	<div class="mantleBg">
+		<div class="mantle">
+			<img id="page-mantleImage" src="images/mantle6.jpg" alt="UIZE JavaScript Framework" style="clip:rect(0,0,0,0);"/>
+			<a id="page-homeLink" href="directory.html" title="UIZE JavaScript Framework home"></a>
+		</div>
+	</div>
+
+	<div class="headerLinks">
+		<a href="javascript-feature-tours.html?tour=all" class="headerLink">DEMOS / EXAMPLES</a><!--
+		--><a href="guides/getting-started.html" class="headerLink">GETTING STARTED</a><!--
+		--><a href="download.html" class="headerLink">DOWNLOAD</a><!--
+		--><a href="support.html" class="headerLink">SUPPORT</a><!--
+		--><a href="javascript-modules-index.html" class="headerLink">DOCS</a><!--
+		--><a href="search-sections.html" class="headerLink">SEARCH</a><!--
+		--><a href="directory.html" class="headerLink">SITE MAP</a><!--
+		--><a href="latest-news.html" class="headerLink">LATEST NEWS</a>
+	</div>
+
+	<a class="forkMeOnGithub" href="https://github.com/uize/uize-javascript-framework" title="Fork me on GitHub"></a>
+</div>
+
+<!-- node for demo info tooltip markup -->
+
+<div class="intro">
+	<div class="introContent">
+		<h1>
+			<div class="quote leftQuote">&ldquo;</div>
+			UIZE is pronounced "you eyes", and is a FREE, powerful, open source, OOP JavaScript framework for browsers, NodeJS, and other JavaScripty places.
+			<div class="quote rightQuote">&bdquo;</div>
+		</h1>
+		<center class="introFeaturesLists">
+			<table>
+				<tr>
+					<td>
+						<ul class="introFeaturesList">
+							<li><a href="#1">FREE and Open Source</a></li>
+							<li><a href="#2">Modules & Dependencies</a></li>
+							<li><a href="#3">Basic Utility Belt Features</a></li>
+							<li><a href="#4">Classes, Inheritance, OOP</a></li>
+							<li><a href="#5">State Properties and Binding</a></li>
+							<li><a href="#6">Event Infrastructure</a></li>
+							<li><a href="#7">Conditions, Barriers, Needs</a></li>
+						</ul>
+					</td>
+					<td>
+						<ul class="introFeaturesList">
+							<li><a href="#8">Ajax / Asynchronous Processes</a></li>
+							<li><a href="#9">DOM Manipulation</a></li>
+							<li><a href="#10">Widgets Framework</a></li>
+							<li><a href="#11">HTML & CSS Templating</a></li>
+							<li><a href="#12">Lots of Built-in Widgets</a></li>
+							<li><a href="#13">Internationalization / Localization</a></li>
+							<li><a href="#14">Testing Framework</a></li>
+						</ul>
+					</td>
+					<td>
+						<ul class="introFeaturesList">
+							<li><a href="#15">Templating System</a></li>
+							<li><a href="#16">Effects / Animation</a></li>
+							<li><a href="#17">Documentation System</a></li>
+							<li><a href="#18">Powerful Build System</a></li>
+							<li><a href="#19">Code Compression</a></li>
+							<li><a href="#20">Dev Server (NodeJS)</a></li>
+							<li><a href="#21">Extensive Documentation</a></li>
+						</ul>
+					</td>
+				</tr>
+			</table>
+		</center>
+	</div>
+</div>
+
+<div id="page-shareStrip" class="shareStrip"></div>
+
+<div class="main">
+	<div class="heading1">NEW SHOWCASE: EVER:CLOCK</div>
+	<div class="contents1">
+		<a href="http://www.everclock.com">
+			<img src="images/showcase/ever-clock.png" title="EVER:CLOCK (The only clock you&apos;ll ever need.)" alt="EVER:CLOCK (The only clock you&apos;ll ever need.)" width="300" height="158" style="float: right; margin-left: 10px;"/>
+		</a>
+		<p><b>EVER:CLOCK</b> is a fun, themeable, online digital clock that can be loaded straight into your modern Web browser.</p>
+
+		<p>Several different clock types are available, and there are thousands upon thousands of interesting clock themes to choose from. Each clock type offers its own unique qualities and theming options.</p>
+
+		<p>The <b>EVER:CLOCK</b> Web app and its supporting Web site is built entirely using the UIZE JavaScript Framework.</p>
+
+		<p>Check it out at... <a href="http://www.everclock.com" class="externalSiteLink">http://www.everclock.com</a></p>
+	</div>
+<%. overviewOfFeatures %>
+</div>
+
+<script type="text/javascript">
+
+Uize.require (
+	'UizeSite.Page.Home.library',
+	function () {(window.page = UizeSite.Page.Home ()).wireUi ()}
+);
+
+</script>
+
+</body>
+</html>
+

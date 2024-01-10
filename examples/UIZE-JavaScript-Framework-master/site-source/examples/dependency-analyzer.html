@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Dependency Analyzer | JavaScript Examples | UIZE JavaScript Framework</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="keywords" content="tool Uize.Widgets.SimpleStatsTable.Widget Uize.Widgets.SimpleStatsTable.Sortable.Widget"/>
+	<meta name="description" content="View detailed info for any module, including a full dependency visualization."/>
+	<link rel="alternate" type="application/rss+xml" title="UIZE JavaScript Framework - Latest News" href="http://www.uize.com/latest-news.rss"/>
+	<link rel="stylesheet" href="../css/page.css"/>
+	<link rel="stylesheet" href="../css/page.example.css"/>
+	<style type="text/css">
+		.selectorControl {
+			width:740px;
+			margin:auto;
+			padding:10px;
+			background:#becacd url(../images/page-contents-bg.gif) repeat-x left top;
+			border:1px solid #899;
+			border-radius: 3px;
+		}
+
+		.overviewTable {
+			border-collapse: collapse;
+			width: 100%;
+			margin: 10px 0;
+		}
+		.overviewTable td {
+			padding: 0;
+		}
+
+		.Uize_Widgets_SimpleStatsTable_Css {
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+
+<script type="text/javascript" src="../js/Uize.js"></script>
+
+<h1 class="header">
+	<a id="page-homeLink" href="../index.html" title="UIZE JavaScript Framework home"></a>
+	<a href="../index.html" class="homeLinkText" title="UIZE JavaScript Framework home">UIZE JavaScript Framework</a>
+</h1>
+
+<div class="main">
+	<h1 class="document-title">
+		<a href="../javascript-examples.html" class="breadcrumb breadcrumbWithArrow">JAVASCRIPT EXAMPLES</a>
+		Dependency Analyzer
+		<div class="pageActionsShell">
+			<div id="page-actions" class="pageActions"><a href="source-code/dependency-analyzer.html" class="buttonLink">SOURCE</a></div>
+		</div>
+	</h1>
+
+	<!-- explanation copy -->
+
+	<div class="explanation">
+		<p>This tool lets you analyze the dependencies for any module, allowing you to view a breakdown of the module's dependencies and how they contribute to the overal load / weight for the module. Simply select a module from the dropdown menu.</p>
+	</div>
+
+	<div class="selectorControl">
+		<div style="float:left; line-height:22px; margin-right:5px;">SELECT A MODULE:</div>
+		<select id="page-selector" style="float:left; margin-right:15px;"></select>
+		<br style="clear:left;"/>
+	</div>
+
+	<div style="height:4px;"></div>
+
+	<table class="overviewTable">
+		<tr>
+			<td id="page-dependenciesOverviewTable"></td>
+			<td id="page-metadataTable"></td>
+		</tr>
+	</table>
+
+	<div id="page-dependenciesListTable"></div>
+</div>
+
+<script type="text/javascript">
+
+/* TODO
+	- improve description for generated modules
+	- interesting top level summary to show
+		- name
+		- description
+		- type of module
+		- link to documentation
+		- how many modules throughout the codebase rely on this module (requires scanning entire codebase)
+	- questions to answer
+		- if I add or remove direct dependencies to a module...
+			- how is the overal module dependency list and size affected
+			- how is the size of other dependent modules affected (as a percentage change on their current total size)
+		- if I change the size of a module...
+			- how is the size of other dependent modules affected (as a percentage change on their current total size)
+		- basically, provide information on consquences on the codebase to making typical kinds of changes
+			- like optimizing code of a module
+			- like adding or removing dependencies
+		- what's the impact of making a change?
+			- taking into account the modules that are affected and how important they are / how in use they are by other modules
+		- for any module in the dependency list, which modules are using it directly
+	- list of all dependencies, including self
+		- showing the following fields (sortable on any of them)
+			- unique size contribution (size of self plus all non-shared dependencies)
+			- local sharedness (used by how many other modules in this dependency graph)
+*/
+
+Uize.require (
+	[
+		'UizeSite.Page.Example',
+		'UizeSite.ModulesTree',
+		'Uize.Data.PathsTree',
+		'Uize.Url',
+		'Uize.Util.Dependencies.Analyzer',
+		'Uize.Widgets.SimpleStatsTable.Widget',
+		'Uize.Widgets.SimpleStatsTable.Sortable.Widget',
+		'Uize.Dom.Basics',
+		'Uize.Dom.Text',
+		'Uize.Tooltip',
+		'Uize.Widgets.Tooltip.Widget'
+	],
+	function () {
+		'use strict';
+
+		var _selectorPlaceholderText = '-- NO MODULE SELECTED --';
+
+		/*** create the example page widget ***/
+			var
+				_page = window.page = UizeSite.Page.Example (),
+				_tooltip = _page.addChild ('tooltip',Uize.Widgets.Tooltip.Widget,{built:false})
+			;
+
+		/*** wire up the page widget ***/
+			_page.wireUi ();
+
+		/*** handle selection of test ***/
+			function _handleSelection () {
+				var
+					_moduleName = _page.getNodeValue ('selector'),
+					_pageChildren = _page.children,
+					_dependenciesOverviewTable = _pageChildren.dependenciesOverviewTable,
+					_metadataTable = _pageChildren.metadataTable,
+					_dependenciesListTable = _pageChildren.dependenciesListTable
+				;
+				_dependenciesOverviewTable && _dependenciesOverviewTable.removeUi ();
+				_metadataTable && _metadataTable.removeUi ();
+				_dependenciesListTable && _dependenciesListTable.removeUi ();
+
+				if (_moduleName != _selectorPlaceholderText) {
+					Uize.Util.Dependencies.Analyzer.analyze (
+						_moduleName,
+						function (_moduleName,_callback) {
+							Uize.require (
+								'UizeSite.ModuleInfo.' + _moduleName,
+								function (_moduleInfoModule) {_callback (_moduleInfoModule ())}
+							);
+						},
+						function (_analysis) {
+							/*** update the dependencies overview table ***/
+								_dependenciesOverviewTable || (
+									_dependenciesOverviewTable = page.addChild (
+										'dependenciesOverviewTable',
+										Uize.Widgets.SimpleStatsTable.Widget,
+										{
+											title:'Overview of Dependencies',
+											columns:[
+												{title:'Segment'},
+												{
+													title:'MOdules',
+													minColor:'hsl(120,100,50)',
+													maxColor:'hsl(0,100,50)'
+												},
+												{
+													title:'Size (B)',
+													minColor:'hsl(120,100,50)',
+													maxColor:'hsl(0,100,50)',
+													formatter:'value + " B"'
+												},
+												{
+													title:'Size (KB)',
+													minColor:'hsl(120,100,50)',
+													maxColor:'hsl(0,100,50)',
+													formatter:'value.toFixed (1) + " KB"'
+												},
+												{
+													title:'Size (%)',
+													minColor:'hsl(120,100,50)',
+													maxColor:'hsl(0,100,50)',
+													formatter:'value.toFixed (1) + "%"'
+												}
+											]
+										}
+									)
+								);
+								_dependenciesOverviewTable.set ({
+									rows:Uize.map (Uize.values (_analysis.overview),'Uize.values (value)')
+								});
+								_dependenciesOverviewTable.insertUi ();
+
+							/*** update the metadata table ***/
+								_metadataTable || (
+									_metadataTable = page.addChild (
+										'metadataTable',
+										Uize.Widgets.SimpleStatsTable.Widget,
+										{
+											title:'Module Metadata',
+											columns:[
+												{title:'Key'},
+												{
+													title:'Estimate',
+													minColor:'hsl(0,100,50)',
+													maxColor:'hsl(120,100,50)',
+													minValue:0,
+													maxValue:100
+												}
+											]
+										}
+									)
+								);
+								var _metadata = _analysis.metaData;
+								_metadataTable.set ({
+									rows:[
+										['Importance',_metadata.importance * 10],
+										['Code Completeness',+_metadata.codeCompleteness],
+										['Documentation Completeness',+_metadata.docCompleteness],
+										['Test Completeness',+_metadata.testCompleteness || 0]
+									]
+								});
+								_metadataTable.insertUi ();
+
+							/*** update the dependencies list table ***/
+								_dependenciesListTable || (
+									_dependenciesListTable = page.addChild (
+										'dependenciesListTable',
+										Uize.Widgets.SimpleStatsTable.Sortable.Widget,
+										{
+											title:'Complete List of Dependencies',
+											children:{
+												tableSorter:{
+													cellTooltips:false,
+													dominantSortOrder:'descending',
+													dominantSortOrderByColumn:{
+														0:'ascending',
+														1:'ascending',
+														3:'ascending'
+													}
+												}
+											},
+											columns:[
+												{
+													title:'Module Name',
+													formatter:function (_moduleName) {
+														return '<a href="?module=' + _moduleName + '">' + _moduleName + '</a>';
+													}
+												},
+												{title:'Type'},
+												{
+													title:'Order',
+													minColor:'hsl(200,100,0)',
+													maxColor:'hsl(200,100,75)'
+												},
+												{
+													title:'Depth',
+													minColor:'hsl(120,100,50)',
+													maxColor:'hsl(0,100,50)',
+													minValue:0,
+													maxValue:2
+												},
+												{
+													title:'Import.',
+													minColor:'hsl(200,100,0)',
+													maxColor:'hsl(200,100,75)',
+													minValue:0,
+													maxValue:10
+												},
+												{
+													title:'Code',
+													minColor:'hsl(0,100,50)',
+													maxColor:'hsl(120,100,50)',
+													minValue:0,
+													maxValue:100,
+													formatter:'value + "%"'
+												},
+												{
+													title:'Dir. Deps',
+													minColor:'hsl(120,100,50)',
+													maxColor:'hsl(0,100,50)'
+												},
+												{
+													title:'Shared',
+													minColor:'hsl(200,100,75)',
+													maxColor:'hsl(200,100,75)',
+													minValue:0
+												},
+												{
+													title:'Size (%)',
+													minColor:'hsl(120,100,50)',
+													maxColor:'hsl(0,100,50)',
+													minValue:0,
+													maxValue:100,
+													formatter:'value.toFixed (1) + "%"'
+												},
+												{
+													title:'Size (B)',
+													minColor:'hsl(120,100,50)',
+													maxColor:'hsl(0,100,50)',
+													formatter:'value + " B"'
+												},
+												{
+													title:'Unique',
+													minColor:'hsl(120,100,50)',
+													maxColor:'hsl(0,100,50)',
+													formatter:'value + " B"'
+												}
+											]
+										}
+									)
+								);
+								_dependenciesListTable.set ({rows:Uize.map (_analysis.dependencies,'Uize.values (value)')});
+								_dependenciesListTable.insertUi ();
+
+							/*** wire up module name tooltip ***/
+								var
+									_tooltipNode = _tooltip.getNode (),
+									_moduleInfoLookup = {}
+								;
+								Uize.forEach (
+									_analysis.dependencies,
+									function (_dependencyInfo) {
+										_moduleInfoLookup [_dependencyInfo.name] = _dependencyInfo.moduleInfo;
+									}
+								);
+
+								_page.wireNode (
+									Uize.Dom.Basics.find ({
+										root:_dependenciesListTable.getNode (),
+										tagName:'A',
+										href:/\?module=/
+									}),
+									{
+										mouseover:function () {
+											var
+												_link = this,
+												_moduleName = Uize.Dom.Text.getText (_link)
+											;
+											_tooltip.set ({
+												heading:_moduleName,
+												body:_moduleInfoLookup [_moduleName].description
+											});
+											Uize.Tooltip.showTooltip (_tooltipNode);
+										},
+										mouseout:function () {
+											Uize.Tooltip.showTooltip (_tooltipNode,false);
+										}
+									}
+								);
+						}
+					);
+				}
+			}
+			_page.wireNode ('selector','change',_handleSelection);
+
+		/*** initialize ***/
+			/*** populate selector ***/
+				var _selectorOptions = _page.getNode ('selector').options;
+				Uize.forEach (
+					[_selectorPlaceholderText].concat (Uize.Data.PathsTree.toList (UizeSite.ModulesTree ())),
+					function (_moduleName,_moduleNo) {
+						_selectorOptions [_moduleNo] = new Option (_moduleName,_moduleName);
+					}
+				);
+
+			/*** initialize selector, using query param ***/
+				_page.setNodeValue (
+					'selector',
+					Uize.Url.fromParams (location.href).module || 'Uize.Widgets.Calculator.Widget'
+				);
+				_handleSelection ();
+
+	}
+);
+
+</script>
+
+</body>
+</html>

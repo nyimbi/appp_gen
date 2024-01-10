@@ -1,0 +1,530 @@
+Introduction
+	The UIZE JavaScript Framework provides a versatile mixin system for implementing reusable fragments of functionality that can be mixed in to different classes in a class hierarchy.
+
+	PROPOSAL
+		This document is a proposal for a feature and is written in the style of describing the feature as though it were already implemented (i.e. documentation for a future feature).
+
+Mixins as Augmenter Modules
+	As implemented in the UIZE JavaScript Framework, mixins are essentially augmenter modules.
+
+	A mixin module is intended to augment other modules by adding new caoabilities or modifying their existing capabilities. An example of a mixin module would be a module that adds an =area= state property to a =Rectangle= class, where the value of the =area= state property is derived from the values of the =Rectangle= class' existing =width= and =height= state properties.
+
+	Mixins Need to be Applied
+		As augmenter modules, mixins need to be loaded and then deliberately applied to the desired modules.
+
+		This can be done in a few different ways, to suit your situation and tastes...
+
+		Declared as a Feature When Subclassing
+			.
+
+			EXAMPLE
+			................................................
+			var MyNamespace.MyClass = Uize.Class.subclass ({
+				mixins:MyNamespace.MyAwesomeMixin
+			});
+			................................................
+
+		Declared as a Feature on an Existing Class
+			.
+
+			EXAMPLE
+			.......................................................
+			var MyNamespace.MyClass = Uize.Class.subclass ();
+
+			MyNamespace.MyClass.mixin (MyNamespace.MyAwesomeMixin);
+			.......................................................
+
+		Mixed in Using the Uize.mixin Method
+			.
+
+			EXAMPLE
+			............................................................
+			var MyNamespace.MyClass = Uize.Class.subclass ();
+
+			Uize.mixin (MyNamespace.MyClass,MyNamespace.MyAwesomeMixin);
+			............................................................
+
+	Loading Mixins Doesn't Have Side Effects
+		Because `mixins need to be applied` deliberately in order for the mixin functionality to be added to other modues, simply `loading mixins doesn't have side effects`.
+
+		Mixin Modules Versus Extension Modules
+			.
+
+			This is in stark contrast to extension modules, that extend specific modules when they are loaded. Extension modules are less versatile because they are only designed to augment specific modules,
+
+	Mixins Aren't Standalones
+		.
+
+		Mixins are really reusable fragments of functionality that are intended to be used by multiple other modules in order to "mix in" capabilities that need to be available in all those other modules, but where that effect cannot be accomplished through a standard inheritance approach. The different modules may be classes from entirely different class hierarchies that do not share a common base class that can be modified)
+
+	Classes Can't be Mixins
+		.
+
+The Uize.mixin Method
+	.
+
+	DIFFERENT USAGES
+
+	`Mix in a Set of Features, by Specifying an Augmenter Function`
+	.........................................................
+	sourceFUNCorOBJ = Uize.mixin (sourceFUNCorOBJ,mixinFUNC);
+	.........................................................
+
+	`Mix in a Set of Features, by Specifying a Features Object`
+	........................................................
+	sourceFUNCorOBJ = Uize.mixin (sourceFUNCorOBJ,mixinOBJ);
+	........................................................
+
+	`Mix in Multiple Mixins, by Specifying an Array of Mixins`
+	...........................................................
+	sourceFUNCorOBJ = Uize.mixin (sourceFUNCorOBJ,mixinsARRAY);
+	...........................................................
+
+	`Mix in One or More Mixins, Specifying an Optional Mixer Function`
+	.......................................................................
+	sourceFUNCorOBJ = Uize.mixin (FUNCorOBJ,mixinOrMixinsFUNCorOBJorARRAY);
+	.......................................................................
+
+	Implementation Approach
+		PSEUDOCODE
+		.............................................................................................
+		if (not mixin has already been applied) {
+			if (mixinOrMixins is a function) {
+				call it with the source as an argument
+			} else if (mixinOrMixins is an array) {
+				for (each element of the mixinOrMixins array) {
+					call Uize.mixin with source as first argument and element as second argument
+				}
+			} else {
+				if (a mixer method is provided) {
+					call mixer method with source as first argument and mixinOrMixins as second argument
+				} else {
+					merge the mixinOrMixins object into the source
+				}
+			}
+		}
+		.............................................................................................
+
+		IMPLEMENTATION
+		.............................................................
+		Uize.mixin = function (_source,_mixin,_mixer) {
+			function _mixIntoSource (_mixin) {
+				Uize.isIn (_source.appliedMixins,_mixin)
+					? 0
+					: Uize.isFunction (_mixin)
+						/* TODO:
+							What about the case where the mixin is a class, so that its type would be a function? Perhaps we should check for a method that performs the mixin of the features from the class, and where this method could be implemented in the Uize.Class base class with a base implementation that mixes in all the static and instance features.
+						*/
+						? _mixin (_source)
+						: Uize.isArray (_mixin)
+							? Uize.forEach (_mixin,_mixIntoSource)
+							: _mixer
+								? _mixer (_source,_mixin)
+								: Uize.mergeInto (_source,_mixin)
+				;
+			}
+			_mixIntoSource (_mixin);
+			return _source;
+		};
+
+		Uize.Class.mixins = function (_mixin) {
+			return Uize.mixin (this,_mixin,function (_source,_mixin) {_source.declare (_mixin)});
+		};
+		.............................................................
+
+		.............................................................
+		Uize.Class.mixins = function (_source,_mixin) {
+			function _mixIntoSource (_mixin) {
+				if (!Uize.isIn (_source.appliedMixins,_mixin)) {
+					_source.appliedMixins.push (_mixin);
+					Uize.isFunction (_mixin)
+						/* TODO:
+							What about the case where the mixin is a class, so that its type would be a function? Perhaps we should check for a method that performs the mixin of the features from the class, and where this method could be implemented in the Uize.Class base class with a base implementation that mixes in all the static and instance features.
+						*/
+						? _mixin (_source)
+						: Uize.isArray (_mixin)
+							? Uize.forEach (_mixin,_mixIntoSource)
+							: _source.declare (_mixin)
+				}
+			}
+			_mixIntoSource (_mixin);
+		};
+		.............................................................
+
+Class Mixins
+	.
+
+	Defining Class Mixin Modules
+		.
+
+		A Class Mixin as a Features Object
+			.
+
+			EXAMPLE
+			...
+			Uize.module ({
+				name:'MyNamespace.WidthAndHeightMixin',
+				builder:function () {
+					return {
+						stateProperties:{
+							width:{value:0},
+							height:{value:0}
+						}
+					};
+				}
+			});
+			...
+
+		A Class Mixin as a Class Augmenter
+			When a class mixin is implemented as a class augmenter, the module simply defines an augmenter function that will be called and passed a reference to the class that is to be augmented as the single argument.
+
+			The augmenter function can then call any of the feature declaration methods on the class to add features to it or override features already defined for the class.
+
+			EXAMPLE
+			...
+			Uize.module ({
+				name:'MyNamespace.WidthAndHeightMixin',
+				builder:function () {
+					return function (_class) {
+						_class.stateProperties ({
+							width:{value:0},
+							height:{value:0}
+						});
+					};
+				}
+			});
+			...
+
+		When to Use a Class Augmenter
+			.
+
+	Using Class Mixin Modules
+		.
+
+		The MyClass.mixin Static Method
+			The =MyClass.mixin= feature declaration method allows one to specify one or more mixins that should be applied to the class.
+
+			EXAMPLE
+			...................................
+			_class.mixin (MyNamespace.MyMixin);
+			...................................
+
+			Declaring Mixins During Subclassing
+				As with any of the feature declaration methods, the mixins can also be declared in the features object when calling the =MyClass.subclass= static method to create a new subclass.
+
+				Using a Single Class Mixin Module
+					.
+
+					EXAMPLE
+					...
+					Uize.module ({
+						name:'MyNamespace.Rect',
+						superclass:'Uize.Class',
+						required:'MyNamespace.WidthAndHeightMixin',
+						builder:function (_superclass) {
+							return _superclass.subclass ({
+								mixins:MyNamespace.WidthAndHeightMixin
+							});
+						}
+					});
+					...
+
+				Using Multiple Class Mixin Modules
+					.
+
+					EXAMPLE
+					...
+					Uize.module ({
+						name:'MyNamespace.Rect',
+						superclass:'Uize.Class',
+						required:[
+							'MyNamespace.WidthAndHeightMixin',
+							'MyNamespace.AreaMixin'
+						],
+						builder:function (_superclass) {
+							return _superclass.subclass ({
+								mixins:[
+									MyNamespace.WidthAndHeightMixin,
+									MyNamespace.AreaMixin
+								]
+							});
+						}
+					});
+					...
+
+			Applying a Mixin to an Existing Class
+				.
+
+				EXAMPLE
+				...
+				MyNamespace.Rect.mixin (MyNamespace.WidthAndHeightMixin);
+				...
+
+				Applying a Mixin Using the MyClass.mixin Static Method
+					.
+
+					EXAMPLE
+					.....................................................
+					Uize.module ({
+						name:'MyNamespace.Rect',
+						superclass:'Uize.Class',
+						required:'MyNamespace.WidthAndHeightMixin',
+						builder:function (_superclass) {
+							var _class = _superclass.subclass ();
+							// ... ... ... ...
+
+							_class.mixin (MyNamespace.WidthAndHeightMixin);
+
+							// ... ... ... ...
+							return _class;
+						}
+					});
+					.....................................................
+
+				Applying a Mixin Using the Uize.mixin Static Method
+					.
+
+					EXAMPLE
+					..........................................................
+					Uize.module ({
+						name:'MyNamespace.Rect',
+						superclass:'Uize.Class',
+						required:'MyNamespace.WidthAndHeightMixin',
+						builder:function (_superclass) {
+							var _class = _superclass.subclass ();
+							// ... ... ... ...
+
+							Uize.mixin (_class,MyNamespace.WidthAndHeightMixin);
+
+							// ... ... ... ...
+							return _class;
+						}
+					});
+					..........................................................
+
+	Mixin Functionality Organized Into Layers
+		.
+
+		EXAMPLE
+		...
+		// a width-and-height mixin
+		Uize.module ({
+			name:'MyNamespace.WidthAndHeightMixin',
+			builder:function () {
+				return {
+					stateProperties:{
+						width:{value:0},
+						height:{value:0}
+					}
+				};
+			}
+		});
+
+		// an area mixin
+		Uize.module ({
+			name:'MyNamespace.AreaMixin',
+			builder:function () {
+				return {
+					stateProperties:{
+						area:{derived:'width,height: width * height'}
+					}
+				};
+			}
+		});
+
+		// a depth mixin
+		Uize.module ({
+			name:'MyNamespace.DepthMixin',
+			builder:function () {
+				return {
+					stateProperties:{
+						width:{depth:0}
+					}
+				};
+			}
+		});
+
+		// a volume mixin
+		Uize.module ({
+			name:'MyNamespace.VolumeMixin',
+			builder:function () {
+				return {
+					stateProperties:{
+						volume:{derived:'width,height,depth: width * height * depth'}
+					}
+				};
+			}
+		});
+
+		// a rectangle class that uses the width-and-height and area mixins
+		Uize.module ({
+			name:'MyNamespace.Rect',
+			superclass:'Uize.Class',
+			required:[
+				'MyNamespace.WidthAndHeightMixin',
+				'MyNamespace.AreaMixin'
+			],
+			builder:function (_superclass) {
+				return _superclass.subclass ({
+					mixins:[MyNamespace.WidthAndHeightMixin,MyNamespace.AreaMixin]
+				});
+			}
+		});
+
+		// a cuboid class that subclasses the rect class and uses the depth and volume mixins
+		Uize.module ({
+			name:'MyNamespace.Cuboid',
+			superclass:'MyNamespace.Rect',
+			required:[
+				'MyNamespace.DepthMixin',
+				'MyNamespace.VolumeMixin'
+			],
+			builder:function (_superclass) {
+				return _superclass.subclass ({
+					mixins:[MyNamespace.DepthMixin,MyNamespace.VolumeMixin]
+				});
+			}
+		});
+		...
+
+	Aggregating Class Mixins
+		.
+
+		Aggregating Class Mixins Using the Augmenter Approach
+			.
+
+			EXAMPLE
+			...
+			Uize.module ({
+				name:'MyNamespace.RectMixin',
+				required:[
+					'MyNamespace.WidthAndHeightMixin',
+					'MyNamespace.AreaMixin'
+				],
+				builder:function () {
+					return function (_class) {
+						_class.mixin ([
+							MyNamespace.WidthAndHeightMixin,
+							MyNamespace.AreaMixin
+						]);
+					];
+				}
+			});
+			...
+
+		Aggregating Class Mixins Using the Mixins List Approach
+			.
+
+			EXAMPLE
+			...
+			Uize.module ({
+				name:'MyNamespace.RectMixin',
+				required:[
+					'MyNamespace.WidthAndHeightMixin',
+					'MyNamespace.AreaMixin'
+				],
+				builder:function () {
+					return [
+						MyNamespace.WidthAndHeightMixin,
+						MyNamespace.AreaMixin
+					];
+				}
+			});
+			...
+
+		Layered Aggregation of Mixins
+			.
+
+			EXAMPLE
+			.........................................
+			// a rect mixin
+			Uize.module ({
+				name:'MyNamespace.RectMixin',
+				required:[
+					'MyNamespace.WidthAndHeightMixin',
+					'MyNamespace.AreaMixin'
+				],
+				builder:function () {
+					return [
+						MyNamespace.WidthAndHeightMixin,
+						MyNamespace.AreaMixin
+					];
+				}
+			});
+
+			// a cuboid mixin
+			Uize.module ({
+				name:'MyNamespace.CuboidMixin',
+				required:[
+					'MyNamespace.RectMixin',
+					'MyNamespace.DepthMixin',
+					'MyNamespace.VolumeMixin'
+				],
+				builder:function () {
+					return [
+						MyNamespace.RectMixin,
+						MyNamespace.DepthMixin,
+						MyNamespace.VolumeMixin
+					];
+				}
+			});
+			.........................................
+
+Object Mixins
+	.
+
+
+Mutual Compatibility
+	.
+
+	Compatibility Between Host and Mixin
+		A mixin will likely have an expectation of the host in which it is to be mixed into.
+
+		A mixin may expect to be mixed in to a specific class or subclass thereof, and may expect specific features to be present that may be used in the mixin's implementation.
+
+	Compatibility Between Mixins
+		.
+
+	Shared Objects and Privates
+		.
+
+		Avoid Namespace Conflicts for Privates
+			.
+
+Considerations for Implementing Mixins
+	Be Careful With Private Static Properties
+		.
+
+		Be Careful with Using Module Scope Variables
+			.
+
+	Avoid Order Requirements Amongst Mixins
+		.
+
+Special Design Requirements
+	- loading a mixin should not have side effects
+	- a mixin should be able to aggregate one or more other mixins
+	- a mixin should be able to augment another mixin to produce a new mixin
+	- if two mixins require a common mixin, then applying both of them should not redundantly apply the common mixin
+	- it should be possible to determine what mixins have been applied to an object
+	- subclasses should inherit the information about applied mixins
+	- it should be possible to determine the mixin origin of a mixed in feature of a class
+	- the documentation system should be able to detect the features of a mixin in order to produce generated documentation for mixin modules. Perhaps this argues in favor of making class mixins actual classes. If this approach were taken, the mixins could be implemented as classes that also implement a special method for mixing in their features into other classes (which would also be used internally in the implementation of the classes). Some alternative approaches: 1) the process of declaring features for a class could result in the features being stored in such a way that they could be declared again for a class into which they are to be mixed, 2) the entire module builder for a mixin could be applied, by supplying the mixin host as the value for the _superclass variable of the builder.
+
+Open Questions
+	Can Mixins be Standalone?
+		For example, if two widget classes existed that implemented some part of a UI, would it be possible to create a new subclass and then mixin those two widget classes?
+
+		An issue with mixing in standalone classes is that one can perform duplicate / redundant / wasted effort in copying in the guts of the classes to be mixed in. Ideally, if one created a new widget class and wanted to mix in the features of two other widget classes, only the modifications made in those widget classes to the features inherited from the widget base class would be copied over to the class into which the classes are being mixed in.
+
+		So, if widget A, widget B, and widget C all subclassed =Uize.Widget=, then mixing in widget B and widget C into widget A would only mix in the feature deltas between =Uize.Widget= and widget B and =Uize.Widget= and widget C. In order to achieve this, the mixin logic would need to trace up the inheritance chain and find the common base class for all the classes involved.
+
+		In reality, it may be more practical to require mixins to be implemented in a specific way - not as standalone classes but as class augmenters that have a specific expectation of the classes that they are to augment.
+
+	Determining Where Features are Introduced
+		With an implementation that treats a `mixin as an augmenter`, there is no way to programmatically determine that a feature that is mixed into a class actually originates from a mixin.
+
+		To a tool like the DELVE tool, feature discovery will attribute mixed in methods to the classes in the inheritance chain into which they were mixed in - not the mixin modules in which they are implemented. The only way to overcome this would be to tag the functions with the modules in which they are implemented. This would involve somehow providing the mixin module also as a reference when declaring features, but it is unclear how this reference would be passed. Additionally, tagging as can be done with function references cannot be accomplished with instance properties, static properties, or state properties.
+
+		All of this suggests that features should be declared in a more formalized manner and that classes on which features are declared should possibly maintain a registry of the features and where they were introduced and overridden.
+

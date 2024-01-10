@@ -1,0 +1,46 @@
+This is a TO DO document for the =Uize.Parse.Xml.Document= module.
+
+Support XML Prolog Tags
+	The parser must support XML prolog tags that could be at the start of the document and have the form...
+
+	.......................................................
+	<?xml version="1.0"?>
+	<?xml-stylesheet type="text/css" href="nutrition.css"?>
+	.......................................................
+
+Support DOCTYPE Tag
+	The parser must support DOCTYPE tags of the form...
+
+	......................................
+	<!DOCTYPE greeting SYSTEM "hello.dtd">
+	......................................
+
+To Work Out
+	Object Representation
+		JSON Representation
+			What's the best way to represent an XML document using a simple JSON object?
+
+			POSSIBILITY
+			.....................
+			[
+				{
+					nodeType:...,
+					tagName:...,
+					attributes:[
+						{
+							name:...,
+							value:...
+						}
+					],
+					childNodes:[
+						...
+					]
+				}
+			]
+			.....................
+
+		Custom Object Representation
+			The ability to configure a map of tag names to tag classes.
+
+			With this ability, any type of XML document could be parsed and turned immediately into an object tree using classes to support different tag types. All classes should support the basic tag interface, to allow attributes to be set and queried, etc. This would imply creating a tag base class, where the basic interface / API could be inherited by all tag specific subclasses.
+

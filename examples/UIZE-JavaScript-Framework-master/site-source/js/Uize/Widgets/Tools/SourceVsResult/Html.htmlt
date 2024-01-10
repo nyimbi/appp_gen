@@ -1,0 +1,15 @@
+<div>
+	<div class="viewButtons">
+		<child name="sourceViewButton" class="viewButton"/>
+		<child name="resultViewButton" class="viewButton"/>
+		<br style="clear: left;"/>
+	</div>
+	<div class="views">
+		<div id="sourceView" class="view sourceView">
+			<div class="textareaShell"><textarea id="source"></textarea></div>
+		</div>
+		<div id="resultView" class="view resultView">
+			<div class="textareaShell"><textarea id="result"></textarea></div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>JSON Prettifier | JavaScript Tools | UIZE JavaScript Framework</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="keywords" content="tool featured Uize.Widgets.Tools.JsonSerializer.Widget Uize.Json"/>
+	<meta name="description" content="Take ugly / unreadable JSON data and prettify it by re-serializing it. Make it look exactly how you want with the many serialization options provided."/>
+	<link rel="alternate" type="application/rss+xml" title="UIZE JavaScript Framework - Latest News" href="http://www.uize.com/latest-news.rss"/>
+	<link rel="stylesheet" href="../css/page.css"/>
+	<link rel="stylesheet" href="../css/page.example.css"/>
+	<style type="text/css">
+		.main {
+			padding-bottom: 0;
+		}
+	</style>
+</head>
+
+<body>
+
+<script type="text/javascript" src="../js/Uize.js"></script>
+
+<h1 class="header">
+	<a id="page-homeLink" href="../index.html" title="UIZE JavaScript Framework home"></a>
+	<a href="../index.html" class="homeLinkText" title="UIZE JavaScript Framework home">UIZE JavaScript Framework</a>
+</h1>
+
+<div class="main">
+	<h1 class="document-title">
+		<a href="../javascript-examples.html" class="breadcrumb breadcrumbWithArrow">JAVASCRIPT EXAMPLES</a>
+		JSON Prettifier
+		<div class="pageActionsShell">
+			<div id="page-actions" class="pageActions"><a href="source-code/json-prettifier.html" class="buttonLink">SOURCE</a></div>
+		</div>
+	</h1>
+
+	<!-- explanation copy -->
+
+	<div class="explanation">
+		<p>The <b>JSON Prettifier</b> tool (which makes use of the <a href="../reference/Uize.Widgets.Tools.JsonSerializer.Widget.html"><code>Uize.Widgets.Tools.JsonSerializer.Widget</code></a> and <a href="../reference/Uize.Json.html"><code>Uize.Json</code></a> modules) lets you enter untidy JSON data and then serialize it to your individual taste. The end result is neat, elegant, readable, well indented JSON formatted data. You can also take expanded JSON data and crunch it down to a one line string. A host of configuration options lets you tweak indentation, linebreaks, quote characters, key quoting, key padding and alignment, and key sorting. Or choose from one of the convenient preset configurations. Enter JSON text in the <b>"Source JSON"</b> pane, and then get the serialized result in the <b>"Serialized JSON"</b> pane. Play around with the test JSON data to begin with.</p>
+	</div>
+
+	<div id="page-jsonSerializer"></div>
+	<div id="page-resetTestData" style="text-align: center;"></div>
+</div>
+
+<script type="text/javascript">
+
+Uize.require (
+	[
+		'UizeSite.Page.Example',
+		'Uize.Widgets.Tools.JsonSerializer.Widget',
+		'Uize.Widgets.Tools.JsonSerializer.TestData',
+		'Uize.Json',
+		'Uize.Widgets.Button.Widget'
+	],
+	function () {
+		'use strict';
+
+		var initialSource = Uize.Json.to (Uize.Widgets.Tools.JsonSerializer.TestData ());
+
+		/*** create the example page widget ***/
+			var page = window.page = UizeSite.Page.Example ();
+
+		/*** add the pseudo-localizer widget ***/
+			var jsonSerializer = page.addChild (
+				'jsonSerializer',
+				Uize.Widgets.Tools.JsonSerializer.Widget,
+				{
+					built:false,
+					source:initialSource
+				}
+			);
+
+		/*** add the buttons ***/
+			page.addChild (
+				'resetTestData',
+				Uize.Widgets.Button.Widget,
+				{
+					built:false,
+					text:'RESET TEST DATA',
+					action:function () {
+						page.confirm ({
+							message:'Are you sure you would like to reset the source JSON to the test data?',
+							yesHandler:function () {jsonSerializer.set ({source:initialSource})}
+						});
+					}
+				}
+			);
+
+		/*** wire up the page widget ***/
+			page.wireUi ();
+	}
+);
+
+</script>
+
+</body>
+</html>
+

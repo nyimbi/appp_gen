@@ -1,0 +1,162 @@
+<%@ required ('Uize.Widgets.CssUtil'); %>
+<%
+	var
+		_cssUtil = Uize.Widgets.CssUtil,
+		_chromeBgColor = _cssUtil.chrome.bgColor
+	;
+%>
+.`` {
+	position: absolute;
+	display: none;
+	top: 100px;
+	left: 200px;
+	background: #fff;
+	padding: 0;
+	z-index: 2;
+}
+
+.`shield` {
+	position: absolute;
+	display: none;
+	background-color: #000;
+	opacity: 0.1;
+	filter: alpha(opacity=10);
+	cursor: not-allowed;
+	z-index: 1;
+}
+
+/*** dialog shadow ***/
+	.`dialogShadow` {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		border: 1px solid #000;
+		left: -3px;
+		box-shadow: 0 0 20px 8px rgba(0,0,0,.3);
+	}
+
+/*** dialog chrome ***/
+	/*** title bar and status bar ***/
+		.`bar` {
+			position: absolute;
+			left: 0;
+			width: 100%;
+			text-align: center;
+			background: <%= _chromeBgColor %> repeat left top;
+		}
+		/*** title bar ***/
+			.`title` {
+				width: 100%;
+				color: #000;
+				font-weight: bold;
+				letter-spacing: 1px;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+			.`closeButton` {
+				display: none;
+				position: absolute;
+				right: 0;
+				top: 0;
+			}
+
+		/*** dialog status bar ***/
+			.`cancelButton`, .`okButton`
+			{
+				position: absolute;
+				bottom: 0;
+			}
+			.`cancelButton` {
+				left: 0;
+			}
+			.`okButton` {
+				right: 0;
+			}
+
+	/*** dialog corners / edges ***/
+		.`cornerEastWest`, .`cornerNorthSouth` {
+			position: absolute;
+			background: <%= _chromeBgColor %>;
+		}
+		.`cornerEastWest` {
+			height: 100%;
+			width: 5px;
+			top: 0;
+		}
+		.`cornerNorthSouth` {
+			position: absolute;
+			width: 100%;
+			height: 5px;
+			left: 0;
+		}
+		.`cornerCorner` {
+			position: absolute;
+			background: <%= _chromeBgColor %>;
+		}
+		/*** edge positioning ***/
+			.`edgeWest` {left: -5px;}
+			.`edgeEast` {right: -5px;}
+
+		/*** edge borders ***/
+			.`edgeNorth`.`edgeWest` {border-top-left-radius: 3px;}
+			.`edgeNorth`.`edgeEast` {border-top-right-radius: 3px;}
+			.`edgeSouth`.`edgeWest` {border-bottom-left-radius: 3px;}
+			.`edgeSouth`.`edgeEast` {border-bottom-right-radius: 3px;}
+
+/*** contents ***/
+	.`contents` {
+		position: relative;
+	}
+
+	.`resizable` .`contents` {
+		overflow: auto;
+		height: 100%;
+		box-sizing: border-box;
+	}
+
+/*** styling for different sizes ***/
+<%
+	Uize.forEach (
+		_cssUtil.sizes,
+		function (_size,_sizeName) {
+			var
+				_sizeFont = _size.font,
+				_sizeOuter = _size.outer,
+				_paddingTop = Math.floor ((_sizeOuter - _sizeFont) / 2)
+			;
+%>	/*** <%= _sizeName %> ***/
+		.`<%= _sizeName %>` .`dialogShadow` {
+			top: -<%= _sizeOuter + 3 %>px;
+			border-width: <%= _sizeOuter + 3 %>px 3px;
+		}
+		.`<%= _sizeName %>` .`cornerCorner` {
+			width: <%= _sizeOuter + 5 %>px;
+			height: <%= _sizeOuter + 5 %>px;
+		}
+		.`<%= _sizeName %>` .`edgeNorth` {
+			top: -<%= _sizeOuter + 5 %>px;
+		}
+		.`<%= _sizeName %>` .`edgeSouth` {
+			bottom: -<%= _sizeOuter + 5 %>px;
+		}
+		.`<%= _sizeName %>` .`contents` {
+			padding: <%= 2 + _size.sizeNo * 2 %>px;
+		}
+		.`<%= _sizeName %>` .`bar` {
+			height: <%= _sizeOuter %>px;
+		}
+		.`<%= _sizeName %>` .`titleBar` {
+			top: -<%= _sizeOuter %>px;
+		}
+		.`<%= _sizeName %>` .`statusBar` {
+			bottom: -<%= _sizeOuter %>px;
+		}
+		.`<%= _sizeName %>` .`title` {
+			font-size: <%= _sizeFont %>px;
+			line-height: <%= _sizeFont %>px;
+			padding-top: <%= _paddingTop %>px;
+		}
+<%		}
+	);
+%>
+

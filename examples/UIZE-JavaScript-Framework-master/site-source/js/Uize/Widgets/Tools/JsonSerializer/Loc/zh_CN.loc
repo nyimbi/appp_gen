@@ -1,0 +1,14 @@
+sourceViewButtonLabel: 来源JSON
+resultViewButtonLabel: JSON序列化
+presetsLabel: 预置
+presetPretty: 漂亮
+presetCompact: 紧凑
+presetPaddedAndSorted: 填充和排序
+indentCharsLabel: 缩进字符
+linebreakCharsLabel: 断行字符
+quoteCharLabel: 引号字符
+keyDelimiterLabel: 关键的分隔符
+padKeysLabel: 键填充
+keyAlignLabel: 关键对齐
+whenToQuoteKeysLabel: 关键的报价模式
+sortKeysLabel: 关键排序

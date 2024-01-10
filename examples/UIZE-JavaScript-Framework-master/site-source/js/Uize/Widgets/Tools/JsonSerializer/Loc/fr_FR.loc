@@ -1,0 +1,14 @@
+sourceViewButtonLabel: Source de JSON
+resultViewButtonLabel: JSON sérialisé
+presetsLabel: Presets
+presetPretty: Joli
+presetCompact: Compact
+presetPaddedAndSorted: Rembourré et triés
+indentCharsLabel: Caractères indentation
+linebreakCharsLabel: Caractères de saut de ligne
+quoteCharLabel: Guillemets
+keyDelimiterLabel: Séparateurs clés
+padKeysLabel: Padding clé
+keyAlignLabel: l'Alignement clé
+whenToQuoteKeysLabel: Mode de clé citant
+sortKeysLabel: Tri des clés

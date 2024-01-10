@@ -1,0 +1,51 @@
+<%@
+	input ({pathToResources:'string'});
+	required ('Uize.Url');
+%><%
+	var _baseUrl = Uize.Url.from (input.pathToResources).fullDomain;
+%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>DELVE</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<base href="<%= _baseUrl %>"/>
+	<link rel="stylesheet" href="css/page.css"/>
+	<link rel="stylesheet" href="css/widget.datatable.css"/>
+	<link rel="stylesheet" href="css/widget.tabs.css"/>
+	<link rel="stylesheet" href="css/page.delve.css"/>
+</head>
+
+<body>
+
+<script type="text/javascript" src="<%= input.pathToResources %>Uize.js"></script>
+
+<script type="text/javascript">
+
+Uize.require (
+	'UizeSite.Delve.library',
+	function () {
+		Uize.require (
+			[
+				'UizeSite.Templates.DelveUiHtml',
+				'Uize.Dom.Basics',
+				'UizeSite.Delve'
+			],
+			function () {
+				/*** inject the guts of the page ***/
+					Uize.Dom.Basics.injectHtml (document.body,UizeSite.Templates.DelveUiHtml.process ());
+
+				/*** create the example page widget ***/
+					var _page = window.page = UizeSite.Delve ({baseUrl:<%= _baseUrl -> json %>,window:top.opener});
+
+				/*** wire up the page widget ***/
+					_page.wireUi ();
+			}
+		);
+	}
+);
+
+</script>
+
+</body>
+</html>
+

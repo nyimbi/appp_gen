@@ -1,0 +1,65 @@
+{
+	servicesSetup:'UizeSite.Build.ServicesSetup',
+	builtPath:'site-built',
+	tempPath:'site-temp',
+	memoryPath:'site-memory',
+	sourcePath:'site-source',
+	uizePath:'site-source',
+	modulesFolder:'js',
+	folderOrgNamespaces:[
+		'UizeSite'
+	],
+	isDev:'false',
+	headComments:{
+		Uize:'Uize.Build.Templates.Module.HeadComment',
+		UizeSite:'Uize.Build.Templates.Module.HeadComment'
+	},
+	scrunchedHeadComments:{
+		Uize:'Uize.Build.Templates.Module.ScrunchedHeadComment',
+		UizeSite:'UizeSite.Build.Templates.Module.ScrunchedHeadComment'
+	},
+	staticFilePathMatcher:/\.(gif|jpg|png|ico|html|css|htaccess|txt)$/,
+	deployConfigPath:'../deploy.config.json',
+	modulesToStub:/^(UizeSite\.Sotu)$/,
+	buildSequence:[
+		'Uize.Build.Files.UnprocessedFiles',
+		'Uize.Build.Files.JsModules',
+		'UizeSite.Build.Files.GeneratedJsModules',
+		'UizeSite.Build.Files.WidgetPages',
+		'UizeSite.Build.Files.SimpleDocPages',
+		'UizeSite.Build.Files.JavaScriptModulesToDoPages',
+		'UizeSite.Build.Files.SimpleDataPages',
+		'UizeSite.Build.Files.SourceCodePages',
+		'UizeSite.Build.Files.IndexPages'
+	],
+	testSequence:[
+		'build.js Uize.Build.Test silent=true',
+		'build.js Uize.Build.Test useSource=false silent=true'
+	],
+	moduleConfigs:{
+		'Uize.Build.Loc':{
+			workingFolder:'loc',
+			projects:{
+				Uize:{
+					serviceAdapter:'Uize.Services.LocAdapter.Uize',
+					rootFolderPath:'site-source/js',
+					languages:[
+						'en-US',
+						'en-GB',
+						'de-DE',
+						'fr-FR',
+						'ja-JP',
+						'nl-NL',
+						'ru-RU',
+						'zh-CN'
+					],
+					primaryLanguage:'en-US',
+					pseudoLocale:'en-ZZ',
+					translationJobFileFormat:'xliff', // csv | xliff
+					plurals:true
+				}
+			}
+		}
+	}
+}
+

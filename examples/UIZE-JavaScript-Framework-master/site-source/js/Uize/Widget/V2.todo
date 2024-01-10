@@ -1,0 +1,232 @@
+This is a TO DO document for the =Uize.Widget.V2= module.
+
+Implement Next Generation Localization
+	Locale Strings as State Properties
+		All locale strings should be represented as state properties.
+
+		Type for Locale String State Properties
+			The values of these locale string state properties can be either string type (in the simple case) or function type (in the case of strings accepting inputs).
+
+		Binding Locale Strings to HTML
+			Represented as state properties, locale strings can be bound to the HTML using the same binding techniques used for binding other state properties.
+
+			- for locale strings that don't accept inputs, the string state properties can be bound directly to the HTML
+			- for locale strings that accept inputs, derived properties can be created that accept state properties inputs and the locale string itself as determinants, and the value of the derived property can be bound to the HTML
+
+		Namespacing of Locale String State Properties
+			In order to prevent state properties that represent locale strings from competing with other state properties, a naming convention can be used to put them in their own unique namespace.
+
+			For example, all locale string state properties could be put under a namespace prefix such as "$", "str_", "loc_", etc.
+
+		A Single Locale Strings State Property
+			As an alternative to representing individual locale strings as separate state property, one could use a single object state property to represent all locale strings.
+
+			In order for this to be viable, it would be necessary to support more granular changed events and binding of properties of state property object values to HTML.
+
+	The locale State Property
+		There should be a =locale= state property, whose value should affect the loading a locale strings module for the class.
+
+		Locale and Locale Strings Module
+			Whenever the value of the =locale= state property changes, a locale stirngs module should be loaded if necessary (i.e. not already loaded), and the values of the locale strings from the module should be used to set the corresponding locale string state properties on the instance.
+
+			The =locale= state property should be a tree-inherited property, so that a locale change on a widget is propagated to all its child widgets, which are set by default to inherit the value of the property from the parent. Optionally, any widget can choose to not inherit the parent's value and explicitly set their own.
+
+		Locale and Theme
+			Whenever the value of the =locale= state property changes, an optional locale-specific theme CSS module can be loaded.
+
+	Locale String Modules
+		Locale string modules are organized into a specific folder under a widget's namespace folder by convention, and named according to a convention that incorporates the locale code.
+
+		Locale String Modules as Implicit Dependencies
+			In order to improve the user experience when the UI is rendered, locale string modules can be injected as implicit dependencies by the module system, based upon an environment setting for locale.
+
+			This will support both the dynamic loading of locale string modules as dependencies of the widget modules that need them, as well as packaging of the locale string modules along with the widget modules that use them.
+
+		Specifying Strings for Variant Selection
+
+			EXAMPLE - ICU MESSAGE FORMAT
+			..........................................................................
+			{gender_of_host, select,
+				female {
+					{num_guests, plural, offset:1
+						=0 {{host} does not give a party.}
+						=1 {{host} invites {guest} to her party.}
+						=2 {{host} invites {guest} and one other person to her party.}
+						other {{host} invites {guest} and # other people to her party.}
+					}
+				}
+				male {
+					{num_guests, plural, offset:1
+						=0 {{host} does not give a party.}
+						=1 {{host} invites {guest} to his party.}
+						=2 {{host} invites {guest} and one other person to his party.}
+						other {{host} invites {guest} and # other people to his party.}
+					}
+				}
+				other {
+					{num_guests, plural, offset:1
+						=0 {{host} does not give a party.}
+						=1 {{host} invites {guest} to their party.}
+						=2 {{host} invites {guest} and one other person to their party.}
+						other {{host} invites {guest} and # other people to their party.}
+					}
+				}
+			}
+			..........................................................................
+
+			UIZE FORMAT
+			....................................................................................
+			invitation
+				host.gender == 'female'
+					num_guests == 0: {host} does not give a party.
+					num_guests == 1: {host} invites {guest} to her party.
+					num_guests == 2: invites {guest} and one other person to her party.
+					else: {host} invites {guest} and {num_guests - 1} other people to her party.
+				host.gender == 'male'
+					num_guests == 0: {host} does not give a party.
+					num_guests == 1: {host} invites {guest} to his party.
+					num_guests == 2: invites {guest} and one other person to his party.
+					else: {host} invites {guest} and {num_guests - 1} other people to his party.
+				else
+					num_guests == 0: {host} does not give a party.
+					num_guests == 1: {host} invites {guest} to their party.
+					num_guests == 2: invites {guest} and one other person to their party.
+					else: {host} invites {guest} and {num_guests - 1} other people to their party.
+			....................................................................................
+
+
+			UIZE FORMAT - ALTERNATE
+			..................................................................................................
+			invitation
+				host.gender == 'female' && num_guests == 0: {host} does not give a party.
+				host.gender == 'female' && num_guests == 1: {host} invites {guest} to her party.
+				host.gender == 'female' && num_guests == 2: invites {guest} and one other person to her party.
+				host.gender == 'female': {host} invites {guest} and {num_guests - 1} other people to her party.
+				host.gender == 'male' && num_guests == 0: {host} does not give a party.
+				host.gender == 'male' && num_guests == 1: {host} invites {guest} to his party.
+				host.gender == 'male' && num_guests == 2: invites {guest} and one other person to his party.
+				host.gender == 'male': {host} invites {guest} and {num_guests - 1} other people to his party.
+				num_guests == 0: {host} does not give a party.
+				num_guests == 1: {host} invites {guest} to their party.
+				num_guests == 2: invites {guest} and one other person to their party.
+				else: {host} invites {guest} and {num_guests - 1} other people to their party.
+			..................................................................................................
+
+			- consider supporting string resources scoped to a conditionalization block (the goal is to allow very flexible construction, with the ability to locally have translated variants of parts / portions of the ultimate translation, but to have those sub-parts still be "in the clear"  and outside of programmatic / scripting code)
+
+Implement New Binding Features
+	Add Feature for Declaring UI Updaters
+		Add a class feature that allows uiUpdates to be declared.
+
+		............................................
+		uiUpdaters:[
+			{
+				properties:['width','height','scale'],
+				updater:function () {
+				}
+			},
+			function (width,height,scale) {
+
+			}
+		]
+		............................................
+
+	Add Feature for Declaring Child State Bindings
+		A way to declare one or more bindings of state properties to child widget state properties.
+
+		- support one-directional or bi-directional bindings
+		- support optional value transformation (in both directions)
+
+	Add Feature for Declaring UI Wirer
+		Provide a way to declare the UI wirer for a widget and switch away from old =wireUi= approach.
+
+		EXAMPLE
+		..........................
+		_superclass.subclass ({
+			uiWirer:function (m) {
+				// wiring logic here
+			}
+		});
+		..........................
+
+		When the =wireUi= method of the =Uize.Widget.V2= base class is executed, it will iterate through all the declared UI wirers for the class, from the shallowest base class to the deepest subclass, passing the reference to the instance as the single argument to the wirer functions.
+
+		This approach has the following benefits...
+
+		No More Safety Wrapping
+			The code inside the UI wirer function would not need to be wrapped inside a =if (m.isWired)= safety check, since this would be taken care of by the =wireUI= implementation in the base class.
+
+		No More Calling Superclass Wirer
+			The UI wirer function would not need to call the UI wirer for the superclass, since this would be taken care of by the =wireUI= implementation in the base class.
+
+			An added benefit of the UI wirer declarative approach is that it would enforce the additive subclassing pattern, so every wirer would count on the fact that the wirers for all shallower classes along the inheritance chain have already been executed by the time that the UI wirer for the current subclass is executed.
+
+		Passing the Instance Reference
+			As an enhancement, the instance reference is passed to the wirer functions as the first argument.
+
+			This means that the value of =this= doesn't need to be captured with an additional statement to assign it to a local variable, thereby reducing code size and making coding easier.
+
+			EXAMPLE
+			..........................
+			_superclass.subclass ({
+				uiWirer:function (m) {
+					// wiring logic here
+				}
+			});
+			..........................
+
+			The wirer functions would still be called with the instance as context, so the old approach would still be supported as well...
+
+			STILL SUPPORTED
+			..........................
+			_superclass.subclass ({
+				uiWirer:function () {
+					var m = this;
+					// wiring logic here
+				}
+			});
+			..........................
+
+		Old vs New Comparison
+
+			OLD APPROACH...
+			.......................................
+			_superclass.subclass ({
+				wireUi:function () {
+					var m = this;
+					if (!m.isWired) {
+						// wiring logic here
+						_superclass.doMy (m,'wireUi');
+					}
+				}
+			});
+			.......................................
+
+			NEW APPROACH...
+			..........................
+			_superclass.subclass ({
+				uiWirer:function (m) {
+					// wiring logic here
+				}
+			});
+			..........................
+
+	Consolidating Node and Child Bindings
+		Is there an elegant way to consolidate bindings for DOM nodes and child widgets, such that...
+
+		- an implementation could escalate from node to child widget without having to rewrite binding logic
+		- two different templates for the same widget could implement something as node or widget, and everything would still work
+		- binding could be written in the same way and in the same sections for either nodes or child widgets
+
+		In order for this to work, node IDs and child widget names would need to share the same namespace, which is not something that has previously been required. Also, certain types of DOM node bindings, such as style bindings and innerHTML bindings would not be application to child widget bindings. Only child widget state property and DOM node attribute bindings could be treated as equivalent.
+
+
+		Child Widget Equivalent of Style Object Bindings
+			Perhaps bindings to the style object could be treated as bindings on the style of a child widget's root node, but this could be quite complicated for rendering of HTML, since the HTML generation for a child widget is opaque to the template for a widget and cannot be easily co-compiled.
+
+			Perhaps a more reasonable approach would be to treat bindings to the style object of a child widget as bindings to a =style= state property that is implemented in the =Uize.Widget.V2= base class and that is bound to the style object of the widget's root node. Then, bindings to a child widget's style object would be propagated through the =style= state property of the child widget to its root node's =style= property.
+
+Possible New Tree-inherited Properties
+	- =theme=
+	- =locale=
+

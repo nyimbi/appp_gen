@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>The Built-in Slider Skin | JavaScript Examples | UIZE JavaScript Framework</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="keywords" content="Uize.Widgets.Slider.Widget"/>
+	<meta name="description" content="A basic preset skin is provided for the slider widget that is customizable with various parameters. This demo shows a few variations using this skin."/>
+	<link rel="alternate" type="application/rss+xml" title="UIZE JavaScript Framework - Latest News" href="http://www.uize.com/latest-news.rss"/>
+	<link rel="stylesheet" href="../css/page.css"/>
+	<link rel="stylesheet" href="../css/page.example.css"/>
+	<style type="text/css">
+		.sliderSpacer {
+			width:15px;
+		}
+	</style>
+</head>
+
+<body>
+
+<script type="text/javascript" src="../js/Uize.js"></script>
+
+<h1 class="header">
+	<a id="page-homeLink" href="../index.html" title="UIZE JavaScript Framework home"></a>
+	<a href="../index.html" class="homeLinkText" title="UIZE JavaScript Framework home">UIZE JavaScript Framework</a>
+</h1>
+
+<div class="main">
+	<h1 class="document-title">
+		<a href="../javascript-examples.html" class="breadcrumb breadcrumbWithArrow">JAVASCRIPT EXAMPLES</a>
+		The Built-in Slider Skin
+		<div class="pageActionsShell">
+			<div id="page-actions" class="pageActions"><a href="source-code/slider-built-in-skin.html" class="buttonLink">SOURCE</a></div>
+		</div>
+	</h1>
+
+	<!-- explanation copy -->
+
+	<div class="explanation">
+		<p>In this example, multiple instances of <a href="../reference/Uize.Widgets.Slider.Widget.html"><code>Uize.Widgets.Slider.Widget</code></a> are being wired up. The markup for all the sliders is not in the page, but is inserted dynamically when the slider widgets are wired up, and is based on the built-in skin supplied by the <a href="../reference/Uize.Widgets.Slider.Widget.html"><code>Uize.Widgets.Slider.Widget</code></a> widget class. The widget provides state properties that control certain aspects of the slider's look.</p>
+	</div>
+
+	<!-- page layout's "wireframe" with slots for sliders' HTML -->
+
+	<table cellspacing="0" cellpadding="0" style="margin:auto;">
+		<tr valign="bottom">
+			<td><div id="page-slider0"></div></td>
+			<td class="sliderSpacer"></td>
+			<td><div id="page-slider1"></div></td>
+			<td class="sliderSpacer"></td>
+			<td><div id="page-slider2"></div></td>
+			<td class="sliderSpacer"></td>
+			<td><div id="page-slider3"></div></td>
+			<td class="sliderSpacer"></td>
+			<td><div id="page-slider4"></div></td>
+			<td class="sliderSpacer"></td>
+			<td><div id="page-slider5"></div></td>
+			<td class="sliderSpacer"></td>
+			<td><div id="page-slider6"></div></td>
+			<td class="sliderSpacer"></td>
+			<td><div id="page-slider7"></div></td>
+			<td class="sliderSpacer"></td>
+			<td><div id="page-slider8"></div></td>
+		</tr>
+	</table>
+</div>
+
+<!-- JavaScript code to make the static slider HTML "come alive" -->
+
+<script type="text/javascript">
+
+Uize.require (
+	[
+		'UizeSite.Page.Example.library',
+		'UizeSite.Page.Example',
+		'Uize.Widgets.Slider.Widget'
+	],
+	function () {
+		'use strict';
+
+		/*** create the example page widget ***/
+			var page = window.page = UizeSite.Page.Example ();
+
+		/*** add the slider child widgets ***/
+			page.addChildren (
+				{
+					slider0:{
+						emptyColor:'#fc4',
+						fullColor:'#fc9',
+						value:10,
+						size:'tiny'
+					},
+					slider1:{
+						emptyColor:'#444',
+						fullColor:'#fff',
+						value:20,
+						size:'tiny'
+					},
+					slider2:{
+						emptyColor:'#000',
+						fullColor:'#fff',
+						value:30,
+						size:'small'
+					},
+					slider3:{
+						emptyColor:'#233',
+						fullColor:'#6aa',
+						value:40,
+						size:'small'
+					},
+					slider4:{
+						emptyColor:'#456',
+						fullColor:'#abc',
+						value:50,
+						size:'medium'
+					},
+					slider5:{
+						emptyColor:'#877',
+						fullColor:'#fee',
+						value:60,
+						size:'medium'
+					},
+					slider6:{
+						fullColor:'#d00',
+						value:70,
+						size:'large'
+					},
+					slider7:{
+						fullColor:'#0d0',
+						value:80,
+						size:'large'
+					},
+					slider8:{
+						fullColor:'#00d',
+						value:90,
+						size:'large'
+					}
+				},
+				{
+					widgetClass:Uize.Widgets.Slider.Widget,
+					orientation:'vertical',
+					minValue:0,
+					maxValue:100,
+					trackLength:300,
+					built:false
+				}
+			);
+
+		/*** wire up the page widget ***/
+			page.wireUi ();
+	}
+);
+
+</script>
+
+</body>
+</html>
+

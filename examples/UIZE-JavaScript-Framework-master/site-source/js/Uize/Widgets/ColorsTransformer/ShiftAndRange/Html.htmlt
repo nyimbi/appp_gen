@@ -1,0 +1,26 @@
+<div>
+	<div class="contents">
+		<div class="heading"><span id="title"></span><child name="reset" flavor="subdued" class="topRightButton"/></div>
+		<div id="body" class="body">
+			<table border="0" cellspacing="2" cellpadding="0">
+				<tr>
+					<td id="shiftMinValue" class="sliderValueLabel sliderMinValue"></td>
+					<td id="shiftLabel" class="sliderLabel"></td>
+					<td id="shiftMaxValue" class="sliderValueLabel sliderMaxValue"></td>
+				</tr>
+				<tr>
+					<td colspan="3"><child name="shiftSlider"/></td>
+				</tr>
+				<tr>
+					<td colspan="3"><child name="rangeSlider"/></td>
+				</tr>
+				<tr>
+					<td class="sliderValueLabel sliderMinValue">0</td>
+					<td id="rangeLabel" class="sliderLabel"></td>
+					<td class="sliderValueLabel sliderMaxValue">100</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+

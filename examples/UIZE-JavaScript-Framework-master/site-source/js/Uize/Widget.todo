@@ -1,0 +1,211 @@
+This is a TO DO document for the =Uize.Widget= module.
+
+Proposed Shortenings
+	- myWidget.getNode -> myWidget.node
+
+More Versatile wireNode Method
+	Support an array of event name/event handler pairs.
+
+	SYNTAX
+	................................................................................
+	myWidget.wireNode (
+		'nodeName',
+		[
+			'event1Name',handler,
+			'event2Name',handler,
+			'event3Name',handler
+		]
+	)
+	................................................................................
+
+	- implementation could use Uize.pairUp to create object from array
+
+- UI Updater Mechanism
+	- declare updaters
+		- declare which properties updaters cover
+		- can have multiple updaters
+
+	- viewed properties
+		- viewed properties are properties whose values are reflected somehow in the view
+		- viewed properties can be declared
+	- when the values of viewed properties change, one of two things can happen...
+		- if the widget is able to update its view, then the appropriate updaters are executed in order to synchronize the view to the new values of the viewed properties
+		- if the widget is NOT able to update its view, then the viewed properties whose values have changed are flagged as needing to be reflected in the view when next the view is updated
+	- UI Updater
+		- a UI Updater can serve multipled viewed properties
+		- more than one UI Updater can serve the same viewed property
+
+	- questions to resolve
+		- what if a property is not viewed by a superclass but *is* viewed by a subclass?
+			- how does the subclass flag the property as viewed?
+			- perhaps this problem is averted by not flagging the properties, but rather by specifying the properties when registering updaters
+
+	BEFORE
+	....................................
+	function _updateUiValue () {
+		var m = this;
+		if (m.isWired) {
+			// code to update UI for value
+		}
+	};
+
+	_class.declare ({
+		instanceMethods:{
+			updateUi:function () {
+				_updateUiValue.call (this);
+			}
+		},
+
+		stateProperties:{
+			_value:{
+				name:'value',
+				onChange:_updateUiValue
+			}
+		}
+	});
+	....................................
+
+	AFTER
+	....................................
+	_class.stateProperties ({
+		_value:'value'
+	});
+
+	_class.registerUiUpdater (
+		'value',
+		function () {
+			var m = this;
+			// code to update UI for value
+		}
+	);
+	....................................
+
+	When you register a UI updater, the UI updater system makes sure that Changed.[propertyName] event handlers are registered for all the properties that the UI updater serves. If values for any viewed properties are changed, then the UI updater system should execute registered UI updaters if possible, or flag the viewed properties whose values have changed as needing synchronization.
+
+	- Benefits
+		- registered UI updaters can automatically be *not* called when the UI cannot be updated (because of the widget not being seen, for example)
+		- the UI updater mechanism takes care of initial synchronization when wiring up a widget's UI, as well as synchronizing the UI when values of viewed properties changed after the widget has been wired.
+		- less code, in general. In some cases, widget classes may no longer need to override the updateUi method, because the updateUi overrides in a lot of cases simply call all the more granular updater methods that are typically defined to handle individual properties.
+
+- should wired be set to true only after wiring of child widgets?
+	- what would the impact of this change be?
+- should the Uize.Widget base class implement basic hour glass cursor support for busyEnabled?
+- should there be generic focus and blur methods of Uize.Widget, with overridded implementation in Uize.Widget.FormElement
+- for nodeMap and nodeCache, should use lookup that sets valueOf and toString properties to undefined, otherwise an implied node with either of those names will have problems
+
+- getImpliedNodeName (impliedNodeIdSTR) or getImpliedNodeName (impliedNodeOBJ)
+	- returns the name of an implied node, deduced from its id (implied node doesn't have to exist in the DOM)
+	- should take into account nodeMap (has to do reverse lookup, potentially)
+
+- getImpliedNodeId (impliedNodeSTR) or getImpliedNodeId (impliedNodeOBJ)
+	- returns the id of an implied node, built from its name (implied node doesn't have to exist in the DOM)
+	- should take into account nodeMap
+
+- getNodeProperty (to use Uize.Dom.Basics.getProperty)
+
+- a way of easily binding any state property to either a child widget (or any widget) or an implied node
+	- the connection is bi-directional (changing the child widget's value or node's value updates state property, and changing state property value updates child widget's or node's value)
+- disabled reason mechanism
+	- a general mechanism for widgets to have reasons registered for why they are disabled. Then, a tooltip could display this reason (or reasons) on mousing over the widget, or a dialog with the reason (or reasons) could be displayed when trying to interact with the widget (e.g. clicking or mousing down on it)
+- node cache improvements
+	- different caching levels
+		- never
+		- after wired
+		- always
+	- possible caching switch
+		- cache null result
+
+- idea: when html property is a function, supply it with outer dimensions, based on shell size
+- new semantics for getInherited, callInherited, getProvider
+	- new names
+		callInherited -> callProvided
+		getInherited -> getProvided
+		getProvider REMAINS getProvider
+		??? inherit -> provided
+		??? enabledInherited -> enabledProvided
+		??? busyInherited -> busyProvided
+	- label the concept "widget providence"
+	- reconcile any new semantics with existing "inherit" value for state properties, and "enabledInherited" and "busyInherited" state properties for widgets
+- if wireNode is called before widget instance is fully constructed, consider throwing a warning?
+- removeNode method: update to support removing multiple nodes
+- flushNodeCache: update to support flushing by node reference, and for multiple nodes in a blob
+- deferred wiring/building mechanism
+	- generalized mechanism for deferring building and/or wiring UI of non-displayed widgets
+
+- deprecate insertUi in favor of built property
+	- PROBLEM: can't rely on wireUi as single gatekeeper because it gets overrided by subclasses, unless you try to tuck the logic into the conditional check and change its semantics...
+		................................................................................
+		if (!m.wired ()) {
+			// wire stuff up
+		}
+		................................................................................
+
+		BECOMES...
+
+		................................................................................
+		if (!m.prepareToWire ()) {
+			// wire stuff up
+		}
+		................................................................................
+
+		here, prepareToWire can check...
+			- if not already wired
+			- if widget UI needs to be built
+			- if wiring should be deferred because root node is not visible
+
+	- implement backwards compatibility as...
+		................................................................................
+		insertUi = function () {
+			this.set ({_built:_false)
+			this.wireUi ();
+		};
+		................................................................................
+
+New Mode for Building HTML
+	Support a new mode for building the HTML for a widget, where the template for a widget does not build the HTML for all child widgets, but has inputs or tokens for the HTML of all child widgets, and where the HTML for child widgets is built independently first before being supplied to the template for the widget.
+
+	If all widgets on a widget tree are put into this mode for building their HTML, then building the HTML for a page can be a depth first recursive process. This is a cleaner model, because it doesn't require the template for a given widget to use template for child widgets in order to generate HTML, but the template for any widget is only required to generate HTML for itself and what it directly knows about.
+
+- deep state
+	- a way to retrieve state all the way through a widget tree
+	- a way to set state all the way through a widget tree
+
+**** a way of cloning the DOM nodes used by one instance, to be used in another instance
+- a formalized means of declaring certain state properties as display properties (i.e. properties that impact display)
+
+- a way for one widget to have more than one set of DOM nodes for the same UI (to have the UI appear in more than one place)
+- provide an automatic way to bubble up inDrag state and the drag events for all widgets (an onChange handler for inDrag at the Uize.Widget level?)
+- provide a general way that a drag rest event can bubble up to the topmost parent
+- consider an alternative to bubble:true, that allows all events to bubble if any widget up the parent chain of a particular widget cares to listen to a specific event coming from deep within
+- a generic way for a widget to be informed if it is being revealed as a result of a parent node in the DOM changing its display state or something else
+- idea: provide a way to expose all Uize.Dom.Basics methods through Uize.Widget, without having to create instance methods for each...
+	eg.
+		..................................................
+		m.node (nodeName,'methodName',param1,param2,...)
+		a_a.node (nodeName,'methodName',param1,param2,...)
+		..................................................
+
+		vs.
+
+		..............................................................
+		_Uize_Node.methodName (m.getNode (nodeName),param1,param2,...)
+		a_a.methodName (a_a.getNode (nodeName),param1,param2,...)
+		..............................................................
+
+	- benefits
+		- makes the code a tiny bit shorter
+		- reduces (and in many cases eliminates) the need for widget classes to require Uize.Dom.Basics
+		- would eliminate many cases of having to capture Uize.Dom.Basics as _Uize_Dom_Basics
+
+- expose more Uize.Dom.* methods as node-related methods (in order of priority)
+	- keep in mind that more instance methods means more time copying when subclassing
+
+	- Uize.Dom.Pos.getCoords => getNodeCoords
+	- Uize.Dom.Pos.setCoords => setNodeCoords
+	- Uize.Dom.Pos.setAbsPos => setNodeAbsPos
+	- Uize.Dom.Pos.getDimensions => getNodeDimensions (maybe deprecate getDimensions -> getDims before exposing the widget method)
+	- Uize.Dom.Pos.centerInWindow => centerNodeInWindow
+	- Uize.Dom.Text.getText => getNodeText
+	- Uize.Dom.Basics.injectHtml => injectNodeHtml
+	- Uize.Dom.Util.showInLayoutFlow => showNodeInLayoutFlow
+

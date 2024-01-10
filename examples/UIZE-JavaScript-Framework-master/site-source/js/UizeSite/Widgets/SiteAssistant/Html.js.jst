@@ -1,0 +1,24 @@
+<%@
+	required (
+		'Uize.Widgets.BoxWithHeading.Widget',
+		'UizeSite.Widgets.LikeThis.Widget',
+		'UizeSite.Widgets.Follow.Widget',
+		'UizeSite.Widgets.GetInvolved.Widget'
+	);
+%><%
+	function _boxedChildWidget (_heading,_childName,_widgetClass) {%>
+		<div class="<%= m.cssClass ('box') %>"><%=
+			m.childHtml ({
+				name:_childName + 'Box',
+				widgetClass:Uize.Widgets.BoxWithHeading.Widget,
+				heading:_heading,
+				body:m.childHtml ({name:_childName,widgetClass:_widgetClass})
+			})
+		%></div><%
+	}
+%><div id="<%. idPrefix %>" class="<%= m.rootNodeCssClasses () %>">
+	<% _boxedChildWidget ('LIKE','likeThis',UizeSite.Widgets.LikeThis.Widget); %>
+	<% _boxedChildWidget ('FOLLOW','follow',UizeSite.Widgets.Follow.Widget); %>
+	<% _boxedChildWidget ('HELP','getInvolved',UizeSite.Widgets.GetInvolved.Widget); %>
+</div>
+

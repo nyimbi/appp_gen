@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Characters Used Indicator | JavaScript Examples | UIZE JavaScript Framework</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="keywords" content="form Uize.Widgets.Bars.UsedAndRemaining.Widget"/>
+	<meta name="description" content="Among the creative uses of the bar widget is this characters used indicator for a textarea. As you type, the bar indicates chars used and remaining."/>
+	<link rel="alternate" type="application/rss+xml" title="UIZE JavaScript Framework - Latest News" href="http://www.uize.com/latest-news.rss"/>
+	<link rel="stylesheet" href="../css/page.css"/>
+	<link rel="stylesheet" href="../css/page.example.css"/>
+
+	<style type="text/css">
+		.fieldHeading {
+			position: relative;
+			width: 400px;
+			height: 23px;
+			line-height: 23px;
+			font-weight: bold;
+			color: #fff;
+			background: #000 url(../images/heading-bg.gif) left top repeat-x;
+		}
+		.charsUsedBar {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 400px;
+			visibility: hidden;
+		}
+		.explanation {
+			margin-bottom: 20px;
+		}
+	</style>
+</head>
+
+<body>
+
+<script type="text/javascript" src="../js/Uize.js"></script>
+
+<h1 class="header">
+	<a id="page-homeLink" href="../index.html" title="UIZE JavaScript Framework home"></a>
+	<a href="../index.html" class="homeLinkText" title="UIZE JavaScript Framework home">UIZE JavaScript Framework</a>
+</h1>
+
+<div class="main">
+	<h1 class="document-title">
+		<a href="../javascript-examples.html" class="breadcrumb breadcrumbWithArrow">JAVASCRIPT EXAMPLES</a>
+		Characters Used Indicator
+		<div class="pageActionsShell">
+			<div id="page-actions" class="pageActions"><a href="source-code/slider-chars-used.html" class="buttonLink">SOURCE</a></div>
+		</div>
+	</h1>
+
+	<!-- explanation copy -->
+
+	<div class="explanation">
+		<p>In this example, an instance of <a href="../reference/Uize.Widgets.Bars.UsedAndRemaining.Widget"><code>Uize.Widgets.Bars.UsedAndRemaining.Widget</code></a> is used to provide feedback - as you type - on how many characters are still permitted in the text input. When you focus the text input, the title for the field is replaced by a dynamically updated indicator that informs you of how many characters you've used and how many characters are remaining. As you type more characters, the bar that is displayed beneath the chars summary is advanced from left to right. As the bar gets closer to "full", its color becomes increasingly hotter, until it is finally solid red once all of the allotted characters are used.</p>
+	</div>
+
+	<!-- slider UI -->
+
+	<center>
+		<form>
+			<div class="fieldHeading"">
+				Enter a Description (200 character maximum)
+				<div id="page-charsUsedBar" class="charsUsedBar"></div>
+			</div>
+			<textarea id="page-textArea" style="width: 396px; height: 100px;" wrap="soft"></textarea><br/>
+		</form>
+	</center>
+</div>
+
+<!-- JavaScript code to make the static slider HTML "come alive" -->
+
+<script type="text/javascript">
+
+Uize.require (
+	[
+		'UizeSite.Page.Example.library',
+		'UizeSite.Page.Example',
+		'Uize.Widgets.Bars.UsedAndRemaining.Widget'
+	],
+	function () {
+		'use strict';
+
+		/*** create the example page widget ***/
+			var page = window.page = UizeSite.Page.Example ();
+
+		/*** create the chars used bar widget ***/
+			var charsUsedBar = page.addChild (
+				'charsUsedBar',
+				Uize.Widgets.Bars.UsedAndRemaining.Widget,
+				{
+					maxValue:200,
+					usedText:'<%. used %> chars used',
+					remainingText:'<%. remaining %> chars remaining',
+					size:'tiny',
+					trackLength:'100%',
+					built:false
+				}
+			);
+
+		/*** function to show/hide chars used indicator ***/
+			function showCharsUsedBar (mustShow) {
+				if (mustShow) updatecharsUsedBar ();
+				page.showNode ('charsUsedBar',mustShow);
+			}
+
+		/*** update slider as contents of textarea changes ***/
+			function updatecharsUsedBar () {
+				charsUsedBar.set ({used:page.getNodeValue ('textArea').length});
+			}
+
+		/*** initialize the slider's value to reflect any initial contents in the textarea ***/
+			updatecharsUsedBar ();
+
+		/*** wire up the page widget ***/
+			page.wireUi ();
+
+		/*** wire up text input ***/
+			page.wireNode (
+				'textArea',
+				{
+					keyup:updatecharsUsedBar,
+					focus:function () {showCharsUsedBar (true)},
+					blur:function () {showCharsUsedBar (false)}
+				}
+			);
+	}
+);
+
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,204 @@
+This is a TO DO document for the =Uize.Flo= module.
+
+Get it Ready for Release
+	- finish up implementation
+	- finish documentation
+	- implement unit tests (only browser and NodeJS because of setTimeout availability? Or create setTimeout patch for JScript in WSH?)
+
+Unresolved Issues
+	Detecting Errors
+		How do you know if an error has occured?
+			More Than One Argument to Callback
+				The callback is passed more than one argument and the first argument is a string or an =Error= object.
+
+				This should cover the case for asynchronous methods that follow the NodeJS style.
+
+			Callback's Only Argument is Error
+				The callback only receives a single argument and its value is an =Error= object.
+
+				This addresses a more desirable unified return value approach, where an error is indicated by passing an =Error= object as the return value. Ajax-style methods that talk to a server and that experience an XHR error during communication would convert that error to an =Error= object and pass it as the result. A technically successful response from the server but where the server indicates an error in its response would also be converted to an =Error= object before being passed on, where the error information from the server would be set as extra properties on the =Error= object.
+
+			An Error is Caught
+				An error is caught using a =try...catch= around a chunk of synchronous execution.
+
+				Wrapping every statement of a flo in a =try...catch= could be costly, but this might be the only robust way of preventing errors in asynchronously executed code from dropping a flo on the floor. It should be sufficient to wrap the =while= loop in the =next= method and then call the =throw= instance method on the current flo if an error is caught.
+
+	how does flo know whether or not a step is asynchronous?
+		- if the function doesn't declare more arguments than those passed to it (one in the case of not function block, and one or more in the case of a function type block), then it is assumed to be synchronous, even if it returns undefined
+		- if a reference to next is returned, then it is asynchronous
+		- if a value other than next or undefined is returned, then it is synchronous
+
+	- how to call a function, where the values of the arguments are determined as a result of asynchronous processes
+	- how to pass arguments to a function block defined using the flo.function method
+	- consider how to support promises (if at all)
+		- if a statement is a function that returns a promise, or will these likely all have to be wrapped for binding to a context and passing arguments?
+		- should flo statements be able to return promises, or should this just be wrapped when desired?
+	- what is the impact of recursion?
+		- probably the flo stack will increase in much the same way as the call stack would increase with traditional synchronous recursion
+		- is it possible to implement tail recursion optimization?
+
+Uize.Flo.forEach
+	Support the following additional items types...
+		- iterator (synchronous, as well as asynchronous)
+		- total iterations
+		- range specifier
+		- could support all these by coming up with a universal (a)sync iterator wrapper and using it as authority
+
+Optimization
+	- for the synchronous execution call stack optimization, consider extending it to span across flos and flo levels, so that a nested scope structure can be executed through in a single loop
+
+Improvements
+	- figure out how to support =finally= in =try=
+	- consider supporting a =yield= statement (basically, pauses execution)
+	- step through
+		- consider providing manual step through ability
+		- could be timed chunks (long breath)
+	- literal result statements
+		- statements that are not of type function are treated as simple assignment of the result
+		- this is useful for switch...case blocks, where the case matches can be specified as string or number literals, rather than having to have functions for statements that are executed
+	- errors
+		- should all statements be wrapped in try...catch to catch and propagate errors in synchronous execution?
+			- perhaps try catch should only wrap synchronous execution when there is a flo.try wrapper somewhere up the scope chain
+			- this doesn't need to be around every statement execution, but can be implemented in next around contiguous blocks of synchronous statements
+		- throwing errors up the call stack
+			- construct a call stack?
+			- how to pass the error to the catch handler? As the result?
+	- add support for asynchronous expression / operation
+		- operator groups
+			- arithmetic: + - * / %
+			- bitwise: << >> >>> ^ | &
+			- conditional: < > == != === !=== <= >=
+			- boolean: ! && ||
+			- ternary: ? :
+			- named: typeof instanceof in
+			- misc: ,
+		- left-to-right + PEMDAS
+		- support short-circuiting
+		- special handling for ternary
+		- special handling for named binary operators
+
+		EXAMPLE
+		.........................
+		flo (
+			'(',
+				function () {},
+				'*',
+				'(',
+					function () {},
+					'+',
+					function () {},
+				')',
+			')'
+		);
+		.........................
+
+	- labels
+		- consider implementing labeled statements with the ability to break to them
+		- consider implementing labeled scopes, with the ability to break out of them
+	- consider allowing the addition of custom properties to any block, with the ability to specify a block to break out of by a match expression that may match on any of those custom properties
+	- syntactic sugar
+		................
+		flo
+			.if (...)
+				.then (...)
+			.elseif (...)
+				.then (...)
+			.elseif (...)
+				.then (...)
+			.else (...)
+			.endif ()
+		................
+
+		................
+		flo
+			.switch (...)
+			.case (...,...)
+			.case (...,...)
+			.default (...)
+		................
+
+		................
+		flo
+			.try (...)
+			.catch (...)
+		................
+
+		................
+		flo.do (...)
+			.while (...)
+		................
+
+		................
+		flo.while (...)
+			.do (...)
+		................
+
+	- features
+		- can add extra provision for doing multiple async things in parallel (but might be out of purview of this module). Would have to figure out how break would behave (how to break or abort all child flos)
+		- parallel vs sequential
+		- degrees of parallelism (limit on number of parallel processes)
+		- parallel sequencing scheme? sequential clusters, or random clusters, or random individual, or etc.?
+		- implement (a)sync iterator
+			- as such, there doesn't need to be a dedicated async map. Instead, an async map should be an (a)sync iterator materialized / played out to produce an array through some method that applies generally to (a)sync iterators of all kinds
+			- if a dedicate map method is provided, at least implement it upon a foundation of (a)sync iterators
+			- this makes it possible to perform iterator math using (a)synchronous iterators
+
+Design Notes
+	- don't conflate sync vs. async with serial vs. parallel processing
+	- don't conflate async with function composition (i.e. next chaining, piping)
+	- don't conflate data utilities solution with sync vs. async solution
+	- don't conflate callback pattern with asynchonous execution
+	- flo does not make any presumptions about what problem asynchronous code is trying to solve
+	- flo focues on solving a single, very specific dimension of the problem space surrounding asynchronous coding - control flow with mixed synchronous / asynchronous code with a sufficiently equivalent lexicon of control flow constructs as is traditionally found with synchronous execution
+
+Implementation Fundamentals
+	- providing a scope
+		- receiving scope
+			- every control flow structure is a function that can be called optionally as an instance method of a scope context
+			- every control flow structure is a function that can be called most simply with no scope context, but with a continuation function reference as an argument
+		- providing scope
+			- when a control flow function is called as an instance method with a scope context, it uses a method on the scope context to create a scope instance for itsself that is parented to the scope context
+			- when a control flow function is called without a scope context, it creates a new root level (unparented) scope context
+			- when a control flow function calls other functions, it calls them as instance methods on the scope context created for itself
+
+	- breaking
+		- when any function called by a control flow function calls the break instance method, the scope chain is ascended and execution is aborted for all scopes up until and including the first scope that is found that is associated with a control flow function that supports breaking (loops and switch), provided that it is not encountered after a returnable scope (function)
+		- when any function called by a control flow function calls the break instance method and there is no breakable scope up the scope chain, then an error is thrown
+
+	- returning
+		- when any function called by a control flow function calls the return instance method, the scope chain is ascended and execution is aborted for all scopes up until and including the first scope that is found that is associated with a control flow function that supports returning (functions), and the return value is returned for that scope
+		- when any function called by a control flow function calls the return instance method and there is no returnable scope up the scope chain, then an error is thrown
+
+	- if multiple functions are called in succession and they are done synchronously, then the call stack overflow with continuation function calls
+
+Thoughts on Services and Flo
+	......................
+	fileService.getFiles (
+		params,
+		callback
+	)
+	......................
+
+	if a callback is provided, then the asynchronous form - if implemented - is
+
+	- asynchronous implementation
+	- synchronous implementation
+
+	require asynchronous
+	prefer asynchronous
+	require synchronous
+
+
+	for every service method
+		- async
+		- sync
+
+	- if no callback is provided and method has no synchronous implementation, then throw error
+	- if callback is provided and synchronous is required and there is
+
+
+	- if synchronous is required and no synchronous implementation is provided, then throw error
+	- if synchronous is required and synchronous implementation is provided, then execute synchronous implementation and return result
+	- if asynchronous is required and no asynchronous implementation is provided, then wrap in a timeout
+	- if asynchronous is preferred and calback is provided, then callback is called synchronously
+
