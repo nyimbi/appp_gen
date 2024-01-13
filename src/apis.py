@@ -1,5 +1,11 @@
 from flask_appbuilder.api import ModelRestApi, BaseApi, expose, rison
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+class Tech_parametersApi(ModelRestApi):
+    resource_name = "Tech_Parameters"
+    datamodel = SQLAInterface(Tech_parameters)
+
+appbuilder.add_api(Tech_parametersApi)
+
 class Agent_tierApi(ModelRestApi):
     resource_name = "agent_tier"
     datamodel = SQLAInterface(Agent_tier)
@@ -77,12 +83,6 @@ class PromotionApi(ModelRestApi):
     datamodel = SQLAInterface(Promotion)
 
 appbuilder.add_api(PromotionApi)
-
-class TechparamsApi(ModelRestApi):
-    resource_name = "techparams"
-    datamodel = SQLAInterface(Techparams)
-
-appbuilder.add_api(TechparamsApi)
 
 class Token_providerApi(ModelRestApi):
     resource_name = "token_provider"

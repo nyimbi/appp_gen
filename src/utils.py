@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3, re
 from pathlib import Path
 from typing import List, Dict
 
@@ -114,10 +114,13 @@ def map_dbml_datatypes(datatype: str):
 
 
 def map_pgsql_datatypes(pg_type: str):
+    pg_type = pg_type.lower()
     if pg_type.startswith('interval'):
         return 'Interval'
     elif pg_type.startswith('int'):
         return 'Integer'
+    elif pg_type.startswith('smallint'):
+        return 'SmallInteger'
     elif pg_type in ('bigint', 'bigserial'):
         return 'BigInteger'
     elif pg_type.startswith('varchar'):
@@ -129,9 +132,18 @@ def map_pgsql_datatypes(pg_type: str):
     elif pg_type in ('real', 'float4'):
         return 'Float'
     elif pg_type in ('double precision', 'float8'):
-        return 'Numeric'
+        return 'Float'
     elif pg_type in ('numeric', 'decimal'):
         return 'Numeric'
+    elif pg_type.startswith('numeric'):
+        # Extract precision and scale from the PostgreSQL type
+        match = re.match(r'numeric\((\d+),(\d+)\)', pg_type)
+        if match:
+            precision = int(match.group(1))
+            scale = int(match.group(2))
+            return f'Numeric(precision={precision}, scale={scale})'
+        else:
+            return 'Numeric'  # Default if precision and scale are not specified
     elif pg_type == 'money':
         return 'Currency'
     elif pg_type == 'date':
@@ -139,7 +151,7 @@ def map_pgsql_datatypes(pg_type: str):
     elif pg_type in ('time', 'timetz'):
         return 'Time'
     elif pg_type.startswith('timestamp'):  # in ('timestamp', 'timestamptz'):
-        return "DateTime, server_default=text('NOW())'"
+        return "DateTime, server_default=text('NOW()')"
     elif pg_type in ('bytea', 'byte', 'blob'):
         return 'LargeBinary'
     elif pg_type == 'uuid':
