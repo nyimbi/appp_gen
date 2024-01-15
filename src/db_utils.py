@@ -1,4 +1,12 @@
 import re, string
+from marshmallow import fields
+from sqlalchemy import create_engine, inspect, MetaData, FetchedValue
+from sqlalchemy.orm import relationship, DeclarativeBase, mapped_column, Mapped
+from sqlalchemy import (
+    Enum, ForeignKey, ARRAY, JSON, PickleType, LargeBinary, Boolean, Date, DateTime, Float, Integer, Interval, Numeric, SmallInteger,
+    String, Text, Time, BigInteger, Unicode, UnicodeText, CHAR, VARBINARY, TIMESTAMP, CLOB, BLOB, NCHAR, NVARCHAR, INTEGER, TEXT, VARCHAR,
+    NUMERIC, BOOLEAN,  Time, DECIMAL,
+)
 from sqlalchemy.dialects.postgresql import (
     ARRAY, BIGINT, BIT, BOOLEAN, BYTEA, CHAR, CIDR, CITEXT, DATE, DATEMULTIRANGE,
     DATERANGE, DOMAIN, DOUBLE_PRECISION, ENUM, FLOAT, HSTORE, INET, INT4MULTIRANGE,
@@ -77,19 +85,19 @@ def map_pgsql_datatypes(pg_type: str):
     elif pg_type == 'uuid':
         return 'UUID'
     elif pg_type == 'inet':
-        return IPAddressType()
+        return 'IPAddressType()'
     elif pg_type == 'json':
-        return JSONType()
+        return 'JSONType()'
     elif pg_type == 'email':
-        return EmailType()
+        return 'EmailType()'
     elif pg_type == 'url':
-        return URLType()
+        return 'URLType()'
     elif pg_type == 'phone':
-        return PhoneNumberType()
+        return 'PhoneNumberType()'
     elif pg_type == 'color':
-        return ColorType()
+        return 'ColorType()'
     elif pg_type == 'choice':
-        return ChoiceType()
+        return 'ChoiceType()'
     else:
         return pg_type
 
@@ -293,3 +301,78 @@ def get_field_type(column_type):
         # Add other SQLAlchemy types and corresponding field types as needed.
     }
     return type_mapping.get(type(column_type))
+
+
+def get_table_schema(metadata):
+    schema = {}
+    for table in metadata.tables.values():
+        columns = []
+        for col in table.columns:
+            field_type = get_field_type(col.type)
+
+            # Handle the case where field_type is None
+            if field_type is None:
+                print(f"Unsupported column type: {col.type} in table {table.name}")
+                continue
+
+            if col.default is not None:
+                default = col.default
+                if isinstance(col.default, FetchedValue):
+                    default = "=" + repr(col.default)
+                field_type.default = default
+
+            if col.server_default is not None:
+                field_type.server_default = col.server_default
+
+            if col.unique:
+                field_type.unique = True
+
+            if col.nullable == False:
+                field_type.required = True
+
+            if col.primary_key:
+                field_type.primary_key = True
+
+            # Handle computed columns.
+            if col.info.get("computed"):
+                field_type = fields.Func(col.name, as_string=True)
+
+            # Handle foreign keys and relationships.
+            if isinstance(col.type, ForeignKey):
+                ref_table = col.foreign_keys[0].referred_table
+                ref_col = [
+                    x
+                    for x in ref_table.columns
+                    if x.name == col.foreign_keys[0].column.name
+                ][0]
+                field_type = relationship(ref_table.name, backref=table.name)
+
+            # Handle enum types.
+            elif isinstance(col.type, Enum):
+                field_type = fields.Str()
+                col_enum_values = str(col.type).split("(")[1].strip().replace("'", "")
+                enum_values = [x.strip() for x in col_enum_values.split(",")]
+                field_choices = [(x, x) for x in enum_values]
+                setattr(field_type, "choices", field_choices)
+
+            # Handle column comments.
+            if table.comment is not None:
+                comment = col.comment or ""
+                field_type.metadata["description"] = comment
+
+            # Add every property of the ReflectedColumn to the schema.
+            # for prop in dir(col):
+            #     print(f'{table.name}\t col: {col.name}\t' + prop)
+            # if not callable(getattr(col, prop)) and prop != 'metadata' and prop != '__weakref__':
+            #     setattr(field_type, prop, getattr(col, prop))
+
+        # Add every property of the Table to the schema.
+        # for prop in dir(table):
+        #     print(prop)
+        # if not callable(getattr(table, prop)) and prop != 'metadata':
+        #     setattr(schema[table.name], prop, getattr(table, prop))
+
+        columns.append(field_type)
+        schema[table.name] = {"columns": columns}
+
+    return schema

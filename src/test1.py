@@ -8,7 +8,7 @@ from sqlalchemy import Enum
 from sqlalchemy import create_engine, inspect, MetaData
 
 import headers
-import utils
+import utils, db_utils
 
 ## Globals
 # DATABASE_URI = 'postgresql://username:password@localhost:5432/mydatabase'
@@ -205,7 +205,7 @@ with open("models.py", "w") as f:
                 )
             else:
                 ctype = col["type"].compile()
-                ctype = utils.map_pgsql_datatypes(ctype.lower())
+                ctype = db_utils.map_pgsql_datatypes(ctype.lower())
 
                 # First Primary Keys
                 if col["name"] in pks["constrained_columns"]:

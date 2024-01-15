@@ -1,29 +1,112 @@
+import inflect, string
+from datetime import date, datetime
 from sqlalchemy import Enum
+from marshmallow import fields
 from sqlalchemy import create_engine, inspect, MetaData, FetchedValue, ForeignKey
 from sqlalchemy import (
-    Enum, ForeignKey, ARRAY, JSON, PickleType, LargeBinary, Boolean, Date, DateTime,
-    Float, Integer, Interval, Numeric, SmallInteger, String, Text, Time, BigInteger, Unicode,
-    UnicodeText, CHAR, VARBINARY, TIMESTAMP, CLOB, BLOB, NCHAR, NVARCHAR, INTEGER, TEXT, VARCHAR, NUMERIC, BOOLEAN,
-    Boolean, DateTime, Date, Time, DECIMAL, Float, Integer, Interval, Numeric, SmallInteger, String, Text, Time
+    Enum,
+    ForeignKey,
+    ARRAY,
+    JSON,
+    PickleType,
+    LargeBinary,
+    Boolean,
+    Date,
+    DateTime,
+    Float,
+    Integer,
+    Interval,
+    Numeric,
+    SmallInteger,
+    String,
+    Text,
+    Time,
+    BigInteger,
+    Unicode,
+    UnicodeText,
+    CHAR,
+    VARBINARY,
+    TIMESTAMP,
+    CLOB,
+    BLOB,
+    NCHAR,
+    NVARCHAR,
+    INTEGER,
+    TEXT,
+    VARCHAR,
+    NUMERIC,
+    BOOLEAN,
+    Boolean,
+    DateTime,
+    Date,
+    Time,
+    DECIMAL,
+    Float,
+    Integer,
+    Interval,
+    Numeric,
+    SmallInteger,
+    String,
+    Text,
+    Time,
 )
 from sqlalchemy.dialects.postgresql import (
-    ARRAY, BIGINT, BIT, BOOLEAN, BYTEA, CHAR, CIDR, CITEXT, DATE, DATEMULTIRANGE,
-    DATERANGE, DOMAIN, DOUBLE_PRECISION, ENUM, FLOAT, HSTORE, INET, INT4MULTIRANGE,
-    INT4RANGE, INT8MULTIRANGE, INT8RANGE, INTEGER, INTERVAL, JSON, JSONB, JSONPATH,
-    MACADDR, MACADDR8, MONEY, NUMERIC, NUMMULTIRANGE, NUMRANGE, OID, REAL, REGCLASS,
-    REGCONFIG, SMALLINT, TEXT, TIME, TIMESTAMP, TSMULTIRANGE, TSQUERY, TSRANGE,
-    TSTZMULTIRANGE, TSTZRANGE, TSVECTOR, UUID, VARCHAR, Range
+    ARRAY,
+    BIGINT,
+    BIT,
+    BOOLEAN,
+    BYTEA,
+    CHAR,
+    CIDR,
+    CITEXT,
+    DATE,
+    DATEMULTIRANGE,
+    DATERANGE,
+    DOMAIN,
+    DOUBLE_PRECISION,
+    ENUM,
+    FLOAT,
+    HSTORE,
+    INET,
+    INT4MULTIRANGE,
+    INT4RANGE,
+    INT8MULTIRANGE,
+    INT8RANGE,
+    INTEGER,
+    INTERVAL,
+    JSON,
+    JSONB,
+    JSONPATH,
+    MACADDR,
+    MACADDR8,
+    MONEY,
+    NUMERIC,
+    NUMMULTIRANGE,
+    NUMRANGE,
+    OID,
+    REAL,
+    REGCLASS,
+    REGCONFIG,
+    SMALLINT,
+    TEXT,
+    TIME,
+    TIMESTAMP,
+    TSMULTIRANGE,
+    TSQUERY,
+    TSRANGE,
+    TSTZMULTIRANGE,
+    TSTZRANGE,
+    TSVECTOR,
+    UUID,
+    VARCHAR,
+    Range,
 )
-from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, DeclarativeBase, mapped_column, Mapped
 
-import inflect
+
 from headers import *
 from utils import *
 from db_utils import *
-from datetime import date, datetime
-import string
-from marshmallow import fields
 
 
 def inspect_metadata(database_uri):
@@ -35,14 +118,14 @@ def inspect_metadata(database_uri):
 
 
 def get_display_column(column_name_list):
-    priorities = ['name', 'alias', 'title', 'label', 'display_name', 'code']
+    priorities = ["name", "alias", "title", "label", "display_name", "code"]
 
     for name in priorities:
         if name in column_name_list:
             return name
 
     for name in column_name_list:
-        if 'name' in name.lower() or 'model' in name.lower():
+        if "name" in name.lower() or "model" in name.lower():
             return name
 
     return column_name_list[0]
@@ -53,9 +136,9 @@ def gen_model_enums(metadata, inspector):
     enums = inspector.get_enums()
     for en in enums:
         enum_code.append(f"\nclass {en['name']}(enum.Enum):")
-        for label in en['labels']:
+        for label in en["labels"]:
             enum_code.append(f"   {label.upper()} = '{label}'")
-    enum_code.append(' ')
+    enum_code.append(" ")
     return enum_code
 
 
@@ -65,16 +148,17 @@ def gen_model_domains(metadata, inspector):
     domains = inspector.get_domains()
 
     for domain in domains:
-        domain_name = domain['name']
-        base_type = domain['data_type']
-        not_null = domain['not_null']
+        domain_name = domain["name"]
+        base_type = domain["data_type"]
+        not_null = domain["not_null"]
         BaseType = map_pgsql_datatypes(base_type.lower())
 
         domain_code.append(
-            f"\nclass {domain_name}({BaseType}):  # BaseType should be replaced with the actual base type")
+            f"\nclass {domain_name}({BaseType}):  # BaseType should be replaced with the actual base type"
+        )
 
         # Check for default value
-        if domain['default']:
+        if domain["default"]:
             domain_code.append(f"    default = {domain['default']}")
 
         # Check for not null constraint
@@ -82,15 +166,15 @@ def gen_model_domains(metadata, inspector):
             domain_code.append(f"    not_null = True")
 
         # Handling constraints
-        for constraint in domain.get('constraints', []):
-            constraint_name = constraint['name']
-            constraint_check = constraint['check']
+        for constraint in domain.get("constraints", []):
+            constraint_name = constraint["name"]
+            constraint_check = constraint["check"]
             domain_code.append(f"    # Constraint: {constraint_name}")
             domain_code.append(f"    check = '{constraint_check}'")
 
         # domain_code.append('    pass')
 
-    domain_code.append(' ')
+    domain_code.append(" ")
     return domain_code
 
 
@@ -108,16 +192,16 @@ def gen_models(metadata, inspector):
         model_code.append(f"class {table_class}(Model):")
         model_code.append(f'    __tablename__ = "{table.name}"')
 
-        if t_comment['text']:
-            model_code.append(f'    __doc__ = "{t_comment["text"]}"\n')  # Use the table comment in the docstring
+        if t_comment["text"]:
+            model_code.append(
+                f'    __doc__ = "{t_comment["text"]}"\n'
+            )  # Use the table comment in the docstring
 
         for col in inspector.get_columns(table.name):
             # String parts to compose a column definition
             # https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedColumn
-            c_pk, c_fk, c_autoincrement, c_comment, c_computed, c_default, c_dialect_options = "", "", "", "", "", "", ""
-            c_identity, c_column_name, c_nullable, c_type, c_unique, c_ck = "", "", "", "", "", ""
-            # c_sqltext = col["sqltext"]
-            # column_names_list.append(col["name"])
+            (c_pk, c_fk, c_autoincrement, c_comment, c_computed, c_default, c_dialect_options,) = ("", "", "", "", "", "", "")
+            c_identity, c_column_name, c_nullable, c_type, c_unique, c_ck = ("", "", "", "", "", "",)
 
             # check if the column is an enum type
             if isinstance(col["type"], Enum):
@@ -134,14 +218,14 @@ def gen_models(metadata, inspector):
 
                 # The Foreign Keys
                 for index, fk in enumerate(fks):
-                    if col['name'] == fk["constrained_columns"][0]:
+                    if col["name"] == fk["constrained_columns"][0]:
                         fkname = fk["name"]
-                        print(fkname, end="\t")
+                        # print(fkname, end="\t")
                         referred_table = fk["referred_table"]
                         fktable = snake_to_pascal(referred_table)
                         fkref = fk["referred_columns"][0]
                         fkcol = fk["constrained_columns"][0]
-                        pjoin = snake_to_pascal(table.name) + '.' + fkcol + ' == ' + fktable + '.' + fkref
+                        pjoin = (snake_to_pascal(table.name) + "." + fkcol + " == " + fktable + "." + fkref)
                         fkey = fk["referred_table"] + "." + fk["referred_columns"][0]
 
                         # Is this a self-referential column
@@ -157,29 +241,31 @@ def gen_models(metadata, inspector):
                     c_unique = ", unique=True"
 
                 # Finally all the fields from the ReflectedColumn Dictionary
-                if col['nullable'] == True:
+                if col["nullable"] == True:
                     c_nullable = ", nullable=True"
                 else:
                     c_nullable = ""  # default behaviour is nullable
 
-                if col['autoincrement'] == True:
+                if col["autoincrement"] == True:
                     c_autoincrement = ", autoincrement=True"
 
-                if col['comment'] != None:
-                    c_comment = ', comment="' + col['comment'] + '"'
+                if col["comment"] != None:
+                    c_comment = ', comment="' + col["comment"] + '"'
 
-                if col['default'] != None:
+                if col["default"] != None:
                     c_default = f", default = {col['default']}"  # Might include sqltext, so we process further
-                    if col['default'] == 'false': c_default = ', default = False'
-                    if col['default'] == 'true': c_default = ', default = True'
-                    if col['default'] == 'now()': c_default = ', default = func.now()'
-                    if ":" in col['default']: c_default = ', default = ' + col['default'].split(':')[0]
-                    # if col.default is not None:
-                    #     default = col.default
-                    #     if isinstance(col.default, FetchedValue):
-                    #         default = '=' + rep(col.default)
+                    if col["default"] == "false":
+                        c_default = ", default = False"
+                    if col["default"] == "true":
+                        c_default = ", default = True"
+                    if col["default"] == "now()":
+                        c_default = ", default = func.now()"
+                    if ":" in col["default"]:
+                        c_default = ", default = " + col["default"].split(":")[0]
 
-                    if col['default'].startswith('nextval'):  # Means it is autoincrement and uses a sequence
+                    if col["default"].startswith(
+                        "nextval"
+                    ):  # Means it is autoincrement and uses a sequence
                         c_autoincrement = ", autoincrement=True"
                         c_default = ""
 
@@ -191,13 +277,13 @@ def gen_models(metadata, inspector):
         # constrained_columns, options, referred_columns, referred_schema, referred_table
         # https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedForeignKeyConstraint
         for fk in fks:
-            fkname = fk["name"].split('_id_')[0]
+            fkname = fk["name"].split("_id_")[0]
             print(fkname, end="\t")
             qsr = ""  # Quote Self Referential Table Name
             fk_ref_table = snake_to_pascal(fk["referred_table"])
             fk_ref_col = fk["referred_columns"][0]
             fkcol = fk["constrained_columns"][0]
-            fkname = fkcol.split('_id')[0]
+            fkname = fkcol.split("_id")[0]
             print(fkname, end="\t")
             pjoin = f", primaryjoin='{snake_to_pascal(table.name)}.{fkcol} == {fk_ref_table}.{fk_ref_col}'"
             back_ref = f", backref='{table}s_{fkname}'"
@@ -221,96 +307,125 @@ def gen_models(metadata, inspector):
         # Now write table level check constraints
         if len(cck) > 0:
             for cc in cck:
-                constraint_name = cc['name']
-                sql_expression = cc['sqltext']
+                constraint_name = cc["name"]
+                sql_expression = cc["sqltext"]
 
                 model_code.append(
                     f"    CheckConstraint('{sql_expression}', name={constraint_name})\n"
                 )
         model_code.append("\n    def __repr__(self):\n")
-        model_code.append("       return self." + get_display_column([c.name for c in table.columns]) + "\n")
+        model_code.append(
+            "       return self."
+            + get_display_column([c.name for c in table.columns])
+            + "\n"
+        )
         model_code.append("\n ### \n\n")
 
     return model_code
 
 
-def get_table_schema(metadata):
-    schema = {}
-    for table in metadata.tables.values():
-        columns = []
-        for col in table.columns:
-            field_type = get_field_type(col.type)
+def gen_views(metadata, inspector):
+    view_code = []
+    md_views = set()
 
-            # Handle the case where field_type is None
-            if field_type is None:
-                print(f"Unsupported column type: {col.type} in table {table.name}")
-                continue
+    def remove_id_columns(column_names):
+        cleaned_names = []
 
-            if col.default is not None:
-                default = col.default
-                if isinstance(col.default, FetchedValue):
-                    default = '=' + rep(col.default)
-                field_type.default = default
+        for name in column_names:
+            if name.lower().endswith("_id_fkey"):
+                # Remove _id_fkey and add
+                cleaned_name = name.replace("_id_fkey", "")
+                cleaned_names.append(cleaned_name)
 
-            if col.server_default is not None:
-                field_type.server_default = col.server_default
+            elif not name.endswith("_id"):
+                cleaned_names.append(name)
 
-            if col.unique:
-                field_type.unique = True
+        return cleaned_names
 
-            if col.nullable == False:
-                field_type.required = True
+    view_code.append(VIEW_FILE_HEADER)
+    for table in metadata.sorted_tables:
+        columns = inspector.get_columns(table.name)
+        fks = inspector.get_foreign_keys(table.name)
+        all_field_names = []
+        # Collect the column and foreign key names
+        # all_field_names = [col["name"].lower() for col in columns]
+        all_field_names = [col["name"] for col in columns]
+        # all_field_names += [fk["name"].lower() for fk in fks]
+        all_field_names += [fk["name"] for fk in fks]
 
-            if col.primary_key:
-                field_type.primary_key = True
+        pks = inspector.get_pk_constraint(table.name)
+        class_name = snake_to_pascal(table.name)
+        snk_table_name = snake_to_pascal(table.name)
+        col_names = [col["name"] for col in columns]
+        rt_cols = []  # str(RefTypeMixin.mixin_fields())
+        rt_fld_set = []  # str(RefTypeMixin.mixin_fieldset())
+        # lbl_cols = [utils.snake_to_label(col["name"]) for col in columns]
+        # lbl_cols = {['col': utils.snake_to_label(col.split('_id_fke')[0]) for col in all_field_names]}
+        lbl_cols = {}
+        for col in all_field_names:
+            lbl_cols[col.split("_id_fke")[0]] = snake_to_label(col.split("_id_fke")[0])
+        print(lbl_cols)
+        tbl_columns = remove_id_columns(all_field_names)
 
-            # Handle computed columns.
-            if col.info.get('computed'):
-                field_type = fields.Func(col.name, as_string=True)
+        table_title = snake_to_label(table.name)
+        # print(class_name, col_names)
+        # print("\n")
 
-            # Handle foreign keys and relationships.
-            if isinstance(col.type, ForeignKey):
-                ref_table = col.foreign_keys[0].referred_table
-                ref_col = [x for x in ref_table.columns if x.name == col.foreign_keys[0].column.name][0]
-                field_type = relationship(ref_table.name, backref=table.name)
+        view_code.append(
+            VIEW_BODY.format(
+                class_name=class_name,
+                snk_table_name=snk_table_name,
+                tbl_columns=tbl_columns,
+                rt_cols=rt_cols,
+                rt_fld_set=rt_fld_set,
+                lbl_cols=lbl_cols,
+            )
+        )
+        view_code.append(
+            VIEW_REGY.format(class_name=class_name, table_title=table_title)
+        )
 
-            # Handle enum types.
-            elif isinstance(col.type, Enum):
-                field_type = fields.Str()
-                col_enum_values = str(col.type).split('(')[1].strip().replace("'", "")
-                enum_values = [x.strip() for x in col_enum_values.split(',')]
-                field_choices = [(x, x) for x in enum_values]
-                setattr(field_type, 'choices', field_choices)
-
-            # Handle column comments.
-            if table.comment is not None:
-                comment = col.comment or ""
-                field_type.metadata['description'] = comment
-
-            # Add every property of the ReflectedColumn to the schema.
-            # for prop in dir(col):
-            #     print(f'{table.name}\t col: {col.name}\t' + prop)
-            # if not callable(getattr(col, prop)) and prop != 'metadata' and prop != '__weakref__':
-            #     setattr(field_type, prop, getattr(col, prop))
-
-        # Add every property of the Table to the schema.
-        # for prop in dir(table):
-        #     print(prop)
-        # if not callable(getattr(table, prop)) and prop != 'metadata':
-        #     setattr(schema[table.name], prop, getattr(table, prop))
-
-        columns.append(field_type)
-        schema[table.name] = {'columns': columns}
-
-    return schema
+    for table in metadata.sorted_tables:
+        columns = inspector.get_columns(table.name)
+        fks = inspector.get_foreign_keys(table.name)
+        detail_class_name = snake_to_pascal(table.name)
+        for fk in fks:
+            # print(table, fk)
+            fkname = fk["name"]
+            fktable = fk["referred_table"]
+            fkcol = fk["constrained_columns"][0]
+            fkref = fk["referred_columns"][0]
+            pjoin = (
+                snake_to_pascal(table.name) + "." + fkcol + " == " + fktable + "." + fkref
+            )
+            class_name = snake_to_pascal(fktable)
+            mv_name = class_name + detail_class_name + "View"
+            if mv_name not in md_views:
+                view_code.append(
+                    VIEW_MASTER_DETAILX.format(
+                        class_name=class_name,
+                        detail_class_name=detail_class_name,
+                        pjoin=pjoin,
+                    )
+                )
+                md_views.add(mv_name)
+    view_code.append(VIEW_FILE_FOOTER)
+    return view_code
 
 
-if __name__ == '__main__':
-    md, ip = inspect_metadata('postgresql:///wakala')
+# This is to create a marshmallow schema from a metatdata object
+# Not actually used at
+
+
+if __name__ == "__main__":
+    md, ip = inspect_metadata("postgresql:///wakala")
     # print(get_table_schema(md))
     s = gen_model_enums(md, ip)
     s.extend(gen_model_domains(md, ip))
     s.extend(gen_models(md, ip))
     # print("\n".join(s))
 
-    write_file('models.py', s)
+    write_file("models.py", s)
+
+    v = gen_views(md, ip)
+    write_file('views.py', v)
