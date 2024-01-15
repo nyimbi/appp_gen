@@ -949,3 +949,27 @@ def load_data():
             db.session.commit()
 
 """
+def gen_model_header():
+    model_header = []
+    model_header.append('import datetime, enum')
+    model_header.append('from flask_appbuilder import Model')
+    model_header.append('from sqlalchemy import Column, Integer, Boolean, String, Float, Enum, ForeignKey, Date, DateTime, Text')
+    model_header.append('from sqlalchemy.orm import relationship, backref\n')
+    model_header.append(MODEL_HEADER)
+    return model_header
+
+
+def gen_view_header():
+    view_header = []
+    view_header.append("from flask_appbuilder import ModelView")
+    view_header.append("from flask_appbuilder.models.sqla.interface import SQLAInterface")
+    view_header.append("from flask_appbuilder.views import MasterDetailView, MultipleView")
+    view_header.append('from .models import *\n')
+    return view_header
+
+
+def gen_api_header():
+    api_header = []
+    api_header.append(f"from flask_appbuilder.api import ModelRestApi, BaseApi, expose, rison")
+    api_header.append(f"from flask_appbuilder.models.sqla.interface import SQLAInterface")
+    return api_header

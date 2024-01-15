@@ -3,25 +3,25 @@
 import inflect
 from sqlalchemy import create_engine, MetaData, inspect, Enum, Identity
 
-from utils import map_pgsql_datatypes
+from db_utils import map_pgsql_datatypes
 from headers import *
 
 p = inflect.engine()
 
 
 # Selects the best display name given a list of column names
-def get_display_column(column_names):
+def get_display_column(column_name_list):
     priorities = ['name', 'alias', 'title', 'label', 'display_name', 'code']
 
     for name in priorities:
-        if name in column_names:
+        if name in column_name_list:
             return name
 
-    for name in column_names:
+    for name in column_name_list:
         if 'name' in name.lower() or 'model' in name.lower():
             return name
 
-    return column_names[0]
+    return column_name_list[0]
 
 def inspect_metadata(database_uri):
     engine = create_engine(database_uri)

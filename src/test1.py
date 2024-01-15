@@ -19,7 +19,6 @@ OUTPUT_VIEWS_FILE = 'views.py'
 engine = create_engine(DATABASE_URI)
 metadata = MetaData()
 metadata.reflect(bind=engine)
-
 inspector = inspect(engine)
 
 

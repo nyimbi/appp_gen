@@ -30,6 +30,7 @@ def pretty_month_year(value):
 
 
 def pretty_year(value):
+    """The Value should be a date"""
     return str(value.year)
 
 
