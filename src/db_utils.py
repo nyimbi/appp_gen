@@ -223,7 +223,7 @@ def pg_to_fabtypes(postgres_type):
     return type_mapping.get(postgres_type.lower(), "String")
 
 ### Using Marshmallow
-def get_field_type(column_type):
+def get_marshmallow_field_type(column_type):
     type_mapping = {
         String: fields.Str(),
         Text: fields.Str(),
@@ -376,3 +376,102 @@ def get_table_schema(metadata):
         schema[table.name] = {"columns": columns}
 
     return schema
+
+
+
+
+# Remove columns that end in _id
+def remove_id_columns(column_names):
+    cleaned_names = []
+
+    for name in column_names:
+
+        if name.lower().endswith('_id_fkey'):
+            # Remove _id_fkey and add
+            cleaned_name = name.replace('_id_fkey', '')
+            cleaned_names.append(cleaned_name)
+
+        elif not name.endswith('_id'):
+            cleaned_names.append(name)
+
+    return cleaned_names
+
+
+# This checks if a table is an association table
+# As Assoc table should only have two FKs
+# if we have named to table 'assoc', 'link' or 'map'
+# We can have more than those two columns, so blanking out the test for other columns
+def is_association_table(table_name):
+    # Get the foreign keys for the table
+    foreign_keys = inspector.get_foreign_keys(table_name)
+
+    columns = inspector.get_columns(table_name)
+    if len(columns) <= 2:
+        # Check for a naming convention
+        if "assoc" in table_name.lower() or \
+                "link" in table_name.lower() or \
+                "map" in table_name.lower():
+            return True
+
+    # Check the number of foreign keys
+    if len(foreign_keys) == 2:
+        # Check if the foreign keys reference different tables
+        referred_tables = {fk['referred_table'] for fk in foreign_keys}
+        if len(referred_tables) == 2:
+            return True
+            # Check for additional columns
+            # columns = inspector.get_columns(table_name)
+            # if len(columns) == 2:  # Only the foreign keys
+            #     return True
+
+    return False
+
+
+# Selects the best display name given a list of column names
+def get_display_column(column_names):
+    priorities = ['name', 'alias', 'title', 'label', 'display_name', 'code']
+
+    for name in priorities:
+        if name in column_names:
+            return name
+
+    for name in column_names:
+        if 'name' in name.lower() or 'model' in name.lower():
+            return name
+
+    return column_names[0]
+
+
+# In order to generate tables in topological sort order
+# -  get table dependencies
+# - do a Depth First search to get topological order
+# def get_table_dependencies():
+#     # Get the table dependencies using SQLAlchemy reflection
+#     table_dependencies = {}
+#
+#     for table_name in inspector.get_table_names():
+#         table_dependencies[table_name] = set()
+#         foreign_keys = inspector.get_foreign_keys(table_name)
+#         for fk in foreign_keys:
+#             ref_table = fk['referred_table']
+#             table_dependencies[table_name].add(ref_table)
+#
+#     return table_dependencies
+
+
+def topological_sort(graph):
+    sorted_list = []
+    visited = set()
+
+    def dfs(node):
+        visited.add(node)
+        for neighbor in graph.get(node, []):
+            if neighbor not in visited:
+                dfs(neighbor)
+        sorted_list.append(node)
+
+    for node in graph:
+        if node not in visited:
+            dfs(node)
+
+    return sorted_list

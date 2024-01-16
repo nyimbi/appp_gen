@@ -1,105 +1,19 @@
-import inflect, string
-from datetime import date, datetime
+import inflect, string, enum
+# from datetime import date, datetime
 from sqlalchemy import Enum
 from marshmallow import fields
 from sqlalchemy import create_engine, inspect, MetaData, FetchedValue, ForeignKey
 from sqlalchemy import (
-    Enum,
-    ForeignKey,
-    ARRAY,
-    JSON,
-    PickleType,
-    LargeBinary,
-    Boolean,
-    Date,
-    DateTime,
-    Float,
-    Integer,
-    Interval,
-    Numeric,
-    SmallInteger,
-    String,
-    Text,
-    Time,
-    BigInteger,
-    Unicode,
-    UnicodeText,
-    CHAR,
-    VARBINARY,
-    TIMESTAMP,
-    CLOB,
-    BLOB,
-    NCHAR,
-    NVARCHAR,
-    INTEGER,
-    TEXT,
-    VARCHAR,
-    NUMERIC,
-    BOOLEAN,
-    Boolean,
-    DateTime,
-    Date,
-    Time,
-    DECIMAL,
-    Float,
-    Integer,
-    Interval,
-    Numeric,
-    SmallInteger,
-    String,
-    Text,
-    Time,
+    Enum, ForeignKey, ARRAY, JSON, PickleType, LargeBinary, Boolean, Date, DateTime, Float, Integer,
+    Interval, Numeric, SmallInteger, String, Text, Time, BigInteger, Unicode, UnicodeText, CHAR,
+    VARBINARY, TIMESTAMP, CLOB, BLOB, NCHAR, NVARCHAR, INTEGER, TEXT, VARCHAR, NUMERIC, BOOLEAN, Boolean, DateTime, Date,
+    Time, DECIMAL, Float, Integer, Interval, Numeric, SmallInteger, String, Text, Time,
 )
 from sqlalchemy.dialects.postgresql import (
-    ARRAY,
-    BIGINT,
-    BIT,
-    BOOLEAN,
-    BYTEA,
-    CHAR,
-    CIDR,
-    CITEXT,
-    DATE,
-    DATEMULTIRANGE,
-    DATERANGE,
-    DOMAIN,
-    DOUBLE_PRECISION,
-    ENUM,
-    FLOAT,
-    HSTORE,
-    INET,
-    INT4MULTIRANGE,
-    INT4RANGE,
-    INT8MULTIRANGE,
-    INT8RANGE,
-    INTEGER,
-    INTERVAL,
-    JSON,
-    JSONB,
-    JSONPATH,
-    MACADDR,
-    MACADDR8,
-    MONEY,
-    NUMERIC,
-    NUMMULTIRANGE,
-    NUMRANGE,
-    OID,
-    REAL,
-    REGCLASS,
-    REGCONFIG,
-    SMALLINT,
-    TEXT,
-    TIME,
-    TIMESTAMP,
-    TSMULTIRANGE,
-    TSQUERY,
-    TSRANGE,
-    TSTZMULTIRANGE,
-    TSTZRANGE,
-    TSVECTOR,
-    UUID,
-    VARCHAR,
-    Range,
+    ARRAY, BIGINT, BIT, BOOLEAN, BYTEA, CHAR, CIDR, CITEXT, DATE, DATEMULTIRANGE,
+    DATERANGE, DOMAIN, DOUBLE_PRECISION, ENUM, FLOAT, HSTORE, INET, INT4MULTIRANGE, INT4RANGE, INT8MULTIRANGE, INT8RANGE, INTEGER,
+    INTERVAL, JSON, JSONB, JSONPATH, MACADDR, MACADDR8, MONEY, NUMERIC, NUMMULTIRANGE, NUMRANGE, OID, REAL,
+    REGCLASS, REGCONFIG, SMALLINT, TEXT, TIME, TIMESTAMP, TSMULTIRANGE, TSQUERY, TSRANGE, TSTZMULTIRANGE, TSTZRANGE, TSVECTOR, UUID, VARCHAR, Range,
 )
 from sqlalchemy.orm import relationship, DeclarativeBase, mapped_column, Mapped
 
@@ -177,6 +91,16 @@ def gen_model_domains(metadata, inspector):
     domain_code.append(" ")
     return domain_code
 
+def gen_model_header():
+    model_header = []
+    model_header.append('import datetime, enum')
+    model_header.append('from flask_appbuilder import Model')
+    model_header.append('from sqlalchemy import Column, Integer, Boolean, String, Float, Enum, ForeignKey, Date, DateTime, Text')
+    model_header.append('from sqlalchemy.orm import relationship, backref\n')
+    model_header.append(MODEL_HEADER)
+    return model_header
+
+
 
 def gen_models(metadata, inspector):
     model_code = []
@@ -186,6 +110,8 @@ def gen_models(metadata, inspector):
         fks = inspector.get_foreign_keys(table.name)
         uqs = inspector.get_unique_constraints(table.name)
         cck = inspector.get_check_constraints(table.name)
+        enums = inspector.get_enums()
+        enum_names = {e['name']: e for e in enums}
         table_class = snake_to_pascal(table.name)
         t_comment = inspector.get_table_comment(table.name)
 
@@ -205,8 +131,19 @@ def gen_models(metadata, inspector):
 
             # check if the column is an enum type
             if isinstance(col["type"], Enum):
-                model_code.append(
-                    f"    {col['name']} = Column(Enum({col['name']}), name='t_{col['name']}', nullable=False)\n"
+                enum_type_name = None
+                # Find the enum type name from the enums list
+                for enum_name, enum_info in enum_names.items():
+                    if col['type'].name == enum_name:
+                        enum_type_name = enum_info['name']
+                        break
+                if enum_type_name:
+                    model_code.append(
+                        f"    {col['name']} = Column(Enum({enum_type_name}), name='t_{col['name']}', nullable=False)\n"
+                    )
+                else:
+                    model_code.append(
+                    f"    {col['name']} = Column(Enum(t_{col['name']}), name='t_{col['name']}', nullable=False)\n"
                 )
             else:
                 ctype = col["type"].compile()
@@ -250,41 +187,36 @@ def gen_models(metadata, inspector):
                     c_autoincrement = ", autoincrement=True"
 
                 if col["comment"] != None:
-                    c_comment = ', comment="' + col["comment"] + '"'
+                    c_comment = '\n\t\t, comment="' + col["comment"] + '"'
 
-                if col["default"] != None:
+                if col['default'] != None:
                     c_default = f", default = {col['default']}"  # Might include sqltext, so we process further
-                    if col["default"] == "false":
-                        c_default = ", default = False"
-                    if col["default"] == "true":
-                        c_default = ", default = True"
-                    if col["default"] == "now()":
-                        c_default = ", default = func.now()"
-                    if ":" in col["default"]:
-                        c_default = ", default = " + col["default"].split(":")[0]
+                    if col['default'] == 'false': c_default = ', default=False'
+                    if col['default'] == 'true': c_default = ', default=True'
+                    if col['default'] == 'now()': c_default = ', default=func.now()'
+                    if ":" in col['default']: c_default ='' # ', default = ' + col['default'].split(':')[0]
 
-                    if col["default"].startswith(
-                        "nextval"
-                    ):  # Means it is autoincrement and uses a sequence
+                    if col['default'].startswith('nextval'):  # Means it is autoincrement and uses a sequence
                         c_autoincrement = ", autoincrement=True"
                         c_default = ""
 
                 model_code.append(
-                    f"    {col['name']} = Column({ctype}{c_fk}{c_pk}{c_unique}{c_autoincrement}{c_default}{c_comment})"
+                    f"    {col['name']} = Column({ctype}{c_fk}{c_pk}{c_unique}{c_autoincrement}{c_default}{c_comment})\n"
                 )
 
         # Now generate relationships for all fks
         # constrained_columns, options, referred_columns, referred_schema, referred_table
         # https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedForeignKeyConstraint
         for fk in fks:
-            fkname = fk["name"].split("_id_")[0]
-            print(fkname, end="\t")
+            # fkname = fk["name"].split("_id_")[0]
+            # fkname = fk["name"].split("_fk")[0]
             qsr = ""  # Quote Self Referential Table Name
             fk_ref_table = snake_to_pascal(fk["referred_table"])
             fk_ref_col = fk["referred_columns"][0]
             fkcol = fk["constrained_columns"][0]
+            # fkname = fkcol.split("_fk")[0]
             fkname = fkcol.split("_id")[0]
-            print(fkname, end="\t")
+            print(fkname)
             pjoin = f", primaryjoin='{snake_to_pascal(table.name)}.{fkcol} == {fk_ref_table}.{fk_ref_col}'"
             back_ref = f", backref='{table}s_{fkname}'"
             for_keys = f", foreign_keys=[{qsr}{fk_ref_table}.{fk_ref_col}{qsr}]"
@@ -299,11 +231,12 @@ def gen_models(metadata, inspector):
             rel_name = f"{qsr}{fk_ref_table}{qsr}"
 
             model_code.append(
+                # f"    {fk['name'].split('_id')[0]} = relationship({rel_name}{back_ref}{pjoin}{rem_side})"
                 f"    {fkname} = relationship({rel_name}{back_ref}{pjoin}{rem_side})"
                 # f"    {rel_name.lower()} = relationship({rel_name}{back_ref}{pjoin}{rem_side})"
             )
 
-            print(f"    {fkname}")
+            # print(f"    {fkname}")
         # Now write table level check constraints
         if len(cck) > 0:
             for cc in cck:
@@ -313,7 +246,7 @@ def gen_models(metadata, inspector):
                 model_code.append(
                     f"    CheckConstraint('{sql_expression}', name={constraint_name})\n"
                 )
-        model_code.append("\n    def __repr__(self):\n")
+        model_code.append("\n    def __repr__(self):")
         model_code.append(
             "       return self."
             + get_display_column([c.name for c in table.columns])
@@ -321,7 +254,21 @@ def gen_models(metadata, inspector):
         )
         model_code.append("\n ### \n\n")
 
-    return model_code
+    mc = []
+    mc.extend(gen_model_header())
+    mc.extend(gen_model_enums(metadata, inspector))
+    mc.extend(gen_model_domains(metadata, inspector))
+    mc.extend(model_code)
+    return mc
+
+
+def gen_view_header():
+    view_header = []
+    view_header.append("from flask_appbuilder import ModelView")
+    view_header.append("from flask_appbuilder.models.sqla.interface import SQLAInterface")
+    view_header.append("from flask_appbuilder.views import MasterDetailView, MultipleView")
+    view_header.append('from .models import *\n')
+    return view_header
 
 
 def gen_views(metadata, inspector):
@@ -336,7 +283,6 @@ def gen_views(metadata, inspector):
                 # Remove _id_fkey and add
                 cleaned_name = name.replace("_id_fkey", "")
                 cleaned_names.append(cleaned_name)
-
             elif not name.endswith("_id"):
                 cleaned_names.append(name)
 
@@ -364,12 +310,9 @@ def gen_views(metadata, inspector):
         lbl_cols = {}
         for col in all_field_names:
             lbl_cols[col.split("_id_fke")[0]] = snake_to_label(col.split("_id_fke")[0])
-        print(lbl_cols)
         tbl_columns = remove_id_columns(all_field_names)
 
         table_title = snake_to_label(table.name)
-        # print(class_name, col_names)
-        # print("\n")
 
         view_code.append(
             VIEW_BODY.format(
@@ -419,13 +362,8 @@ def gen_views(metadata, inspector):
 
 if __name__ == "__main__":
     md, ip = inspect_metadata("postgresql:///wakala")
-    # print(get_table_schema(md))
-    s = gen_model_enums(md, ip)
-    s.extend(gen_model_domains(md, ip))
-    s.extend(gen_models(md, ip))
-    # print("\n".join(s))
-
-    write_file("models.py", s)
-
-    v = gen_views(md, ip)
-    write_file('views.py', v)
+    m =[]
+    m = gen_models(md,ip)
+    write_file("models.py", m)
+    m = gen_views(md, ip)
+    write_file('views.py', m)

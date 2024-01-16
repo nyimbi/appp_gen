@@ -249,14 +249,19 @@ with open("models.py", "w") as f:
 
                 if col['default'] != None:
                     c_default = f", default = {col['default']}"  # Might include sqltext, so we process further
-                    if col['default'] == 'false': c_default = ', default = False'
-                    if col['default'] == 'true': c_default = ', default = True'
-                    if col['default'] == 'now()': c_default = ', default = func.now()'
-                    if ":" in col['default']: c_default = ', default = ' + col['default'].split(':')[0]
-
-                    if col['default'].startswith('nextval'):  # Means it is autoincrement and uses a sequence
+                    if col['default'] == 'false':
+                        c_default = ', default=False'
+                    elif col['default'] == 'true':
+                        c_default = ', default=True'
+                    elif col['default'] == 'now()':
+                        c_default = ', default=func.now()'
+                    elif ":" in col['default']:
+                        c_default = ''  # , default = ' + col['default'].split(':')[0]
+                    elif col['default'].startswith('nextval'):  # Means it is autoincrement and uses a sequence
                         c_autoincrement = ", autoincrement=True"
                         c_default = ""
+                    else:
+                        c_default = ''
 
                 f.write(
                     f"    {col['name']} = Column({ctype}{c_fk}{c_pk}{c_unique}{c_autoincrement}{c_default}{c_comment})\n"
@@ -305,7 +310,7 @@ with open("models.py", "w") as f:
 ####### Generate views #####
 
 with open('views.py', 'w') as f:
-    f.write(headers.VIEW_FILE_HEADER)
+    f.write(headers.VIEW_HEADER)
     md_views = set()
     for table in sorted_tables:
         columns = inspector.get_columns(table)

@@ -1,12 +1,14 @@
 # TODO: Process _img fields in views to make them uploadable
 # Conventions: PostgreSQL Database
-#   - id fields should always end in _id
+#   - id fields should always be in id serial
+#   - Foreign Keys should ALWAYS end in _id_fk
 #   - association tables should end in _link, _map or _assoc
 #   - Timestamps always default to func.now(), change generated code manually
 #
 from sqlalchemy import Enum
 from sqlalchemy import create_engine, inspect, MetaData
 
+import db_utils
 import headers
 import utils
 
@@ -46,8 +48,8 @@ def remove_id_columns(column_names):
 def is_association_table(table_name):
     # Get the foreign keys for the table
     foreign_keys = inspector.get_foreign_keys(table_name)
-    columns = inspector.get_columns(table_name)
 
+    columns = inspector.get_columns(table_name)
     if len(columns) <= 2:
         # Check for a naming convention
         if "assoc" in table_name.lower() or \
@@ -74,7 +76,7 @@ def get_display_column(column_names):
     priorities = ['name', 'alias', 'title', 'label', 'display_name', 'code']
 
     for name in priorities:
-        if name.lower() in column_names:
+        if name in column_names:
             return name
 
     for name in column_names:
@@ -124,6 +126,12 @@ mtbl = inspector.get_multi_columns()  # https://docs.sqlalchemy.org/en/20/core/r
 table_dependencies = get_table_dependencies()
 sorted_tables = topological_sort(table_dependencies)
 
+# Alternative way to get the list of dependency sorted tables
+# exp_list = inspector.get_sorted_table_and_fkc_names()
+# print(exp_list)
+# for tbl_fkc in exp_list:
+#     sorted_tables.append(tbl_fkc[0])
+
 with open("models.py", "w") as f:
     enum_names = []  # To keep track of enums so that we don't repeat
     graph = {}
@@ -134,12 +142,12 @@ with open("models.py", "w") as f:
 
     # In order to Guarantee successful generation we want to do a topological sort of tables
     table_dependencies = get_table_dependencies()
-    sorted_tables = [table.name for table in metadata.sorted_tables]
+    sorted_tables = topological_sort(table_dependencies)
     # print(sorted_tables)
 
     # Generate Enums first
-    for table in metadata.sorted_tables:
-        cols = inspector.get_columns(table.name)
+    for table in sorted_tables:
+        cols = inspector.get_columns(table)
         for col in cols:
             if isinstance(col["type"], Enum):
                 enum_vals = list(col["type"].enums)
@@ -154,9 +162,9 @@ with open("models.py", "w") as f:
                 f.write("\n\n")
 
     # Now generate Models
-    for table in metadata.sorted_tables:
+    for table in sorted_tables:
         column_names_list = []
-        cols = inspector.get_columns(table.name)
+        cols = inspector.get_columns(table)
         pks = inspector.get_pk_constraint(table)
         fks = inspector.get_foreign_keys(table)
         uqs = inspector.get_unique_constraints(table)
@@ -199,7 +207,7 @@ with open("models.py", "w") as f:
                 )
             else:
                 ctype = col["type"].compile()
-                ctype = utils.map_pgsql_datatypes(ctype.lower())
+                ctype = db_utils.map_pgsql_datatypes(ctype.lower())
 
                 # First Primary Keys
                 if col["name"] in pks["constrained_columns"]:

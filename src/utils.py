@@ -1,4 +1,4 @@
-import sqlite3, re
+import sqlite3, re, string
 from pathlib import Path
 from typing import List, Dict
 
@@ -13,7 +13,9 @@ from sqlparse.tokens import Keyword
 # For writing a list of code to a file
 def write_file(filename, list_of_strings):
     with open(filename, "w") as f:
-        f.write("\n".join(list_of_strings))
+        s = "\n".join(list_of_strings)
+        f.write(s)
+        # f.writelines(list_of_strings)
 
 
 

@@ -11,8 +11,8 @@ from sqlalchemy.orm import relationship, query, defer, deferred, column_property
 from sqlalchemy.schema import FetchedValue
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy import (Column, Integer, String, ForeignKey,
-    Sequence, Float, Text, BigInteger, Date,
-    DateTime, Time, Boolean, Index, CheckConstraint,
+    Sequence, Float, Text, BigInteger, Date, SmallInteger, BigInteger, 
+    DateTime, Time, Boolean, Index, CheckConstraint, Interval, # MatchType  
     UniqueConstraint, ForeignKeyConstraint, Numeric, LargeBinary , Table, func, Enum,
     text)
 
@@ -53,7 +53,7 @@ from geoalchemy2 import Geometry
 # from sqlalchemy_mixins import AllFeaturesMixin, ActiveRecordMixin
 
 
-from .mixins import *
+# from .model_mixins import *
 
 # Here is how to extend the User model
 #class UserExtended(Model, UserExtensionMixin):
@@ -381,13 +381,13 @@ class State(Model):
 
     country_id_fk = Column(Integer, ForeignKey('country.id'))
     id = Column(Integer, primary_key=True, autoincrement=True)
-    state_code = Column(String)
-    state_name = Column(String)
-    state_desc = Column(Text)
+    code = Column(String)
+    name = Column(String)
+    desc = Column(Text)
     state_country = relationship(Country, backref='states_state_country', primaryjoin='State.country_id_fk == Country.id')
 
     def __repr__(self):
-       return self.state_name
+       return self.name
 
  ### 
 
@@ -405,16 +405,17 @@ class Lga(Model):
 
  ### 
 
-class TechParameters(Model):
-    __tablename__ = "Tech_Parameters"
+class Techparams(Model):
+    __tablename__ = "techparams"
 
-    key = Column(String, primary_key=True)
-    value = Column(Text)
-    enabled = Column(Boolean, default = True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    tp_key = Column(String)
+    tp_value = Column(Text)
+    enabled = Column(Boolean, default=True)
     notes = Column(Text)
 
     def __repr__(self):
-       return self.key
+       return self.id
 
  ### 
 
@@ -439,17 +440,17 @@ class DocType(Model):
     doc_category = Column(Enum(Doc_category), name='t_doc_category', nullable=False)
     notes = Column(Text, comment="Any additional remarks or details about the document type.")
     required_information = Column(Text, comment="List or description of required fields/information for this document type.")
-    is_serialized = Column(Boolean, default = False)
+    is_serialized = Column(Boolean, default=False)
     serial_length = Column(Integer)
-    expires = Column(Boolean, default = False)
+    expires = Column(Boolean, default=False)
     validity_period = Column(Integer, comment="Standard validity duration of this type of document in days.")
     renewal_frequency = Column(Integer, comment="Frequency at which this document typically needs renewal, in days. Useful for setting reminders.")
-    is_government_issued = Column(Boolean, default = False, comment="Indicates if this document is typically issued by a government authority.")
-    is_digital = Column(Boolean, default = False, comment="Indicates if the document is typically in digital format.")
+    is_government_issued = Column(Boolean, default=False, comment="Indicates if this document is typically issued by a government authority.")
+    is_digital = Column(Boolean, default=False, comment="Indicates if the document is typically in digital format.")
     template_url = Column(String, comment="URL or link to a template or sample of this document type, if available.")
     example_image_url = Column(String, comment="URL or link to an example image of this document type.")
-    created_at = Column(DateTime, server_default=text('NOW())', default = func.now(), comment="Timestamp when the document type was added to the system.")
-    updated_at = Column(DateTime, server_default=text('NOW())', default = func.now(), comment="Timestamp when the document type was last updated.")
+    created_at = Column(DateTime, server_default=text('NOW()'), default=func.now(), comment="Timestamp when the document type was added to the system.")
+    updated_at = Column(DateTime, server_default=text('NOW()'), default=func.now(), comment="Timestamp when the document type was last updated.")
 
     def __repr__(self):
        return self.name
@@ -462,27 +463,15 @@ class Bank(Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(String, comment="NIBSS institutionCode")
     name = Column(String)
-    category = Column(Integer, default = 2, comment="category")
+    category = Column(Integer, comment="category")
     swift_code = Column(String)
     sort_code = Column(String)
     iban = Column(String)
     cust_care_phone = Column(String)
     cust_care_email = Column(String)
     escalation_contact = Column(Text)
-    created_on = Column(DateTime, server_default=text('NOW())', default = func.now())
-    updated_on = Column(DateTime, server_default=text('NOW())', default = func.now())
-
-    def __repr__(self):
-       return self.name
-
- ### 
-
-class AgentTier(Model):
-    __tablename__ = "agent_tier"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String)
-    notes = Column(Text)
+    created_on = Column(DateTime, server_default=text('NOW()'), default=func.now())
+    updated_on = Column(DateTime, server_default=text('NOW()'), default=func.now())
 
     def __repr__(self):
        return self.name
@@ -500,6 +489,18 @@ class MimeType(Model):
 
     def __repr__(self):
        return self.label
+
+ ### 
+
+class AgentTier(Model):
+    __tablename__ = "agent_tier"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String)
+    notes = Column(Text)
+
+    def __repr__(self):
+       return self.name
 
  ### 
 
@@ -528,10 +529,10 @@ class Agent(Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     aggregator_id_fk = Column(Integer, ForeignKey('agent.id'))
-    is_aggregator = Column(Boolean, default = False)
-    became_aggregator_date = Column(DateTime, server_default=text('NOW())')
-    assigned_pos_count = Column(Integer, default = 0)
-    aggregator_pos_threshold = Column(Integer, default = 20)
+    is_aggregator = Column(Boolean, default=False)
+    became_aggregator_date = Column(DateTime, server_default=text('NOW()'))
+    assigned_pos_count = Column(Integer)
+    aggregator_pos_threshold = Column(Integer)
     registration_status = Column(Enum(Registration_status), name='t_registration_status', nullable=False)
     registration_status_notes = Column(Text)
     agent_type = Column(Enum(Agent_type), name='t_agent_type', nullable=False)
@@ -549,8 +550,8 @@ class Agent(Model):
     email = Column(String)
     alt_email = Column(String)
     bvn = Column(String)
-    bvn_verified = Column(Boolean, default = False)
-    bvn_verification_date = Column(DateTime, server_default=text('NOW())', default = func.now())
+    bvn_verified = Column(Boolean, default=False)
+    bvn_verification_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
     bvn_verification_code = Column(Text)
     tax_id = Column(String)
     bank_id_fk = Column(Integer, ForeignKey('bank.id'))
@@ -565,9 +566,9 @@ class Agent(Model):
     biz_address = Column(Text)
     biz_poa_img = Column(String)
     biz_poa_desc = Column(String)
-    biz_poa_valid = Column(Boolean, default = False)
-    biz_lat = Column(Numeric)
-    biz_lon = Column(Numeric)
+    biz_poa_valid = Column(Boolean, default=False)
+    biz_lat = Column(Float)
+    biz_lon = Column(Float)
     biz_loc = Column(Text)
     biz_ggl_code = Column(String)
     company_name = Column(String)
@@ -578,25 +579,25 @@ class Agent(Model):
     ref_code = Column(String)
     access_pin = Column(String)
     registered_by_fk = Column(Integer, ForeignKey('user_ext.id'))
-    registration_date = Column(DateTime, server_default=text('NOW())', default = func.now())
+    registration_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
     reviewed_by_fk = Column(Integer, ForeignKey('user_ext.id'))
-    review_date = Column(DateTime, server_default=text('NOW())', default = func.now())
+    review_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
     approved_by_fk = Column(Integer, ForeignKey('user_ext.id'))
-    approval_date = Column(DateTime, server_default=text('NOW())')
+    approval_date = Column(DateTime, server_default=text('NOW()'))
     approval_narrative = Column(Text)
-    kyc_submit_date = Column(DateTime, server_default=text('NOW())')
+    kyc_submit_date = Column(DateTime, server_default=text('NOW()'))
     kyc_verification_status = Column(Enum(Kyc_verification_status), name='t_kyc_verification_status', nullable=False)
-    kyc_approval_date = Column(DateTime, server_default=text('NOW())')
+    kyc_approval_date = Column(DateTime, server_default=text('NOW()'))
     kyc_ref_code = Column(String)
     kyc_rejection_narrative = Column(Text)
     kyc_rejection_by_fk = Column(Integer, ForeignKey('user_ext.id'))
-    rejection_date = Column(DateTime, server_default=text('NOW())')
+    rejection_date = Column(DateTime, server_default=text('NOW()'))
     rejection_narrative = Column(Text)
     rejected_by_fk = Column(Integer, ForeignKey('user_ext.id'))
     face_matrix = Column(Text)
     finger_print_img = Column(Text)
     agent_public_key = Column(Text)
-    agent_pj_expiry = Column(DateTime, server_default=text('NOW())')
+    agent_pj_expiry = Column(DateTime, server_default=text('NOW()'))
     agent_history = Column(Text)
     agent_account_manager = relationship(UserExt, backref='agents_agent_account_manager', primaryjoin='Agent.account_manager_id_fk == UserExt.id')
     agent_agent_tier = relationship(AgentTier, backref='agents_agent_agent_tier', primaryjoin='Agent.agent_tier_id_fk == AgentTier.id')
@@ -624,12 +625,12 @@ class ContactType(Model):
     id = Column(Integer, primary_key=True, autoincrement=True, comment="Unique identifier for the address type.")
     name = Column(String, comment="Name or type of contact method, e.g., Mobile, Email, WhatsApp.")
     description = Column(Text, comment="Brief description about the address type, providing context or usage scenarios.")
-    is_digital = Column(Boolean, default = True, comment="Indicates if the contact method is digital or physical.")
-    requires_verification = Column(Boolean, default = False, comment="Indicates if the address type typically requires a verification process, e.g., email confirmation.")
+    is_digital = Column(Boolean, default=True, comment="Indicates if the contact method is digital or physical.")
+    requires_verification = Column(Boolean, default=False, comment="Indicates if the address type typically requires a verification process, e.g., email confirmation.")
     max_length = Column(Integer, comment="If applicable, the maximum character length of a value of this address type. Useful for validation.")
     icon_url = Column(String, comment="URL or link to an icon or image representing this address type. Useful for UI/UX purposes.")
-    created_at = Column(DateTime, server_default=text('NOW())', default = '2024-01-12 09, comment="Timestamp when the address type was added to the system.")
-    updated_at = Column(DateTime, server_default=text('NOW())', default = '2024-01-12 09, comment="Timestamp when the address type was last updated.")
+    created_at = Column(DateTime, server_default=text('NOW()'), comment="Timestamp when the address type was added to the system.")
+    updated_at = Column(DateTime, server_default=text('NOW()'), comment="Timestamp when the address type was last updated.")
 
     def __repr__(self):
        return self.name
@@ -651,15 +652,15 @@ class Person(Model):
     photo_img = Column(String)
     signature_img = Column(String)
     bvn_no = Column(String)
-    bvn_verified = Column(Boolean, default = False)
-    bvn_verification_date = Column(DateTime, server_default=text('NOW())', default = func.now())
+    bvn_verified = Column(Boolean, default=False)
+    bvn_verification_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
     bvn_verification_code = Column(Text)
     tax_id = Column(String)
     home_poa_img = Column(String)
     home_poa_desc = Column(String)
-    home_poa_valid = Column(Boolean, default = False)
-    home_lat = Column(Numeric)
-    home_lon = Column(Numeric)
+    home_poa_valid = Column(Boolean, default=False)
+    home_lat = Column(Float)
+    home_lon = Column(Float)
     home_loc = Column(Text)
     home_ggl_code = Column(String)
     person_agent = relationship(Agent, backref='persons_person_agent', primaryjoin='Person.agent_id_fk == Agent.id')
@@ -705,12 +706,12 @@ class Doc(Model):
     issued_by_authority = Column(String, comment="Authority or organization that issued the document.")
     issued_at = Column(String, comment="Place or location where the document was issued.")
     expires_on = Column(Date, comment="Expiration date of the document.")
-    expired = Column(Boolean, default = False, comment="Flag to indicate if the document has expired.")
-    verified = Column(Boolean, default = False)
-    verification_date = Column(DateTime, server_default=text('NOW())', default = func.now(), comment="The date when the document was verified.")
+    expired = Column(Boolean, default=False, comment="Flag to indicate if the document has expired.")
+    verified = Column(Boolean, default=False)
+    verification_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), comment="The date when the document was verified.")
     verification_code = Column(Text)
-    uploaded_on = Column(DateTime, server_default=text('NOW())', default = func.now(), comment="Timestamp when the document was uploaded into the system.")
-    updated_on = Column(DateTime, server_default=text('NOW())', default = func.now(), comment="Timestamp when the document record was last updated.")
+    uploaded_on = Column(DateTime, server_default=text('NOW()'), default=func.now(), comment="Timestamp when the document was uploaded into the system.")
+    updated_on = Column(DateTime, server_default=text('NOW()'), default=func.now(), comment="Timestamp when the document record was last updated.")
     doc_agent = relationship(Agent, backref='docs_doc_agent', primaryjoin='Doc.agent_id_fk == Agent.id')
     doc_doc_content_type_fkey = relationship(MimeType, backref='docs_doc_doc_content_type_fkey', primaryjoin='Doc.doc_content_type == MimeType.id')
     doc_doc_type = relationship(DocType, backref='docs_doc_doc_type', primaryjoin='Doc.doc_type_id_fk == DocType.id')
@@ -727,7 +728,7 @@ class AgentDocLink(Model):
     agent_id_fk = Column(Integer, ForeignKey('agent.id'), primary_key=True)
     doc_id_fk = Column(Integer, ForeignKey('doc.id'), primary_key=True)
     verification_status = Column(Enum(Verification_status), name='t_verification_status', nullable=False)
-    submit_date = Column(DateTime, server_default=text('NOW())', default = func.now())
+    submit_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
     notes = Column(Text)
     agent_doc_link_agent = relationship(Agent, backref='agent_doc_links_agent_doc_link_agent', primaryjoin='AgentDocLink.agent_id_fk == Agent.id')
     agent_doc_link_doc = relationship(Doc, backref='agent_doc_links_agent_doc_link_doc', primaryjoin='AgentDocLink.doc_id_fk == Doc.id')
@@ -743,7 +744,7 @@ class PersonDocLink(Model):
     person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True)
     doc_id_fk = Column(Integer, ForeignKey('doc.id'), primary_key=True)
     verification_status = Column(Enum(Verification_status), name='t_verification_status', nullable=False)
-    submit_date = Column(DateTime, server_default=text('NOW())', default = func.now())
+    submit_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
     person_doc_link_doc = relationship(Doc, backref='person_doc_links_person_doc_link_doc', primaryjoin='PersonDocLink.doc_id_fk == Doc.id')
     person_doc_link_person = relationship(Person, backref='person_doc_links_person_doc_link_person', primaryjoin='PersonDocLink.person_id_fk == Person.id')
 
@@ -767,20 +768,20 @@ class Pos(Model):
     device_condition = Column(String, comment="working, irreparrable, repaired")
     status = Column(String)
     owner_type = Column(String)
-    registration_date = Column(DateTime, server_default=text('NOW())', default = func.now())
-    assigned = Column(Boolean, default = False)
-    assigned_date = Column(DateTime, server_default=text('NOW())')
+    registration_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
+    assigned = Column(Boolean, default=False)
+    assigned_date = Column(DateTime, server_default=text('NOW()'))
     assigned_narrative = Column(Text)
-    active = Column(Boolean, default = False)
-    activation_date = Column(DateTime, server_default=text('NOW())', default = func.now())
-    last_active = Column(DateTime, server_default=text('NOW())')
-    deployed = Column(Boolean, default = False)
-    deploy_date = Column(DateTime, server_default=text('NOW())')
+    active = Column(Boolean, default=False)
+    activation_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
+    last_active = Column(DateTime, server_default=text('NOW()'))
+    deployed = Column(Boolean, default=False)
+    deploy_date = Column(DateTime, server_default=text('NOW()'))
     deploy_narrative = Column(Text)
-    returned = Column(Boolean, default = False)
-    return_date = Column(DateTime, server_default=text('NOW())')
+    returned = Column(Boolean, default=False)
+    return_date = Column(DateTime, server_default=text('NOW()'))
     return_narrative = Column(Text)
-    return_received_date = Column(DateTime, server_default=text('NOW())')
+    return_received_date = Column(DateTime, server_default=text('NOW()'))
     return_received_by = Column(Integer, ForeignKey('user_ext.id'))
     state_id = Column(Integer, ForeignKey('state.id'))
     lga_id = Column(Integer, ForeignKey('lga.id'))
@@ -806,19 +807,19 @@ class AgentPosLink(Model):
 
     agent_id_fk = Column(Integer, ForeignKey('agent.id'), primary_key=True)
     pos_id_fk = Column(Integer, ForeignKey('pos.id'), primary_key=True)
-    assigned_date = Column(DateTime, server_default=text('NOW())', default = func.now())
+    assigned_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
     assigned_by = Column(String, comment="user")
     received_by = Column(String)
-    received_date = Column(DateTime, server_default=text('NOW())')
+    received_date = Column(DateTime, server_default=text('NOW()'))
     received_location = Column(String)
     delivery_note = Column(Text)
-    delivery_note_printed = Column(Boolean, default = False)
-    activated = Column(Boolean, default = False)
-    activation_date = Column(DateTime, server_default=text('NOW())')
+    delivery_note_printed = Column(Boolean, default=False)
+    activated = Column(Boolean, default=False)
+    activation_date = Column(DateTime, server_default=text('NOW()'))
     activation_otp = Column(String)
-    otp_sent = Column(Boolean, default = False)
-    otp_sent_time = Column(DateTime, server_default=text('NOW())')
-    otp_used = Column(Boolean, default = False)
+    otp_sent = Column(Boolean, default=False)
+    otp_sent_time = Column(DateTime, server_default=text('NOW()'))
+    otp_used = Column(Boolean, default=False)
     history = Column(Text)
     agent_pos_link_agent = relationship(Agent, backref='agent_pos_links_agent_pos_link_agent', primaryjoin='AgentPosLink.agent_id_fk == Agent.id')
     agent_pos_link_pos = relationship(Pos, backref='agent_pos_links_agent_pos_link_pos', primaryjoin='AgentPosLink.pos_id_fk == Pos.id')
@@ -842,7 +843,7 @@ class TokenProvider(Model):
     token_provider_ssl = Column(Text)
     token_provider_ip_whitelist = Column(Text)
     token_provider_password = Column(String)
-    enabled = Column(Boolean, default = False)
+    enabled = Column(Boolean, default=False)
 
     def __repr__(self):
        return self.token_provider_name
@@ -853,10 +854,10 @@ class PersonAdminData(Model):
     __tablename__ = "person_admin_data"
 
     person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True)
-    creation_time = Column(DateTime, server_default=text('NOW())', default = func.now())
-    failed_login_count = Column(Integer, default = 0)
-    failed_login_timestamp = Column(DateTime, server_default=text('NOW())')
-    password_last_set_time = Column(DateTime, server_default=text('NOW())')
+    creation_time = Column(DateTime, server_default=text('NOW()'), default=func.now())
+    failed_login_count = Column(Integer)
+    failed_login_timestamp = Column(DateTime, server_default=text('NOW()'))
+    password_last_set_time = Column(DateTime, server_default=text('NOW()'))
     profile_picture = Column(String)
     awatar = Column(String)
     screen_name = Column(String)
@@ -864,12 +865,12 @@ class PersonAdminData(Model):
     user_pub_cert = Column(Text)
     alt_security_identities = Column(Text)
     generated_UID = Column(UUID)
-    do_not_email = Column(Boolean, default = False)
-    do_not_phone = Column(Boolean, default = False)
-    do_not_mail = Column(Boolean, default = False)
-    do_not_sms = Column(Boolean, default = False)
-    do_not_trade = Column(Boolean, default = False)
-    opted_out = Column(Boolean, default = False)
+    do_not_email = Column(Boolean, default=False)
+    do_not_phone = Column(Boolean, default=False)
+    do_not_mail = Column(Boolean, default=False)
+    do_not_sms = Column(Boolean, default=False)
+    do_not_trade = Column(Boolean, default=False)
+    opted_out = Column(Boolean, default=False)
     do_not_track_update_date = Column(Date)
     do_not_process_from_update_date = Column(Date)
     do_not_market_from_update_date = Column(Date)
@@ -886,7 +887,7 @@ class PersonAdminData(Model):
     hospitalizations_last5_years_count = Column(Integer)
     surgeries_last5_years_count = Column(Integer)
     dependent_count = Column(Integer)
-    account_locked = Column(Boolean, default = False)
+    account_locked = Column(Boolean, default=False)
     send_individual_data = Column(Boolean)
     influencer_rating = Column(Integer)
     person_admin_data_person = relationship(Person, backref='person_admin_datas_person_admin_data_person', primaryjoin='PersonAdminData.person_id_fk == Person.id')
@@ -900,7 +901,7 @@ class PersonAdditionalData(Model):
     __tablename__ = "person_additional_data"
 
     person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True)
-    Gender = Column(Enum(Gender), name='t_Gender', nullable=False)
+    gender = Column(Enum(Gender), name='t_gender', nullable=False)
     religion = Column(String)
     ethnicity = Column(String)
     consumer_credit_score = Column(Integer)
@@ -915,8 +916,8 @@ class PersonAdditionalData(Model):
     Marital_Status_cd = Column(Integer)
     citizenship_fk = Column(Integer, ForeignKey('country.id'))
     From_whom = Column(String)
-    Amount = Column(numeric(20, 6))
-    Interest_rate_pa = Column(numeric(20, 6))
+    Amount = Column(Numeric)
+    Interest_rate_pa = Column(Numeric)
     Number_of_people_depending_on_overal_income = Column(Integer)
     YesNo_cd_Bank_account = Column(Integer)
     YesNo_cd_Business_plan_provided = Column(Integer)
@@ -939,16 +940,16 @@ class Token(Model):
     token_id = Column(Integer, primary_key=True, autoincrement=True)
     token_provider_id_fk = Column(Integer, ForeignKey('token_provider.token_provider_id'))
     token_name = Column(String)
-    token_issue_date = Column(DateTime, server_default=text('NOW())', default = func.now())
-    token_expiry_date = Column(DateTime, server_default=text('NOW())', default = func.now())
+    token_issue_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
+    token_expiry_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
     token_validity = Column(Integer)
-    token_expired = Column(Boolean, default = False)
+    token_expired = Column(Boolean, default=False)
     token_value = Column(String)
     token_username = Column(String)
     token_password = Column(String)
     token_notes = Column(Text)
     token_client_secret = Column(Text)
-    enabled = Column(Boolean, default = False)
+    enabled = Column(Boolean, default=False)
     token_token_provider = relationship(TokenProvider, backref='tokens_token_token_provider', primaryjoin='Token.token_provider_id_fk == TokenProvider.token_provider_id')
 
     def __repr__(self):
@@ -959,40 +960,40 @@ class Token(Model):
 class BillerCategory(Model):
     __tablename__ = "biller_category"
 
-    biller_cat_id = Column(Integer, primary_key=True, autoincrement=True)
-    biller_cat_name = Column(String)
-    biller_cat_notes = Column(Text)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String)
+    notes = Column(Text)
 
     def __repr__(self):
-       return self.biller_cat_name
+       return self.name
 
  ### 
 
 class Biller(Model):
     __tablename__ = "biller"
 
-    biller_id = Column(Integer, primary_key=True, autoincrement=True)
-    biller_cat_id_fk = Column(Integer, ForeignKey('biller_category.biller_cat_id'))
-    biller_code = Column(String)
-    biller_name = Column(String)
-    biller_url = Column(String)
-    biller_note = Column(Text)
-    biller_biller_cat = relationship(BillerCategory, backref='billers_biller_biller_cat', primaryjoin='Biller.biller_cat_id_fk == BillerCategory.biller_cat_id')
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    cat_id_fk = Column(Integer, ForeignKey('biller_category.id'))
+    code = Column(String)
+    name = Column(String)
+    url = Column(String)
+    note = Column(Text)
+    biller_cat = relationship(BillerCategory, backref='billers_biller_cat', primaryjoin='Biller.cat_id_fk == BillerCategory.id')
 
     def __repr__(self):
-       return self.biller_name
+       return self.name
 
  ### 
 
 class BillerOffering(Model):
     __tablename__ = "biller_offering"
 
-    biller_id_fk = Column(Integer, ForeignKey('biller.biller_id'))
-    biller_offering_id = Column(Integer, primary_key=True, autoincrement=True)
+    biller_id_fk = Column(Integer, ForeignKey('biller.id'))
+    offering_id = Column(Integer, primary_key=True, autoincrement=True)
     offering_name = Column(String)
     offering_description = Column(Text)
-    offering_price = Column(numeric(10, 2))
-    biller_offering_biller = relationship(Biller, backref='biller_offerings_biller_offering_biller', primaryjoin='BillerOffering.biller_id_fk == Biller.biller_id')
+    offering_price = Column(Numeric)
+    biller_offering_biller = relationship(Biller, backref='biller_offerings_biller_offering_biller', primaryjoin='BillerOffering.biller_id_fk == Biller.id')
 
     def __repr__(self):
        return self.offering_name
@@ -1005,8 +1006,8 @@ class Promotion(Model):
     promo_id = Column(Integer, primary_key=True, autoincrement=True)
     promo_name = Column(String)
     promo_notes = Column(Text)
-    promo_start_date = Column(DateTime, server_default=text('NOW())')
-    promo_end_date = Column(DateTime, server_default=text('NOW())')
+    promo_start_date = Column(DateTime, server_default=text('NOW()'))
+    promo_end_date = Column(DateTime, server_default=text('NOW()'))
 
     def __repr__(self):
        return self.promo_name
@@ -1018,20 +1019,20 @@ class Coupon(Model):
 
     __doc__ = " A coupon can be shared electronically and redeemed at any agent"
     coupon_id = Column(Integer, primary_key=True, autoincrement=True)
-    coupon_value = Column(numeric(10, 2))
+    coupon_value = Column(Numeric)
     active = Column(Boolean)
-    used = Column(Boolean, default = False)
-    used_date = Column(DateTime, server_default=text('NOW())')
+    used = Column(Boolean, default=False)
+    used_date = Column(DateTime, server_default=text('NOW()'))
     primary_scan_code_label = Column(String)
     is_return_coupon = Column(Boolean)
     expiration_date = Column(Date)
-    generation_date = Column(DateTime, server_default=text('NOW())', default = func.now())
-    activation_date = Column(DateTime, server_default=text('NOW())', default = func.now())
+    generation_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
+    activation_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
     secondary_scan_code_label = Column(String)
     scan_code_img = Column(String)
     coupon_code = Column(String)
     return_coupon_reason = Column(String)
-    is_valid = Column(Boolean, default = True)
+    is_valid = Column(Boolean, default=True)
     coupon_status = Column(String)
     discount_percentage = Column(Integer)
     coupon_count = Column(Integer)
@@ -1049,7 +1050,7 @@ class PaymentCard(Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     bin = Column(String)
     pan = Column(String)
-    credit_card_expired = Column(Boolean, default = False)
+    credit_card_expired = Column(Boolean, default=False)
     card_token = Column(String)
     issue_number = Column(String)
     bill_to_city = Column(String)
@@ -1082,13 +1083,13 @@ class Wallet(Model):
     __tablename__ = "wallet"
 
     __doc__ = " Each Pos has an individual wallet"
-    wallet_id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     agent_id_fk = Column(Integer, ForeignKey('agent.id'))
     pos_id_fk = Column(Integer, ForeignKey('pos.id'))
     wallet_name = Column(String)
-    wallet_balance = Column(numeric(10, 3))
-    wallet_locked = Column(Boolean, default = False)
-    wallet_active = Column(Boolean, default = True)
+    wallet_balance = Column(Numeric)
+    wallet_locked = Column(Boolean, default=False)
+    wallet_active = Column(Boolean, default=True)
     wallet_code = Column(String)
     wallet_crypt = Column(Text)
     wallet_narrative = Column(Text)
@@ -1108,7 +1109,7 @@ class Currency(Model):
     symbol = Column(String)
     numeric_code = Column(String)
     full_name = Column(String)
-    decimal_places = Column(smallint)
+    decimal_places = Column(SmallInteger)
     internationalized_name_code = Column(String)
 
     def __repr__(self):
@@ -1119,14 +1120,14 @@ class Currency(Model):
 class TransRoutingThresholds(Model):
     __tablename__ = "trans_routing_thresholds"
 
-    trans_route_id = Column(Integer, primary_key=True, autoincrement=True)
-    trans_route_name = Column(String)
-    trans_route_min = Column(numeric(10, 2))
-    trans_route_max = Column(numeric(10, 2))
-    trans_route_priority = Column(Integer, default = 1)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String)
+    min_amount = Column(Numeric)
+    max_amount = Column(Numeric)
+    priority = Column(Integer)
 
     def __repr__(self):
-       return self.trans_route_name
+       return self.name
 
  ### 
 
@@ -1162,17 +1163,17 @@ class Contact(Model):
     agent_id_fk = Column(Integer, ForeignKey('agent.id'), comment="Reference to the organization associated with this contact.")
     contact_type_id_fk = Column(Integer, ForeignKey('contact_type.id'), comment="Reference to the type of contact.")
     contact = Column(String, comment="Actual contact value, e.g., phone number or email address.")
-    priority = Column(Integer, default = 10, comment="Ordering priority for displaying or using the contact. Lower value indicates higher priority.")
+    priority = Column(Integer, comment="Ordering priority for displaying or using the contact. Lower value indicates higher priority.")
     best_time_to_contact_start = Column(Time, comment="Preferred start time when the individual/organization is available for contact.")
     best_time_to_contact_end = Column(Time, comment="Preferred end time for availability.")
-    active_from_date = Column(DateTime, server_default=text('NOW())', default = func.now(), comment="Date when this contact became active or relevant.")
+    active_from_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), comment="Date when this contact became active or relevant.")
     active_to_date = Column(Date, comment="Date when this contact ceases to be active or relevant.")
-    for_business_use = Column(Boolean, default = False, comment="Indicates if the contact is primarily for business purposes.")
-    for_personal_use = Column(Boolean, default = True, comment="Indicates if the contact is primarily for personal use.")
-    do_not_use = Column(Boolean, default = False, comment="Indicates if there are any restrictions or requests not to use this contact.")
-    is_active = Column(Boolean, default = True, comment="Indicates if this contact is currently active and usable.")
-    is_blocked = Column(Boolean, default = False, comment="Indicates if this contact is blocked, maybe due to spam or other reasons.")
-    is_verified = Column(Boolean, default = False, comment="Indicates if this contact has been verified, e.g., via OTP or email confirmation.")
+    for_business_use = Column(Boolean, default=False, comment="Indicates if the contact is primarily for business purposes.")
+    for_personal_use = Column(Boolean, default=True, comment="Indicates if the contact is primarily for personal use.")
+    do_not_use = Column(Boolean, default=False, comment="Indicates if there are any restrictions or requests not to use this contact.")
+    is_active = Column(Boolean, default=True, comment="Indicates if this contact is currently active and usable.")
+    is_blocked = Column(Boolean, default=False, comment="Indicates if this contact is blocked, maybe due to spam or other reasons.")
+    is_verified = Column(Boolean, default=False, comment="Indicates if this contact has been verified, e.g., via OTP or email confirmation.")
     notes = Column(Text, comment="Additional notes or context about the contact.")
     contact_agent = relationship(Agent, backref='contacts_contact_agent', primaryjoin='Contact.agent_id_fk == Agent.id')
     contact_contact_type = relationship(ContactType, backref='contacts_contact_contact_type', primaryjoin='Contact.contact_type_id_fk == ContactType.id')
@@ -1192,25 +1193,25 @@ class CommRef(Model):
     agent_id_fk = Column(Integer, ForeignKey('agent.id'))
     state_id_fk = Column(Integer, ForeignKey('state.id'))
     lga_id_fk = Column(Integer, ForeignKey('lga.id'))
-    biller_id_fk = Column(Integer, ForeignKey('biller.biller_id'))
-    biller_offering_id_fk = Column(Integer, ForeignKey('biller_offering.biller_offering_id'))
+    biller_id_fk = Column(Integer, ForeignKey('biller.id'))
+    biller_offering_id_fk = Column(Integer, ForeignKey('biller_offering.offering_id'))
     transaction_type_id_fk = Column(Integer, ForeignKey('trans_type.tt_id'))
     customer_segment_id_fk = Column(Integer, ForeignKey('customer_segment.cs_id'), comment="Customer Segment")
     special_promotion_id_fk = Column(Integer, ForeignKey('promotion.promo_id'))
-    min_trans_amount = Column(numeric(10, 2), default = 0)
-    max_trans_amount = Column(numeric(10, 2))
+    min_trans_amount = Column(Numeric)
+    max_trans_amount = Column(Numeric)
     min_max_step = Column(Integer)
-    min_comm_amount = Column(numeric(10, 2), default = 0)
-    max_comm_amount = Column(numeric(10, 2))
-    commission_rate = Column(numeric(10, 5))
+    min_comm_amount = Column(Numeric)
+    max_comm_amount = Column(Numeric)
+    commission_rate = Column(Numeric)
     start_time = Column(Time, comment="Start Time of Commission Rate Validity")
     end_time = Column(Time, comment="End Time of Commission Rate Validity")
     start_date = Column(Date, comment="In case this commission rate is only valid for a period")
     end_date = Column(Date)
     comm_ref_agent = relationship(Agent, backref='comm_refs_comm_ref_agent', primaryjoin='CommRef.agent_id_fk == Agent.id')
     comm_ref_agent_tier_level_fkey = relationship(AgentTier, backref='comm_refs_comm_ref_agent_tier_level_fkey', primaryjoin='CommRef.agent_tier_level == AgentTier.id')
-    comm_ref_biller = relationship(Biller, backref='comm_refs_comm_ref_biller', primaryjoin='CommRef.biller_id_fk == Biller.biller_id')
-    comm_ref_biller_offering = relationship(BillerOffering, backref='comm_refs_comm_ref_biller_offering', primaryjoin='CommRef.biller_offering_id_fk == BillerOffering.biller_offering_id')
+    comm_ref_biller = relationship(Biller, backref='comm_refs_comm_ref_biller', primaryjoin='CommRef.biller_id_fk == Biller.id')
+    comm_ref_biller_offering = relationship(BillerOffering, backref='comm_refs_comm_ref_biller_offering', primaryjoin='CommRef.biller_offering_id_fk == BillerOffering.offering_id')
     comm_ref_customer_segment = relationship(CustomerSegment, backref='comm_refs_comm_ref_customer_segment', primaryjoin='CommRef.customer_segment_id_fk == CustomerSegment.cs_id')
     comm_ref_lga = relationship(Lga, backref='comm_refs_comm_ref_lga', primaryjoin='CommRef.lga_id_fk == Lga.id')
     comm_ref_special_promotion = relationship(Promotion, backref='comm_refs_comm_ref_special_promotion', primaryjoin='CommRef.special_promotion_id_fk == Promotion.promo_id')
@@ -1225,7 +1226,7 @@ class CommRef(Model):
 class Trans(Model):
     __tablename__ = "trans"
 
-    trans_id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     coupon_id_fk = Column(Integer, ForeignKey('coupon.coupon_id'))
     customer_name = Column(String)
     trans_purpose = Column(Text)
@@ -1235,13 +1236,13 @@ class Trans(Model):
     agent_id_fk = Column(Integer, ForeignKey('agent.id'))
     payment_card_id_fk = Column(Integer, ForeignKey('payment_card.id'))
     pos_id_fk = Column(Integer, ForeignKey('pos.id'))
-    wallet_id_fk = Column(Integer, ForeignKey('wallet.wallet_id'))
-    biller_id_fk = Column(Integer, ForeignKey('biller.biller_id'))
-    biller_offering_id_fk = Column(Integer, ForeignKey('biller_offering.biller_offering_id'))
-    trans_time = Column(DateTime, server_default=text('NOW())', default = func.now())
+    wallet_id_fk = Column(Integer, ForeignKey('wallet.id'))
+    biller_id_fk = Column(Integer, ForeignKey('biller.id'))
+    biller_offering_id_fk = Column(Integer, ForeignKey('biller_offering.offering_id'))
+    trans_time = Column(DateTime, server_default=text('NOW()'), default=func.now())
     currency_id_fk = Column(Integer, ForeignKey('currency.id'))
     trans_status = Column(Enum(Trans_status), name='t_trans_status', nullable=False)
-    trans_route_id_fk = Column(Integer, ForeignKey('trans_routing_thresholds.trans_route_id'))
+    trans_route_id_fk = Column(Integer, ForeignKey('trans_routing_thresholds.id'))
     origin_source = Column(Enum(Origin_source), name='t_origin_source', nullable=False)
     origin_ref_code = Column(String)
     origin_trans_notes = Column(Text)
@@ -1258,7 +1259,7 @@ class Trans(Model):
     name_enquiry_ref = Column(String)
     api_transactionid = Column(String)
     receipt_no = Column(String)
-    pin_based = Column(Boolean, default = False)
+    pin_based = Column(Boolean, default=False)
     pin_code = Column(String)
     pin_option = Column(String)
     authorization_code = Column(String)
@@ -1279,30 +1280,30 @@ class Trans(Model):
     bene_phone_number = Column(String)
     bene_phone_denom = Column(String)
     bene_phone_product = Column(String)
-    transaction_amount = Column(numeric(10, 2), comment="topup_amount or bank transfer amount")
-    available_balance = Column(numeric(10, 2))
-    svc_fees = Column(numeric(10, 2), default = 0, comment="service fees")
-    comm_total = Column(numeric(10, 2))
-    comm_agent = Column(numeric(10, 2))
-    comm_aggr = Column(numeric(10, 2))
-    comm_ours = Column(numeric(10, 2))
-    comm_other = Column(numeric(10, 2), default = 0, comment="payments to others")
-    comm_net_pct = Column(Numeric)
-    tax = Column(numeric(10, 2))
-    excise_duty = Column(numeric(10, 2))
-    vat = Column(numeric(10, 2))
-    transmit_amount = Column(numeric(10, 2))
+    transaction_amount = Column(Numeric, comment="topup_amount or bank transfer amount")
+    available_balance = Column(Numeric)
+    svc_fees = Column(Numeric, comment="service fees")
+    comm_total = Column(Numeric)
+    comm_agent = Column(Numeric)
+    comm_aggr = Column(Numeric)
+    comm_ours = Column(Numeric)
+    comm_other = Column(Numeric, comment="payments to others")
+    comm_net_pct = Column(Float)
+    tax = Column(Numeric)
+    excise_duty = Column(Numeric)
+    vat = Column(Numeric)
+    transmit_amount = Column(Numeric)
     comm_narration = Column(Text, comment="how the commision was calculated")
-    trans_currency = Column(String, default = 'NGN')
+    trans_currency = Column(String)
     trans_convert_currency = Column(String)
-    trans_currency_exchange_rate = Column(numeric(10, 2), default = 1)
-    trans_date = Column(DateTime, server_default=text('NOW())', default = func.now())
+    trans_currency_exchange_rate = Column(Numeric)
+    trans_date = Column(DateTime, server_default=text('NOW()'), default=func.now())
     customer_segment_id_fk = Column(Integer, ForeignKey('customer_segment.cs_id'))
     agent_tier_level_id_fk = Column(Integer, ForeignKey('agent_tier.id'))
     special_promotions_id_fk = Column(Integer, ForeignKey('promotion.promo_id'))
-    fraud_marker = Column(Boolean, default = False, comment="fraudulent transaction")
+    fraud_marker = Column(Boolean, default=False, comment="fraudulent transaction")
     fraud_eval_outcome = Column(String, comment="returned by as Fraud, Not Fraud, Unknown")
-    fraud_risk_score = Column(Numeric, default = 0, comment="values 1-1000")
+    fraud_risk_score = Column(Float, comment="values 1-1000")
     fraud_prediction_explanations = Column(Text, comment=" list of explanations for how each event variable impacted the fraud prediction score.")
     fraud_rule_evaluations = Column(Text, comment="evaluations of the rules that were included in the detector version")
     fraud_event_num = Column(String, comment=" returned by AWS Fraud Detector")
@@ -1310,8 +1311,8 @@ class Trans(Model):
     trans_agent = relationship(Agent, backref='transs_trans_agent', primaryjoin='Trans.agent_id_fk == Agent.id')
     trans_agent_tier_level = relationship(AgentTier, backref='transs_trans_agent_tier_level', primaryjoin='Trans.agent_tier_level_id_fk == AgentTier.id')
     trans_bene_bank = relationship(Bank, backref='transs_trans_bene_bank', primaryjoin='Trans.bene_bank_id_fk == Bank.id')
-    trans_biller = relationship(Biller, backref='transs_trans_biller', primaryjoin='Trans.biller_id_fk == Biller.biller_id')
-    trans_biller_offering = relationship(BillerOffering, backref='transs_trans_biller_offering', primaryjoin='Trans.biller_offering_id_fk == BillerOffering.biller_offering_id')
+    trans_biller = relationship(Biller, backref='transs_trans_biller', primaryjoin='Trans.biller_id_fk == Biller.id')
+    trans_biller_offering = relationship(BillerOffering, backref='transs_trans_biller_offering', primaryjoin='Trans.biller_offering_id_fk == BillerOffering.offering_id')
     trans_coupon = relationship(Coupon, backref='transs_trans_coupon', primaryjoin='Trans.coupon_id_fk == Coupon.coupon_id')
     trans_currency = relationship(Currency, backref='transs_trans_currency', primaryjoin='Trans.currency_id_fk == Currency.id')
     trans_customer_segment = relationship(CustomerSegment, backref='transs_trans_customer_segment', primaryjoin='Trans.customer_segment_id_fk == CustomerSegment.cs_id')
@@ -1319,8 +1320,8 @@ class Trans(Model):
     trans_payment_card = relationship(PaymentCard, backref='transs_trans_payment_card', primaryjoin='Trans.payment_card_id_fk == PaymentCard.id')
     trans_pos = relationship(Pos, backref='transs_trans_pos', primaryjoin='Trans.pos_id_fk == Pos.id')
     trans_special_promotions = relationship(Promotion, backref='transs_trans_special_promotions', primaryjoin='Trans.special_promotions_id_fk == Promotion.promo_id')
-    trans_trans_route = relationship(TransRoutingThresholds, backref='transs_trans_trans_route', primaryjoin='Trans.trans_route_id_fk == TransRoutingThresholds.trans_route_id')
-    trans_wallet = relationship(Wallet, backref='transs_trans_wallet', primaryjoin='Trans.wallet_id_fk == Wallet.wallet_id')
+    trans_trans_route = relationship(TransRoutingThresholds, backref='transs_trans_trans_route', primaryjoin='Trans.trans_route_id_fk == TransRoutingThresholds.id')
+    trans_wallet = relationship(Wallet, backref='transs_trans_wallet', primaryjoin='Trans.wallet_id_fk == Wallet.id')
 
     def __repr__(self):
        return self.customer_name
