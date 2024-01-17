@@ -1,21 +1,10 @@
-from sqlalchemy.dialects.postgresql import (
-    BYTEA)
+from sqlalchemy.dialects.postgresql import (BYTEA)
 from flask_appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn
 from flask_appbuilder.fieldwidgets import BS3TextFieldWidget, BS3TextAreaFieldWidget, DatePickerWidget, DateTimePickerWidget
-
+import sqlalchemy as sa
 from sqlalchemy import (
-    Boolean,
-    CheckConstraint,
-    Column,
-    Date,
-    DateTime,
-    Float,
-    ForeignKey,
-    Integer,
-    Numeric,
-    String,
-    Text,
-    Interval,
+    Boolean, CheckConstraint, Column, Date, DateTime,
+    Float, ForeignKey, Integer, Numeric, String, Text, Interval,
 )
 
 postgresql_type_map = {
@@ -39,7 +28,7 @@ postgresql_type_map = {
     'jsonb': 'JSONB',
 }
 
-import sqlalchemy as sa
+
 
 """
 This function takes a string representing a PostgreSQL type as input and returns the corresponding SQLAlchemy type 

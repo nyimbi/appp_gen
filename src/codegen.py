@@ -1,6 +1,6 @@
 # TODO: Process _img fields in views to make them uploadable
 # Conventions: PostgreSQL Database
-#   - id fields should always be in id serial
+#   - id fields should always be in id serial and called id
 #   - Foreign Keys should ALWAYS end in _id_fk
 #   - association tables should end in _link, _map or _assoc
 #   - Timestamps always default to func.now(), change generated code manually
@@ -24,11 +24,9 @@ OUTPUT_VIEWS_FILE = 'views.py'
 def gen_models(metadata, inspector):
     model_code = []
     enum_names = []  # To keep track of enums so that we don't repeat
-    graph = {}
     # Write the models.py header file first
     model_code.append(headers.MODEL_HEADER)
 
-    cnam = []  # Temporary holder for a tables column names
 
     # Generate Enums first
     for t in metadata.sorted_tables:
@@ -59,7 +57,6 @@ def gen_models(metadata, inspector):
         t_comment = inspector.get_table_comment(table)  # Table Comment
 
         table_class = snake_to_pascal(table)
-        # print(table_class)
         model_code.append(f"class {table_class}(Model):")
         model_code.append(f'    __tablename__ = "{table}"')
         if t_comment['text']:
@@ -162,8 +159,6 @@ def gen_models(metadata, inspector):
             fk_ref_table = snake_to_pascal(fk["referred_table"])
             fk_ref_col = fk["referred_columns"][0]
             fkcol = fk["constrained_columns"][0]
-            # fkname = fkcol.split("_fk")[0]
-            # fkname = fkcol.split("_id")[0]
             pjoin = f", primaryjoin='{snake_to_pascal(table)}.{fkcol} == {fk_ref_table}.{fk_ref_col}'"
             # back_ref = f", backref='{fk_ref_table}{fkname}s'"
             back_ref = f", backref='{table}s_{fkname}'"
@@ -179,7 +174,6 @@ def gen_models(metadata, inspector):
 
             model_code.append(
                 f"    {fkname} = relationship({rel_name}{back_ref}{pjoin}{rem_side})"
-                # f"    {fkname} = relationship({rel_name}{back_ref}{for_keys}{rem_side})\n"
             )
         # Now write table level check constraints
         if len(cck) > 0:
@@ -197,7 +191,6 @@ def gen_models(metadata, inspector):
 
 def gen_views(metadata, inspector):
     views = []
-    view_regs = []
     views.append(headers.VIEW_HEADER)
     def gen_col_names(table):
         col_names = []
@@ -219,9 +212,7 @@ def gen_views(metadata, inspector):
         views.append(f'    datamodel = SQLAInterface({model_name})')
         c = gen_col_names(table)
         views.append(f'#    list_columns = [{c}]')
-
         views.append('')
-        # view_regs.append(
         views.append(
                 f'appbuilder.add_view({model_name}ModelView, "{p.plural(model_name)}", icon="fa-folder-open-o", category="Setup")\n')
 
@@ -242,12 +233,12 @@ def gen_views(metadata, inspector):
                 views.append(f'    related_views = [{detail_view_name}]')
                 views.append(f"    show_template = 'appbuilder/general/model/show_cascade.html'")
                 views.append('')
-                # view_regs.append(
                 views.append(
                 f'appbuilder.add_view({master_detail_view_name}, "{p.plural_noun(parent_model_name)}", icon="fa-folder-open-o", category="Review")\n')
                 mviews.add(master_detail_view_name)
 
     # Generate MultipleViews for tables that have multiple Foreign Keys
+    # This needs to be re-examined
     mviews = set()
     for table in metadata.sorted_tables:
         related_views = set()
@@ -282,7 +273,6 @@ def gen_api(metadata, inspector):
     for t in metadata.sorted_tables:
         table = t.name
         table_class = snake_to_pascal(table)
-        # print(table_class)
         api_code.append(f"\nclass {table_class}Api(ModelRestApi):")
         api_code.append(f'    resource = "{table}"')
         api_code.append(f'    datamodel = SQLAInterface({table_class})')
@@ -293,7 +283,8 @@ def gen_api(metadata, inspector):
     return api_code
 
 
-
+def gen_dbml(metadata, inspector):
+    pass
 
 
 if __name__ == '__main__':
