@@ -47,6 +47,7 @@ from flask_appbuilder.models.group import aggregate_count
 from flask_appbuilder.widgets import ListThumbnail, ListWidget
 from flask_appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
 from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction as FA
+from flask_appbuilder.api import ModelRestApi
 from flask import g
 
 # If you want to enable search
@@ -56,6 +57,7 @@ from . import appbuilder, db
 
 from .models import *
 from .view_mixins import *
+from .apis import *
 
 ##########
 # Various Utilities
@@ -165,8 +167,8 @@ MODEL_FOOTER = """
 
 API_HEADER ="""
 from flask_appbuilder import ModelRestApi
-from flask_appbuilder.api import BaseApi, expose
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.api import BaseApi, expose
 from flask_appbuilder.models.filters import BaseFilter
 from sqlalchemy import or_
 from sqlalchemy.sql import text

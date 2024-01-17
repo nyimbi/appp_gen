@@ -71,6 +71,7 @@ from geoalchemy2 import Geometry
 # make_searchable()
 
 
+
 class Doc_category(enum.Enum):
    IDENTIFICATION = 'Identification'
    CERTIFICATION = 'Certification'
@@ -82,6 +83,7 @@ class Doc_category(enum.Enum):
    CONTRACT = 'Contract'
    INSURANCE_POLICY = 'Insurance_Policy'
    TAX_DOCUMENT = 'Tax_Document'
+
 
 
 class Registration_status(enum.Enum):
@@ -103,6 +105,7 @@ class Registration_status(enum.Enum):
    VERIFICATION_FAILED = 'verification_failed'
 
 
+
 class Agent_type(enum.Enum):
    INDIVIDUAL = 'Individual'
    BUSINESS_NAME = 'Business_Name'
@@ -114,11 +117,13 @@ class Agent_type(enum.Enum):
    PUBLIC_UNLIMITED_COMPANY = 'Public_Unlimited_Company'
 
 
+
 class Agent_role(enum.Enum):
    AGENT = 'agent'
    SUB_AGENT = 'sub_agent'
    SUPER_AGENT = 'super_agent'
    AGGREGATOR = 'aggregator'
+
 
 
 class Kyc_verification_status(enum.Enum):
@@ -142,6 +147,8 @@ class Kyc_verification_status(enum.Enum):
 
 
 
+
+
 class Person_role(enum.Enum):
    NEXT_OF_KIN = 'next_of_kin'
    COMPANY_DIRECTOR = 'company_director'
@@ -152,12 +159,15 @@ class Person_role(enum.Enum):
    SUPERVISOR = 'supervisor'
 
 
+
 class Gender(enum.Enum):
    MALE = 'Male'
    FEMALE = 'Female'
    NON_BINARY = 'Non_Binary'
    PREFER_NOT_TO_SAY = 'Prefer_Not_to_Say'
    OTHER = 'Other'
+
+
 
 
 
@@ -197,6 +207,7 @@ class Transaction_type(enum.Enum):
    TRADE_CREDIT = 'trade_credit'
 
 
+
 class Card_trans_type(enum.Enum):
    PURCHASE = 'purchase'
    BALANCE = 'balance'
@@ -208,6 +219,7 @@ class Card_trans_type(enum.Enum):
    CARD_VERIFICATION = 'card_verification'
    TRANSACTION = 'transaction'
    SETTLEMENT = 'settlement'
+
 
 
 class Trans_status(enum.Enum):
@@ -272,6 +284,7 @@ class Trans_status(enum.Enum):
    CONSOLIDATED = 'consolidated'
 
 
+
 class Origin_source(enum.Enum):
    CASH = 'cash'
    CREDIT_CARD = 'credit_card'
@@ -305,6 +318,7 @@ class Origin_source(enum.Enum):
    POSTPAID = 'postpaid'
    THIRD_PARTY = 'third_party'
    TRADE_CREDIT = 'trade_credit'
+
 
 
 class Trans_dest(enum.Enum):
@@ -342,6 +356,7 @@ class Trans_dest(enum.Enum):
    TRADE_CREDIT = 'trade_credit'
 
 
+
 class Verification_status(enum.Enum):
    PENDING = 'pending'
    KYC_SUBMITTED = 'kyc_submitted'
@@ -363,21 +378,23 @@ class Verification_status(enum.Enum):
 
 
 
+
+
 class AgentTier(Model):
     __tablename__ = "agent_tier"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=True)
     notes = Column(Text, nullable=True)
 
     def __repr__(self):
+
        return self.name
 
  ### 
 
+
 class Bank(Model):
     __tablename__ = "bank"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(String
 		, comment="NIBSS institutionCode")
@@ -394,25 +411,27 @@ class Bank(Model):
     updated_on = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
 
     def __repr__(self):
+
        return self.name
 
  ### 
 
+
 class BillerCategory(Model):
     __tablename__ = "biller_category"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=True)
     notes = Column(Text, nullable=True)
 
     def __repr__(self):
+
        return self.name
 
  ### 
 
+
 class ContactType(Model):
     __tablename__ = "contact_type"
-
     __doc__ = " phone, mobile, email, messaging, whatsapp, viber, instagram, website, etc"
     id = Column(Integer, primary_key=True, autoincrement=True
 		, comment="Unique identifier for the address type.")
@@ -434,26 +453,28 @@ class ContactType(Model):
 		, comment="Timestamp when the address type was last updated.")
 
     def __repr__(self):
+
        return self.name
 
  ### 
 
+
 class Country(Model):
     __tablename__ = "country"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=True)
     code = Column(String, nullable=True)
     phone_code = Column(Integer, nullable=True)
 
     def __repr__(self):
+
        return self.name
 
  ### 
 
+
 class Coupon(Model):
     __tablename__ = "coupon"
-
     __doc__ = " A coupon can be shared electronically and redeemed at any agent"
     coupon_id = Column(Integer, primary_key=True, autoincrement=True)
     coupon_value = Column(Numeric, nullable=True)
@@ -476,13 +497,14 @@ class Coupon(Model):
     payment_method_status = Column(String)
 
     def __repr__(self):
+
        return self.coupon_id
 
  ### 
 
+
 class Currency(Model):
     __tablename__ = "currency"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=True)
     symbol = Column(String, nullable=True)
@@ -492,25 +514,27 @@ class Currency(Model):
     internationalized_name_code = Column(String, nullable=True)
 
     def __repr__(self):
+
        return self.name
 
  ### 
 
+
 class CustomerSegment(Model):
     __tablename__ = "customer_segment"
-
     cs_id = Column(Integer, primary_key=True, autoincrement=True)
     cs_name = Column(String, nullable=True)
     cs_notes = Column(Text, nullable=True)
 
     def __repr__(self):
+
        return self.cs_name
 
  ### 
 
+
 class DocType(Model):
     __tablename__ = "doc_type"
-
     id = Column(Integer, primary_key=True, autoincrement=True
 		, comment="Unique identifier for the document type.")
     name = Column(String, nullable=True
@@ -541,13 +565,14 @@ class DocType(Model):
 		, comment="Timestamp when the document type was last updated.")
 
     def __repr__(self):
+
        return self.name
 
  ### 
 
+
 class MimeType(Model):
     __tablename__ = "mime_type"
-
     __doc__ = "Standard MIME types recognized by the content management system."
     id = Column(Integer, primary_key=True, autoincrement=True)
     label = Column(String, nullable=True)
@@ -555,26 +580,28 @@ class MimeType(Model):
     file_extension = Column(String, nullable=True)
 
     def __repr__(self):
+
        return self.label
 
  ### 
 
+
 class MimeTypeMap(Model):
     __tablename__ = "mime_type_map"
-
     __doc__ = "Maps extesions to mime types"
     id = Column(Integer, primary_key=True, autoincrement=True)
     extension = Column(String, nullable=True)
     mime_type = Column(String, nullable=True)
 
     def __repr__(self):
+
        return self.id
 
  ### 
 
+
 class PaymentCard(Model):
     __tablename__ = "payment_card"
-
     __doc__ = "We want to store as little data as possible about peoples cards"
     id = Column(Integer, primary_key=True, autoincrement=True)
     bin = Column(String, nullable=True)
@@ -606,13 +633,14 @@ class PaymentCard(Model):
 		, comment="mask or hash the cvv")
 
     def __repr__(self):
+
        return self.name
 
  ### 
 
+
 class Promotion(Model):
     __tablename__ = "promotion"
-
     promo_id = Column(Integer, primary_key=True, autoincrement=True)
     promo_name = Column(String, nullable=True)
     promo_notes = Column(Text, nullable=True)
@@ -620,13 +648,14 @@ class Promotion(Model):
     promo_end_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
 
     def __repr__(self):
+
        return self.promo_name
 
  ### 
 
+
 class Techparams(Model):
     __tablename__ = "techparams"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     tp_key = Column(String, nullable=True)
     tp_value = Column(Text, nullable=True)
@@ -634,13 +663,14 @@ class Techparams(Model):
     notes = Column(Text, nullable=True)
 
     def __repr__(self):
+
        return self.id
 
  ### 
 
+
 class TokenProvider(Model):
     __tablename__ = "token_provider"
-
     token_provider_id = Column(Integer, primary_key=True, autoincrement=True)
     token_provider_name = Column(String)
     token_provioder_notes = Column(Text, nullable=True)
@@ -655,13 +685,14 @@ class TokenProvider(Model):
     enabled = Column(Boolean, default=False, nullable=True)
 
     def __repr__(self):
+
        return self.token_provider_name
 
  ### 
 
+
 class TransRoutingThresholds(Model):
     __tablename__ = "trans_routing_thresholds"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=True)
     min_amount = Column(Numeric, nullable=True)
@@ -669,26 +700,28 @@ class TransRoutingThresholds(Model):
     priority = Column(Integer, nullable=True)
 
     def __repr__(self):
+
        return self.name
 
  ### 
 
+
 class TransType(Model):
     __tablename__ = "trans_type"
-
     tt_id = Column(Integer, primary_key=True, autoincrement=True)
     tt_name = Column(String, nullable=True
 		, comment="Deposit, Withdrawal, Transfer, Bill Payment, etc")
     tt_notes = Column(Text, nullable=True)
 
     def __repr__(self):
+
        return self.tt_name
 
  ### 
 
+
 class UserExt(Model):
     __tablename__ = "user_ext"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     manager_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True)
     first_name = Column(String, nullable=True)
@@ -702,13 +735,14 @@ class UserExt(Model):
     user_ext_manager = relationship('UserExt', backref='user_exts_user_ext_manager', primaryjoin='UserExt.manager_id_fk == UserExt.id', remote_side=[id])
 
     def __repr__(self):
+
        return self.first_name
 
  ### 
 
+
 class Biller(Model):
     __tablename__ = "biller"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     cat_id_fk = Column(Integer, ForeignKey('biller_category.id'), nullable=True)
     code = Column(String)
@@ -718,13 +752,14 @@ class Biller(Model):
     biller_cat = relationship(BillerCategory, backref='billers_biller_cat', primaryjoin='Biller.cat_id_fk == BillerCategory.id')
 
     def __repr__(self):
+
        return self.name
 
  ### 
 
+
 class State(Model):
     __tablename__ = "state"
-
     country_id_fk = Column(Integer, ForeignKey('country.id'), nullable=True)
     id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(String, nullable=True)
@@ -733,13 +768,14 @@ class State(Model):
     state_country = relationship(Country, backref='states_state_country', primaryjoin='State.country_id_fk == Country.id')
 
     def __repr__(self):
+
        return self.name
 
  ### 
 
+
 class Token(Model):
     __tablename__ = "token"
-
     token_id = Column(Integer, primary_key=True, autoincrement=True)
     token_provider_id_fk = Column(Integer, ForeignKey('token_provider.token_provider_id'), nullable=True)
     token_name = Column(String, nullable=True)
@@ -756,13 +792,14 @@ class Token(Model):
     token_token_provider = relationship(TokenProvider, backref='tokens_token_token_provider', primaryjoin='Token.token_provider_id_fk == TokenProvider.token_provider_id')
 
     def __repr__(self):
+
        return self.token_name
 
  ### 
 
+
 class BillerOffering(Model):
     __tablename__ = "biller_offering"
-
     biller_id_fk = Column(Integer, ForeignKey('biller.id'), nullable=True)
     offering_id = Column(Integer, primary_key=True, autoincrement=True)
     offering_name = Column(String, nullable=True)
@@ -771,13 +808,14 @@ class BillerOffering(Model):
     biller_offering_biller = relationship(Biller, backref='biller_offerings_biller_offering_biller', primaryjoin='BillerOffering.biller_id_fk == Biller.id')
 
     def __repr__(self):
+
        return self.offering_name
 
  ### 
 
+
 class Lga(Model):
     __tablename__ = "lga"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     state_id_fk = Column(Integer, ForeignKey('state.id'), nullable=True)
     code = Column(String, nullable=True)
@@ -785,13 +823,14 @@ class Lga(Model):
     lga_state = relationship(State, backref='lgas_lga_state', primaryjoin='Lga.state_id_fk == State.id')
 
     def __repr__(self):
+
        return self.code
 
  ### 
 
+
 class Agent(Model):
     __tablename__ = "agent"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     aggregator_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True)
     is_aggregator = Column(Boolean, default=False, nullable=True)
@@ -881,13 +920,14 @@ class Agent(Model):
     agent_reviewed_by_fk_fkey = relationship(UserExt, backref='agents_agent_reviewed_by_fk_fkey', primaryjoin='Agent.reviewed_by_fk == UserExt.id')
 
     def __repr__(self):
+
        return self.alias
 
  ### 
 
+
 class Pos(Model):
     __tablename__ = "pos"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     serial_no = Column(String, nullable=True)
     imei = Column(String, nullable=True)
@@ -931,13 +971,14 @@ class Pos(Model):
     pos_state = relationship(State, backref='poss_pos_state', primaryjoin='Pos.state_id == State.id')
 
     def __repr__(self):
+
        return self.device_model
 
  ### 
 
+
 class AgentPosLink(Model):
     __tablename__ = "agent_pos_link"
-
     agent_id_fk = Column(Integer, ForeignKey('agent.id'), primary_key=True)
     pos_id_fk = Column(Integer, ForeignKey('pos.id'), primary_key=True)
     assigned_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
@@ -959,13 +1000,14 @@ class AgentPosLink(Model):
     agent_pos_link_pos = relationship(Pos, backref='agent_pos_links_agent_pos_link_pos', primaryjoin='AgentPosLink.pos_id_fk == Pos.id')
 
     def __repr__(self):
+
        return self.agent_id_fk
 
  ### 
 
+
 class CommRef(Model):
     __tablename__ = "comm_ref"
-
     cr_id = Column(Integer, primary_key=True, autoincrement=True)
     agent_type = Column(Enum(Agent_type), name='t_agent_type', nullable=False)
     agent_tier_level = Column(Integer, ForeignKey('agent_tier.id'), nullable=True)
@@ -1002,13 +1044,14 @@ class CommRef(Model):
     comm_ref_transaction_type = relationship(TransType, backref='comm_refs_comm_ref_transaction_type', primaryjoin='CommRef.transaction_type_id_fk == TransType.tt_id')
 
     def __repr__(self):
+
        return self.cr_id
 
  ### 
 
+
 class Person(Model):
     __tablename__ = "person"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     agent_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True)
     next_of_kin_id_fk = Column(Integer, ForeignKey('person.id'), nullable=True)
@@ -1036,13 +1079,14 @@ class Person(Model):
     person_next_of_kin = relationship('Person', backref='persons_person_next_of_kin', primaryjoin='Person.next_of_kin_id_fk == Person.id', remote_side=[id])
 
     def __repr__(self):
+
        return self.first_name
 
  ### 
 
+
 class Wallet(Model):
     __tablename__ = "wallet"
-
     __doc__ = " Each Pos has an individual wallet"
     id = Column(Integer, primary_key=True, autoincrement=True)
     agent_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True)
@@ -1058,26 +1102,28 @@ class Wallet(Model):
     wallet_pos = relationship(Pos, backref='wallets_wallet_pos', primaryjoin='Wallet.pos_id_fk == Pos.id')
 
     def __repr__(self):
+
        return self.wallet_name
 
  ### 
 
+
 class AgentPersonLink(Model):
     __tablename__ = "agent_person_link"
-
     person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True)
     agent_id_fk = Column(Integer, ForeignKey('agent.id'), primary_key=True)
     agent_person_link_agent = relationship(Agent, backref='agent_person_links_agent_person_link_agent', primaryjoin='AgentPersonLink.agent_id_fk == Agent.id')
     agent_person_link_person = relationship(Person, backref='agent_person_links_agent_person_link_person', primaryjoin='AgentPersonLink.person_id_fk == Person.id')
 
     def __repr__(self):
+
        return self.person_id_fk
 
  ### 
 
+
 class Contact(Model):
     __tablename__ = "contact"
-
     id = Column(Integer, primary_key=True, autoincrement=True
 		, comment="Unique identifier for the contact.")
     person_id_fk = Column(Integer, ForeignKey('person.id'), nullable=True
@@ -1117,13 +1163,14 @@ class Contact(Model):
     contact_person = relationship(Person, backref='contacts_contact_person', primaryjoin='Contact.person_id_fk == Person.id')
 
     def __repr__(self):
+
        return self.id
 
  ### 
 
+
 class Doc(Model):
     __tablename__ = "doc"
-
     id = Column(Integer, primary_key=True, autoincrement=True
 		, comment="Unique identifier for the document.")
     doc_type_id_fk = Column(Integer, ForeignKey('doc_type.id'), nullable=True
@@ -1177,13 +1224,14 @@ class Doc(Model):
     doc_person = relationship(Person, backref='docs_doc_person', primaryjoin='Doc.person_id_fk == Person.id')
 
     def __repr__(self):
+
        return self.doc_name
 
  ### 
 
+
 class PersonAdditionalData(Model):
     __tablename__ = "person_additional_data"
-
     person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True)
     gender = Column(Enum(Gender), name='t_gender', nullable=False)
     religion = Column(String, nullable=True)
@@ -1214,13 +1262,14 @@ class PersonAdditionalData(Model):
     person_additional_data_person = relationship(Person, backref='person_additional_datas_person_additional_data_person', primaryjoin='PersonAdditionalData.person_id_fk == Person.id')
 
     def __repr__(self):
+
        return self.mothers_maiden_name
 
  ### 
 
+
 class PersonAdminData(Model):
     __tablename__ = "person_admin_data"
-
     person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True)
     creation_time = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
     failed_login_count = Column(Integer, nullable=True)
@@ -1261,13 +1310,14 @@ class PersonAdminData(Model):
     person_admin_data_person = relationship(Person, backref='person_admin_datas_person_admin_data_person', primaryjoin='PersonAdminData.person_id_fk == Person.id')
 
     def __repr__(self):
+
        return self.screen_name
 
  ### 
 
+
 class Trans(Model):
     __tablename__ = "trans"
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     coupon_id_fk = Column(Integer, ForeignKey('coupon.coupon_id'), nullable=True)
     customer_name = Column(String, nullable=True)
@@ -1378,13 +1428,14 @@ class Trans(Model):
     trans_wallet = relationship(Wallet, backref='transs_trans_wallet', primaryjoin='Trans.wallet_id_fk == Wallet.id')
 
     def __repr__(self):
+
        return self.customer_name
 
  ### 
 
+
 class AgentDocLink(Model):
     __tablename__ = "agent_doc_link"
-
     agent_id_fk = Column(Integer, ForeignKey('agent.id'), primary_key=True)
     doc_id_fk = Column(Integer, ForeignKey('doc.id'), primary_key=True)
     verification_status = Column(Enum(Verification_status), name='t_verification_status', nullable=False)
@@ -1394,13 +1445,14 @@ class AgentDocLink(Model):
     agent_doc_link_doc = relationship(Doc, backref='agent_doc_links_agent_doc_link_doc', primaryjoin='AgentDocLink.doc_id_fk == Doc.id')
 
     def __repr__(self):
+
        return self.agent_id_fk
 
  ### 
 
+
 class PersonDocLink(Model):
     __tablename__ = "person_doc_link"
-
     person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True)
     doc_id_fk = Column(Integer, ForeignKey('doc.id'), primary_key=True)
     verification_status = Column(Enum(Verification_status), name='t_verification_status', nullable=False)
@@ -1409,6 +1461,7 @@ class PersonDocLink(Model):
     person_doc_link_person = relationship(Person, backref='person_doc_links_person_doc_link_person', primaryjoin='PersonDocLink.person_id_fk == Person.id')
 
     def __repr__(self):
+
        return self.person_id_fk
 
  ### 
