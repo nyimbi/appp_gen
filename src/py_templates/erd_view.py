@@ -3,7 +3,7 @@ from flask import render_template
 from sqlalchemy.schema import ForeignKeyConstraint
 from sqlalchemy import create_engine, inspect, MetaData
 from sqlalchemy.engine import reflection
-from app import appbuilder
+from src import appbuilder
 # For the chart drawing module
 
 class ERDView(BaseView):

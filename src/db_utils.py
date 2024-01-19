@@ -1,11 +1,12 @@
 import re, string
 from marshmallow import fields
 from sqlalchemy import create_engine, inspect, MetaData, FetchedValue
-from sqlalchemy.orm import relationship, DeclarativeBase, mapped_column, Mapped
+# from sqlalchemy.orm import relationship, DeclarativeBase, mapped_column, Mapped, sessionmaker
+# from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import (
     Enum, ForeignKey, ARRAY, JSON, PickleType, LargeBinary, Boolean, Date, DateTime, Float, Integer, Interval, Numeric, SmallInteger,
     String, Text, Time, BigInteger, Unicode, UnicodeText, CHAR, VARBINARY, TIMESTAMP, CLOB, BLOB, NCHAR, NVARCHAR, INTEGER, TEXT, VARCHAR,
-    NUMERIC, BOOLEAN,  Time, DECIMAL,
+    NUMERIC, BOOLEAN,  Time, DECIMAL, Column
 )
 from sqlalchemy.dialects.postgresql import (
     ARRAY, BIGINT, BIT, BOOLEAN, BYTEA, CHAR, CIDR, CITEXT, DATE, DATEMULTIRANGE,
@@ -15,6 +16,9 @@ from sqlalchemy.dialects.postgresql import (
     REGCONFIG, SMALLINT, TEXT, TIME, TIMESTAMP, TSMULTIRANGE, TSQUERY, TSRANGE,
     TSTZMULTIRANGE, TSTZRANGE, TSVECTOR, UUID, VARCHAR,
 )
+
+
+
 def map_dbml_datatypes(datatype: str):
     mapping = {
         'int': 'Integer',
@@ -475,3 +479,4 @@ def topological_sort(graph):
             dfs(node)
 
     return sorted_list
+

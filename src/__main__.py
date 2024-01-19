@@ -1,6 +1,6 @@
 """Command-line interface."""
 import click
-
+import .codegen as cg 
 
 @click.command()
 @click.version_option()
@@ -23,3 +23,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main(prog_name="appgen")  # pragma: no cover
+    md, insp = cg.inspect_database('postgresql:///wakala1')
+

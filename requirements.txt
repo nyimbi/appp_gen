@@ -1,0 +1,9 @@
+
+flask_graphql
+flask-appbuilder
+psycopg2
+sqlalachemy
+sqlalachemy_searchable
+whoosh
+kivy
+kivymd

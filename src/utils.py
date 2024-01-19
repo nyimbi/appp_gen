@@ -48,6 +48,12 @@ def snake_to_pascal(string):
     # capitalize the first letter of each word and join them
     return ''.join(word.capitalize() for word in words)
 
+def snake_to_words(string):
+    # split the string by underscores
+    words = string.split('_')
+
+    # capitalize the first letter of each word and join them
+    return ' '.join(word.capitalize() for word in words)
 
 def snake_to_camel(string):
     # split the string by underscores
@@ -460,3 +466,4 @@ def update_config_setting(config_file, setting, value):
             else:
                 file.write(line)
 # Selects the best display name given a list of column names
+

@@ -4,8 +4,10 @@
 #   - Foreign Keys should ALWAYS end in _id_fk
 #   - association tables should end in _link, _map or _assoc
 #   - Timestamps always default to func.now(), change generated code manually
+#   - relationships will always have the foreign key name without the _id_fk
+#   - Comments on fields are used to give descriptions in the UI
 #
-from sqlalchemy import Enum
+from sqlalchemy.types import Enum
 from sqlalchemy import create_engine, inspect, MetaData
 import inflect
 p = inflect.engine()
@@ -14,21 +16,74 @@ from db_utils  import *
 import headers
 from utils import *
 
-## Globals
-# DATABASE_URI = 'postgresql://username:password@localhost:5432/mydatabase'
-DATABASE_URI = "postgresql:///wakala"
-OUTPUT_MODELS_FILE = 'models.py'
-OUTPUT_VIEWS_FILE = 'views.py'
+
+def inspect_metadata(database_uri):
+    engine = create_engine(database_uri)
+    metadata = MetaData()
+    metadata.reflect(bind=engine)
+    inspector = inspect(engine)
+    return metadata, inspector
+
 
 
 def gen_models(metadata, inspector):
     model_code = []
     enum_names = []  # To keep track of enums so that we don't repeat
     # Write the models.py header file first
-    model_code.append(headers.MODEL_HEADER)
+    model_code.extend(headers.gen_model_header())
 
+    # Generate Domains
 
-    # Generate Enums first
+    def gen_domains(inspector):
+        domain_code = []
+        domain_code.append("# Domains defined in the database")
+        # Retrieve information about domain types
+        domains = inspector.get_domains()
+
+        for domain in domains:
+            domain_name = domain["name"]
+            base_type = domain["data_type"]
+            not_null = domain["not_null"]
+            BaseType = map_pgsql_datatypes(base_type.lower())
+
+            domain_code.append(
+                f"\nclass {domain_name}({BaseType}):  # BaseType should be replaced with the actual base type"
+            )
+
+            # Check for default value
+            if domain["default"]:
+                domain_code.append(f"    default = {domain['default']}")
+
+            # Check for not null constraint
+            if not_null:
+                domain_code.append(f"    not_null = True")
+
+            # Handling constraints
+            for constraint in domain.get("constraints", []):
+                constraint_name = constraint["name"]
+                constraint_check = constraint["check"]
+                domain_code.append(f"    # Constraint: {constraint_name}")
+                domain_code.append(f"    check = '{constraint_check}'")
+
+            # domain_code.append('    pass')
+
+        domain_code.append("\n ")
+        return domain_code
+
+    model_code.extend(gen_domains(inspector))
+
+    def gen_enums( inspector):
+        enum_code = []
+        enum_code.append('# Enums defined in the database')
+        enums = inspector.get_enums()
+        for en in enums:
+            enum_code.append(f"\nclass {en['name']}(enum.Enum):")
+            for label in en["labels"]:
+                enum_code.append(f"   {label.upper()} = '{label}'")
+        enum_code.append("\n\n")
+        return enum_code
+
+    model_code.extend(gen_enums(inspector))
     for t in metadata.sorted_tables:
         table = t.name
         cols = inspector.get_columns(table)
@@ -67,28 +122,19 @@ def gen_models(metadata, inspector):
         for col in cols:
             # String parts to compose a column definition
             # https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedColumn
-            c_pk = ""
-            c_fk = ""
-            c_autoincrement = ""
-            c_comment = ""
-            c_computed = ""
-            c_default = ""
-            c_dialect_options = ""
-            c_identity = ""
-            c_column_name = ""
-            c_nullable = ""
-            c_type = ""
-            c_unique = ""
-            c_ck = ""  # Check constraints
+            c_pk = ""; c_fk = ""; c_autoincrement = ""; c_comment = ""; c_computed = ""; c_ck = ""  # Check constraints
+            c_default = ""; c_dialect_options = ""; c_identity = ""; c_column_name = ""; c_nullable = ""; c_type = ""; c_unique = ""
+
             column_names_list.append(col["name"])
 
             # check if the column is an enum type
             if isinstance(col["type"], Enum):
+                enum_name = col["type"].name
                 enum_vals = list(col["type"].enums)
                 # enum_name = f"{table}{col['name'].capitalize()}Enum"
-                enum_name = f"{col['name'].capitalize()}"
+                # enum_name = f"{col['name'].capitalize()}"
                 model_code.append(
-                    f"    {col['name']} = Column(Enum({enum_name}), name='t_{col['name']}', nullable=False)"
+                    f"    {col['name']} = Column(Enum({enum_name}), nullable=False)"
                 )
             else:
                 ctype = col["type"].compile()
@@ -154,11 +200,16 @@ def gen_models(metadata, inspector):
         # constrained_columns, options, referred_columns, referred_schema, referred_table
         # https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedForeignKeyConstraint
         for fk in fks:
-            fkname = fk["name"].split('_id_')[0]
+            # fkname = fk["name"].split('_id_')[0]
             qsr = ""  # Quote Self Referential Table Name
             fk_ref_table = snake_to_pascal(fk["referred_table"])
             fk_ref_col = fk["referred_columns"][0]
             fkcol = fk["constrained_columns"][0]
+            fkname = fkcol
+            if fkname.endswith('_id_fk'):
+                fkname = fkname[:-6]
+            fkname = fkcol.split('_fk')[0]
+            fkname = fkcol.split('_id')[0]
             pjoin = f", primaryjoin='{snake_to_pascal(table)}.{fkcol} == {fk_ref_table}.{fk_ref_col}'"
             # back_ref = f", backref='{fk_ref_table}{fkname}s'"
             back_ref = f", backref='{table}s_{fkname}'"
@@ -184,24 +235,97 @@ def gen_models(metadata, inspector):
                 model_code.append(
                     f"    CheckConstraint('{sql_expression}', name={constraint_name})"
                 )
-        model_code.append("\n    def __repr__(self):\n")
+        model_code.append("\n    def __repr__(self):")
         model_code.append("       return self." + get_display_column(column_names_list))
         model_code.append("\n ### \n\n")
-    return model_code
+
+    # model_gql = gen_graphql(metadata, inspector)    #Test TODO: delete
+    # model_code.extend(model_gql)                    #Test TODO: delete
+    return model_code                                #Test TODO delete
+    # return model_code
 
 def gen_views(metadata, inspector):
     views = []
-    views.append(headers.VIEW_HEADER)
+    views.extend(headers.gen_view_header())
+
     def gen_col_names(table):
         col_names = []
         for col in table.columns:
+            s =  col.name
             if col.name == 'id': continue
-            if col.name.endswith('_id_fk'):
-                col_names.append(f"'col.name[:-6]'")
+            if s.endswith('_id_fk'):
+                s = col.name[:-6]  #.split('_id')[0]
+            # if s.endswith('_id'):
+            #     s = s[:-6]
+                col_names.append(f"'{s}'")
                 continue
-            col_names.append(f"'{col.name}'")
+            col_names.append(f"'{s}'")
         c = ', '.join(col_names)
         return c
+
+    def gen_labels(table):
+        label_names = []
+        for col in table.columns:
+            s = col.name
+            if col.name == 'id': continue
+            if s.endswith('_id_fk'):
+                s = col.name[:-6]  # .split('_id')[0]
+            # if s.endswith('_id'):
+            #     s = s[:-3]
+                label_names.append(f"'{s}'")
+                continue
+            label_names.append(f"'{s}':'{snake_to_words(s)}'")
+        c = ', '.join(label_names)
+        return '{' + c + '}'
+
+    def gen_descriptions(table):
+        desc = []
+        desc.append('    description_columns = {')
+        for col in table.columns:
+            desc.append(f"        '{col.name}' : '{col.comment}',")
+        desc.append('    }')
+        return desc
+    def gen_titles(table):
+        titles = []
+        titles.append(f"    list_title = 'List {snake_to_words(table.name)}'")
+        titles.append(f"    show_title = 'Show {snake_to_words(table.name)}'")
+        titles.append(f"    edit_title = 'Edit {snake_to_words(table.name)}'")
+        titles.append(f"    add_title  = 'Add {snake_to_words(table.name)}'")
+        titles.append(f' ')
+        titles.append(f"    list_columns = [{gen_col_names(table)}]")
+        titles.append(f"    # show_columns = [{gen_col_names(table)}]")
+        titles.append(f"    # edit_columns = [{gen_col_names(table)}]")
+        titles.append(f"    add_columns = [{gen_col_names(table)}]")
+        titles.append(f"    search_columns = [{gen_col_names(table)}]")
+        titles.extend(gen_descriptions(table))
+
+        titles.append(f"    # list_exclude_columns = [{gen_col_names(table)}]")
+        titles.append(f"    # show_exclude_columns = [{gen_col_names(table)}]")
+        titles.append(f"    # edit_exclude_columns = [{gen_col_names(table)}]")
+        titles.append(f"    # add_exclude_columns = [{gen_col_names(table)}]")
+        titles.append(f"    # search_exclude_columns = [{gen_col_names(table)}]")
+
+        titles.append(f"    # order_columns = [{gen_col_names(table)}]")
+        titles.append(f"    # add_columns = [{gen_col_names(table)}]")
+        titles.append(f"    # add_columns = [{gen_col_names(table)}]")
+        titles.append(f"    # add_columns = [{gen_col_names(table)}]")
+        titles.append(f"    ")
+        titles.append(f"    # label_columns = {gen_labels(table)}")
+        # titles.append(f"    ")
+        # titles.append(f"    ")
+        # titles.append(f"    ")
+        titles.append(f"    # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]")
+        titles.append(f'    # base_order = ("name", "asc")')
+        # titles.append(f"    ")
+        # titles.append(f"    ")
+        # titles.append(f"    ")
+        # titles.append(f"    ")
+        # titles.append(f"    ")
+        # titles.append(f"    ")
+        titles.append(f'    # page_size = 100 ')
+        return titles
+
+
 
     # Generate ModelViews for all tables
     for table in metadata.sorted_tables:
@@ -211,8 +335,8 @@ def gen_views(metadata, inspector):
         views.append(f'class {model_name}ModelView(ModelView):')
         views.append(f'    datamodel = SQLAInterface({model_name})')
         c = gen_col_names(table)
+        views.extend(gen_titles(table))
         views.append(f'#    list_columns = [{c}]')
-        views.append('')
         views.append(
                 f'appbuilder.add_view({model_name}ModelView, "{p.plural(model_name)}", icon="fa-folder-open-o", category="Setup")\n')
 
@@ -269,7 +393,7 @@ def gen_views(metadata, inspector):
 
 def gen_api(metadata, inspector):
     api_code =[]
-    api_code.append(headers.API_HEADER)
+    api_code.extend(headers.gen_api_header())
     for t in metadata.sorted_tables:
         table = t.name
         table_class = snake_to_pascal(table)
@@ -282,24 +406,45 @@ def gen_api(metadata, inspector):
 
     return api_code
 
+def gen_graphql(metadata, inspector):
+    gql_code = []
+    gql_code.append(headers.gen_gql_header())
+    query_code = []
+    query_code.append(headers.GQL_QUERY_HDR)
+    for t in metadata.sorted_tables:
+        table = t.name
+        gql_code.append(headers.gen_gql_class(snake_to_pascal(table)))
+        query_code.append(headers.gen_gql_query(table))
+    gql_code.extend(query_code)
+    gql_code.append(headers.GQL_FOOTER)
+    return gql_code
+
 
 def gen_dbml(metadata, inspector):
+    dbml_code = []
+    for t in metadata.sorted_tables:
+        table = t.name
+
+
+    pass
+
+def gen_kivy(metadata, inspector):
     pass
 
 
+
+
 if __name__ == '__main__':
-    engine = create_engine(DATABASE_URI)
-    metadata = MetaData()
-    metadata.reflect(bind=engine)
-    inspector = inspect(engine)
+    # DATABASE_URI = 'postgresql://username:password@localhost:5432/mydatabase'
+    DATABASE_URI = "postgresql:///wakala"
+    metadata, inspector = inspect_metadata(DATABASE_URI)
 
-    tables = inspector.get_table_names()
-    mtbl = inspector.get_multi_columns()  # https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.reflection.Inspector.get_multi_columns
+    # m = gen_models(metadata, inspector)
+    write_file('models.py', gen_models(metadata, inspector))
 
-    m = gen_models(metadata, inspector)
-    write_file('models.py', m)
-    a = gen_api(metadata, inspector)
-    write_file('apis.py', a)
-    v = gen_views(metadata, inspector)
-    # v.extend(a)
-    write_file('views.py', v)
+    # a = gen_api(metadata, inspector)
+    write_file('apis.py', gen_api(metadata, inspector))
+
+    # v = gen_views(metadata, inspector)
+    write_file('views.py', gen_views(metadata, inspector))
+    write_file('gql.py', gen_graphql(metadata, inspector))
