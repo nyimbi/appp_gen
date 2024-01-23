@@ -112,8 +112,14 @@ def gen_models(metadata, inspector):
         t_comment = inspector.get_table_comment(table)  # Table Comment
 
         table_class = snake_to_pascal(table)
-        model_code.append(f"class {table_class}(Model):")
-        model_code.append(f'    __tablename__ = "{table}"')
+        # If the model is an extension of the user
+        if table.startswith('user_'):
+            model_code.append(f"class {table_class}(User):")
+            model_code.append(f'    __tablename__ = "ab_user"')
+        else:   # This is the normal path
+            model_code.append(f"class {table_class}(Model):")
+            model_code.append(f'    __tablename__ = "{table}"')
+
         if t_comment['text']:
             model_code.append(f'    __doc__ = "{t_comment["text"]}"')  # Use the table comment in the docstring
         # Put check constraints
@@ -408,16 +414,32 @@ def gen_api(metadata, inspector):
 
 def gen_graphql(metadata, inspector):
     gql_code = []
-    gql_code.append(headers.gen_gql_header())
+    gql_hdr = []
+    gql_code.append
     query_code = []
     query_code.append(headers.GQL_QUERY_HDR)
     for t in metadata.sorted_tables:
         table = t.name
         gql_code.append(headers.gen_gql_class(snake_to_pascal(table)))
         query_code.append(headers.gen_gql_query(table))
-    gql_code.extend(query_code)
-    gql_code.append(headers.GQL_FOOTER)
-    return gql_code
+        cols = inspector.get_columns(table)
+        for col in cols:
+            if isinstance(col["type"], Enum):
+                enum_name = col["type"].name
+                enum_vals = list(col["type"].enums)
+                gql_code.append(
+                    f"    {col['name']} = graphene.Field({enum_name}_gql)"
+                )
+                gql_hdr.append(
+                    f"{enum_name}_gql = graphene.Enum.from_enum({enum_name})"
+                )
+    gql =[]
+    gql.append(headers.gen_gql_header())
+    gql.extend(gql_hdr)
+    gql.extend(gql_code)
+    gql.extend(query_code)
+    gql.append(headers.GQL_FOOTER)
+    return gql
 
 
 def gen_dbml(metadata, inspector):
@@ -430,6 +452,23 @@ def gen_dbml(metadata, inspector):
 
 def gen_kivy(metadata, inspector):
     pass
+    kivy_code = []
+
+    for table_name, table in metadata.tables.items():
+        form_code = f"# Form for {table_name}\n"
+        form_code += f"class {table_name}Form(BoxLayout):\n"
+        form_code += f"    orientation: 'vertical'\n"
+
+        for column_name in table.columns.keys():
+            form_code += f"    Label:\n"
+            form_code += f"        text: '{column_name}'\n"
+            form_code += f"    TextInput:\n"
+            form_code += f"        hint_text: 'Enter {column_name}'\n"
+            form_code += f"\n"
+
+        kivy_code.append(form_code)
+
+    return kivy_code
 
 
 

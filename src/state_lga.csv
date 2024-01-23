@@ -1,0 +1,778 @@
+ country_id_fk | id | code |           name           |               desc               |  id  | state_id_fk |              code               |            lga_name             
+---------------+----+------+--------------------------+----------------------------------+------+-------------+---------------------------------+---------------------------------
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  865 |           5 | ALKALERI                        | Alkaleri
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  866 |           5 | BAUCHI                          | Bauchi
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  867 |           5 | BOGORO                          | Bogoro
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  868 |           5 | DAMBAM                          | Dambam
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  869 |           5 | DARAZO                          | Darazo
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  870 |           5 | DASS                            | Dass
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  871 |           5 | GAMAWA                          | Gamawa
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  872 |           5 | GANJUWA                         | Ganjuwa
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  873 |           5 | GIADE                           | Giade
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  874 |           5 | ITAS_GADAU                      | Itas/gadau
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  875 |           5 | JAMA'ARE                        | Jama'are
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  876 |           5 | KATAGUM                         | Katagum
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  877 |           5 | KIRFI                           | Kirfi
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  878 |           5 | MISAU                           | Misau
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  879 |           5 | NINGI                           | Ningi
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  880 |           5 | SHIRA                           | Shira
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  881 |           5 | TAFAWA_BALEWA                   | Tafawa balewa
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  882 |           5 | TORO                            | Toro
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  883 |           5 | WARJI                           | Warji
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1029 |          12 | IREPODUN_IFELODUN               | Irepodun / ifelodun
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1031 |          12 | MOBA                            | Moba
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1032 |          12 | OYE                             | Oye
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1033 |          13 | ANINRI                          | Aninri
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1034 |          13 | AWGU                            | Awgu
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1035 |          13 | ENUGU_EAST                      | Enugu east
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1036 |          13 | ENUGU_NORTH                     | Enugu north
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1037 |          13 | ENUGU_SOUTH                     | Enugu south
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1038 |          13 | EZEAGU                          | Ezeagu
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1039 |          13 | IGBO_ETITI                      | Igbo etiti
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1040 |          13 | IGBO_EZE_NORTH                  | Igbo eze north
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1041 |          13 | IGBO_EZE_SOUTH                  | Igbo eze south
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1042 |          13 | ISI_UZO                         | Isi uzo
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1043 |          13 | NKANU_EAST                      | Nkanu east
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1044 |          13 | NKANU_WEST                      | Nkanu west
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1045 |          13 | NSUKKA                          | Nsukka
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1046 |          13 | OJI_RIVER                       | Oji-river
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1047 |          13 | UDENU                           | Udenu
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1048 |          13 | UDI                             | Udi
+            39 | 13 | EN   | Enugu                    | Enugu State                      | 1049 |          13 | UZO_UWANI                       | Uzo-uwani
+            39 | 36 | FC   | Federal Capital Teritory | Federal Capital Territory, Abuja | 1050 |          36 | ABAJI                           | Abaji
+            39 | 36 | FC   | Federal Capital Teritory | Federal Capital Territory, Abuja | 1051 |          36 | BWARI                           | Bwari
+            39 | 36 | FC   | Federal Capital Teritory | Federal Capital Territory, Abuja | 1052 |          36 | GWAGWALADA                      | Gwagwalada
+            39 | 36 | FC   | Federal Capital Teritory | Federal Capital Territory, Abuja | 1053 |          36 | KUJE                            | Kuje
+            39 | 36 | FC   | Federal Capital Teritory | Federal Capital Territory, Abuja | 1054 |          36 | KWALI                           | Kwali
+            39 | 36 | FC   | Federal Capital Teritory | Federal Capital Territory, Abuja | 1055 |          36 | MUNICIPAL                       | Municipal
+            39 | 14 | GO   | Gombe                    | Gombe State                      | 1056 |          14 | AKKO                            | Akko
+            39 | 14 | GO   | Gombe                    | Gombe State                      | 1057 |          14 | BALANGA                         | Balanga
+            39 | 14 | GO   | Gombe                    | Gombe State                      | 1058 |          14 | BILLIRI                         | Billiri
+            39 | 14 | GO   | Gombe                    | Gombe State                      | 1059 |          14 | DUKKU                           | Dukku
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  823 |           3 | IKA                             | Ika
+            39 | 14 | GO   | Gombe                    | Gombe State                      | 1060 |          14 | FUNAKAYE                        | Funakaye
+            39 | 14 | GO   | Gombe                    | Gombe State                      | 1061 |          14 | GOMBE                           | Gombe
+            39 | 14 | GO   | Gombe                    | Gombe State                      | 1062 |          14 | KALTUNGO                        | Kaltungo
+            39 | 14 | GO   | Gombe                    | Gombe State                      | 1063 |          14 | KWAMI                           | Kwami
+            39 | 14 | GO   | Gombe                    | Gombe State                      | 1064 |          14 | NAFADA                          | Nafada
+            39 | 14 | GO   | Gombe                    | Gombe State                      | 1065 |          14 | SHONGOM                         | Shongom
+            39 | 14 | GO   | Gombe                    | Gombe State                      | 1066 |          14 | YALMALTU_DEBA                   | Yalmaltu/ deba
+            39 | 15 | IM   | Imo                      | Imo State                        | 1067 |          15 | ABOH_MBAISE                     | Aboh mbaise
+            39 | 15 | IM   | Imo                      | Imo State                        | 1068 |          15 | AHIAZU_MBAISE                   | Ahiazu mbaise
+            39 | 15 | IM   | Imo                      | Imo State                        | 1069 |          15 | EHIME_MBANO                     | Ehime mbano
+            39 | 15 | IM   | Imo                      | Imo State                        | 1070 |          15 | EZINIHITTE_MBAISE               | Ezinihitte mbaise
+            39 | 15 | IM   | Imo                      | Imo State                        | 1071 |          15 | IDEATO_NORTH                    | Ideato north
+            39 | 15 | IM   | Imo                      | Imo State                        | 1072 |          15 | IDEATO_SOUTH                    | Ideato south
+            39 | 15 | IM   | Imo                      | Imo State                        | 1073 |          15 | IHITTE_UBOMA_(ISINWEKE)         | Ihitte/uboma (isinweke)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1074 |          15 | IKEDURU_(IHO)                   | Ikeduru (iho)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1075 |          15 | ISIALA_MBANO_(UMUELEMAI)        | Isiala mbano (umuelemai)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1076 |          15 | ISU_(UMUNDUGBA)                 | Isu (umundugba)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1077 |          15 | MBAITOLI_(NWAORIEUBI)           | Mbaitoli (nwaorieubi)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1078 |          15 | NGOR_OKPALA_(UMUNEKE)           | Ngor okpala (umuneke)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1079 |          15 | NJABA_(NNENASA)                 | Njaba (nnenasa)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1080 |          15 | NKWERRE                         | Nkwerre
+            39 | 15 | IM   | Imo                      | Imo State                        | 1081 |          15 | NWANGELE_(ONU_NWANGELE_AMAIGBO) | Nwangele (onu-nwangele amaigbo)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1082 |          15 | OBOWO_(OTOKO)                   | Obowo (otoko)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1083 |          15 | OGUTA_(OGUTA)                   | Oguta (oguta)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1084 |          15 | OHAJI_EGBEMA_(MMAHU_EGBEMA)     | Ohaji/egbema (mmahu-egbema)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1085 |          15 | OKIGWE_(OKIGWE)                 | Okigwe  (okigwe)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1086 |          15 | ONUIMO_(OKWE)                   | Onuimo (okwe)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1087 |          15 | ORLU                            | Orlu
+            39 | 15 | IM   | Imo                      | Imo State                        | 1088 |          15 | ORSU_(AWO_IDEMILI)              | Orsu (awo idemili)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1089 |          15 | ORU_WEST_(MGBIDI)               | Oru west (mgbidi)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1090 |          15 | ORU_EAST                        | Oru-east
+            39 | 15 | IM   | Imo                      | Imo State                        | 1091 |          15 | OWERRI_NORTH_(ORIE_URATTA)      | Owerri north (orie uratta)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1092 |          15 | OWERRI_URBAN_(OWERRI)           | Owerri urban (owerri)
+            39 | 15 | IM   | Imo                      | Imo State                        | 1093 |          15 | OWERRI_WEST_(UMUGUMA)           | Owerri west (umuguma)
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1094 |          16 | AUYO                            | Auyo
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1095 |          16 | BABURA                          | Babura
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1096 |          16 | BIRNIN_KUDU                     | Birnin kudu
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1097 |          16 | BIRNIWA                         | Birniwa
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1098 |          16 | BUJI                            | Buji
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1099 |          16 | DUTSE                           | Dutse
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1100 |          16 | GAGARAWA                        | Gagarawa
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1101 |          16 | GARKI                           | Garki
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1102 |          16 | GUMEL                           | Gumel
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1103 |          16 | GURI                            | Guri
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1104 |          16 | GWARAM                          | Gwaram
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1105 |          16 | GWIWA                           | Gwiwa
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1106 |          16 | HADEJIA                         | Hadejia
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1107 |          16 | JAHUN                           | Jahun
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1108 |          16 | KAFIN_HAUSA                     | Kafin hausa
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1109 |          16 | KAUGAMA                         | Kaugama
+            39 | 18 | KN   | Kano                     | Kano State                       | 1150 |          18 | DALA                            | Dala
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1110 |          16 | KAZAURE                         | Kazaure
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1111 |          16 | KIRIKA_SAMMA                    | Kirika samma
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1112 |          16 | KIYAWA                          | Kiyawa
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1113 |          16 | MAIGATARI                       | Maigatari
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1114 |          16 | MALAM_MADORI                    | Malam madori
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1115 |          16 | MIGA                            | Miga
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1116 |          16 | RINGIM                          | Ringim
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1117 |          16 | RONI                            | Roni
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1118 |          16 | SULE_TANKARKAR                  | Sule-tankarkar
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1119 |          16 | TAURA                           | Taura
+            39 |  5 | BA   | Bauchi                   | Bauchi State                     |  884 |           5 | ZAKI                            | Zaki
+            39 | 37 | BY   | Bayelsa                  | Bayelsa State                    |  885 |          37 | BRASS                           | Brass
+            39 | 37 | BY   | Bayelsa                  | Bayelsa State                    |  886 |          37 | EKEREMOR                        | Ekeremor
+            39 | 37 | BY   | Bayelsa                  | Bayelsa State                    |  887 |          37 | KOLOKUMA_OPOKUMA                | Kolokuma/opokuma
+            39 | 37 | BY   | Bayelsa                  | Bayelsa State                    |  888 |          37 | NEMBE                           | Nembe
+            39 | 37 | BY   | Bayelsa                  | Bayelsa State                    |  889 |          37 | OGBIA                           | Ogbia
+            39 | 37 | BY   | Bayelsa                  | Bayelsa State                    |  890 |          37 | SAGBAMA                         | Sagbama
+            39 | 37 | BY   | Bayelsa                  | Bayelsa State                    |  891 |          37 | SOUTHERN_IJAW                   | Southern ijaw
+            39 | 37 | BY   | Bayelsa                  | Bayelsa State                    |  892 |          37 | YENAGOA                         | Yenagoa
+            39 |  6 | BE   | Benue                    | Benue State                      |  893 |           6 | ADO                             | Ado
+            39 |  6 | BE   | Benue                    | Benue State                      |  894 |           6 | AGATU                           | Agatu
+            39 |  6 | BE   | Benue                    | Benue State                      |  895 |           6 | APA                             | Apa
+            39 |  6 | BE   | Benue                    | Benue State                      |  896 |           6 | BURUKU                          | Buruku
+            39 |  6 | BE   | Benue                    | Benue State                      |  897 |           6 | GBOKO                           | Gboko
+            39 |  6 | BE   | Benue                    | Benue State                      |  898 |           6 | GUMA                            | Guma
+            39 |  6 | BE   | Benue                    | Benue State                      |  899 |           6 | GWER_EAST                       | Gwer east
+            39 |  6 | BE   | Benue                    | Benue State                      |  900 |           6 | GWER_WEST                       | Gwer west
+            39 |  6 | BE   | Benue                    | Benue State                      |  901 |           6 | KATSINA_ALA                     | Katsina-ala
+            39 |  6 | BE   | Benue                    | Benue State                      |  902 |           6 | KONSHISHA                       | Konshisha
+            39 |  6 | BE   | Benue                    | Benue State                      |  903 |           6 | KWANDE                          | Kwande
+            39 |  6 | BE   | Benue                    | Benue State                      |  904 |           6 | LOGO                            | Logo
+            39 |  6 | BE   | Benue                    | Benue State                      |  905 |           6 | MAKURDI                         | Makurdi
+            39 |  6 | BE   | Benue                    | Benue State                      |  906 |           6 | OBI                             | Obi
+            39 |  6 | BE   | Benue                    | Benue State                      |  907 |           6 | OGBADIBO                        | Ogbadibo
+            39 |  6 | BE   | Benue                    | Benue State                      |  908 |           6 | OHIMINI                         | Ohimini
+            39 |  6 | BE   | Benue                    | Benue State                      |  909 |           6 | OJU                             | Oju
+            39 |  6 | BE   | Benue                    | Benue State                      |  910 |           6 | OKPOKWU                         | Okpokwu
+            39 |  6 | BE   | Benue                    | Benue State                      |  911 |           6 | OTUKPO                          | Otukpo
+            39 |  6 | BE   | Benue                    | Benue State                      |  912 |           6 | TARKA                           | Tarka
+            39 |  6 | BE   | Benue                    | Benue State                      |  913 |           6 | UKUM                            | Ukum
+            39 |  6 | BE   | Benue                    | Benue State                      |  914 |           6 | USHONGO                         | Ushongo
+            39 |  6 | BE   | Benue                    | Benue State                      |  915 |           6 | VANDEIKYA                       | Vandeikya
+            39 |  7 | BO   | Borno                    | Borno State                      |  916 |           7 | ABADAM                          | Abadam
+            39 |  7 | BO   | Borno                    | Borno State                      |  917 |           7 | ASKIRA_UBA                      | Askira / uba
+            39 |  7 | BO   | Borno                    | Borno State                      |  918 |           7 | BAMA                            | Bama
+            39 |  7 | BO   | Borno                    | Borno State                      |  919 |           7 | BAYO                            | Bayo
+            39 |  7 | BO   | Borno                    | Borno State                      |  920 |           7 | BIU                             | Biu
+            39 |  7 | BO   | Borno                    | Borno State                      |  921 |           7 | CHIBOK                          | Chibok
+            39 |  7 | BO   | Borno                    | Borno State                      |  922 |           7 | DAMBOA                          | Damboa
+            39 |  7 | BO   | Borno                    | Borno State                      |  923 |           7 | DIKWA                           | Dikwa
+            39 |  7 | BO   | Borno                    | Borno State                      |  924 |           7 | GUBIO                           | Gubio
+            39 | 16 | JI   | Jigawa                   | Jigawa State                     | 1120 |          16 | YANKWASHI                       | Yankwashi
+            39 | 18 | KN   | Kano                     | Kano State                       | 1144 |          18 | AJINGI                          | Ajingi
+            39 | 18 | KN   | Kano                     | Kano State                       | 1145 |          18 | ALBASU                          | Albasu
+            39 | 18 | KN   | Kano                     | Kano State                       | 1146 |          18 | BAGWAI                          | Bagwai
+            39 | 18 | KN   | Kano                     | Kano State                       | 1147 |          18 | BEBEJI                          | Bebeji
+            39 | 18 | KN   | Kano                     | Kano State                       | 1148 |          18 | BICHI                           | Bichi
+            39 | 18 | KN   | Kano                     | Kano State                       | 1149 |          18 | BUNKURE                         | Bunkure
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1256 |          21 | OFU                             | Ofu
+            39 | 18 | KN   | Kano                     | Kano State                       | 1151 |          18 | DANBATA                         | Danbata
+            39 | 18 | KN   | Kano                     | Kano State                       | 1152 |          18 | DAWAKI_KUDU                     | Dawaki kudu
+            39 | 18 | KN   | Kano                     | Kano State                       | 1153 |          18 | DAWAKI_TOFA                     | Dawaki tofa
+            39 | 18 | KN   | Kano                     | Kano State                       | 1154 |          18 | DOGUWA                          | Doguwa
+            39 | 18 | KN   | Kano                     | Kano State                       | 1155 |          18 | FAGGE                           | Fagge
+            39 | 18 | KN   | Kano                     | Kano State                       | 1156 |          18 | GABASAWA                        | Gabasawa
+            39 | 18 | KN   | Kano                     | Kano State                       | 1157 |          18 | GARKO                           | Garko
+            39 | 18 | KN   | Kano                     | Kano State                       | 1158 |          18 | GARUN_MALAM                     | Garun malam
+            39 | 18 | KN   | Kano                     | Kano State                       | 1159 |          18 | GAYA                            | Gaya
+            39 | 18 | KN   | Kano                     | Kano State                       | 1160 |          18 | GEZAWA                          | Gezawa
+            39 | 18 | KN   | Kano                     | Kano State                       | 1161 |          18 | GWALE                           | Gwale
+            39 | 18 | KN   | Kano                     | Kano State                       | 1162 |          18 | GWARZO                          | Gwarzo
+            39 | 18 | KN   | Kano                     | Kano State                       | 1163 |          18 | KABO                            | Kabo
+            39 | 18 | KN   | Kano                     | Kano State                       | 1164 |          18 | KANO_MUNICIPAL                  | Kano municipal
+            39 | 18 | KN   | Kano                     | Kano State                       | 1165 |          18 | KARAYE                          | Karaye
+            39 | 18 | KN   | Kano                     | Kano State                       | 1166 |          18 | KIBIYA                          | Kibiya
+            39 | 18 | KN   | Kano                     | Kano State                       | 1167 |          18 | KIRU                            | Kiru
+            39 | 18 | KN   | Kano                     | Kano State                       | 1168 |          18 | KUMBOTSO                        | Kumbotso
+            39 | 18 | KN   | Kano                     | Kano State                       | 1169 |          18 | KUNCHI                          | Kunchi
+            39 | 18 | KN   | Kano                     | Kano State                       | 1170 |          18 | KURA                            | Kura
+            39 | 18 | KN   | Kano                     | Kano State                       | 1171 |          18 | MADOBI                          | Madobi
+            39 | 18 | KN   | Kano                     | Kano State                       | 1172 |          18 | MAKODA                          | Makoda
+            39 | 18 | KN   | Kano                     | Kano State                       | 1173 |          18 | MINJIBIR                        | Minjibir
+            39 | 18 | KN   | Kano                     | Kano State                       | 1174 |          18 | NASARAWA                        | Nasarawa
+            39 | 18 | KN   | Kano                     | Kano State                       | 1175 |          18 | RANO                            | Rano
+            39 | 18 | KN   | Kano                     | Kano State                       | 1176 |          18 | RIMIN_GADO                      | Rimin gado
+            39 | 18 | KN   | Kano                     | Kano State                       | 1177 |          18 | ROGO                            | Rogo
+            39 | 18 | KN   | Kano                     | Kano State                       | 1178 |          18 | SHANONO                         | Shanono
+            39 | 18 | KN   | Kano                     | Kano State                       | 1179 |          18 | SUMAILA                         | Sumaila
+            39 | 18 | KN   | Kano                     | Kano State                       | 1180 |          18 | TAKAI                           | Takai
+            39 | 18 | KN   | Kano                     | Kano State                       | 1181 |          18 | TARAUNI                         | Tarauni
+            39 | 18 | KN   | Kano                     | Kano State                       | 1182 |          18 | TOFA                            | Tofa
+            39 | 18 | KN   | Kano                     | Kano State                       | 1183 |          18 | TSANYAWA                        | Tsanyawa
+            39 | 18 | KN   | Kano                     | Kano State                       | 1184 |          18 | TUDUN_WADA                      | Tudun wada
+            39 | 18 | KN   | Kano                     | Kano State                       | 1185 |          18 | UNGOGO                          | Ungogo
+            39 | 18 | KN   | Kano                     | Kano State                       | 1186 |          18 | WARAWA                          | Warawa
+            39 | 18 | KN   | Kano                     | Kano State                       | 1187 |          18 | WUDIL                           | Wudil
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1188 |          19 | BAKORI                          | Bakori
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1189 |          19 | BATAGARAWA                      | Batagarawa
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1190 |          19 | BATSARI                         | Batsari
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1191 |          19 | BAURE                           | Baure
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1192 |          19 | BINDAWA                         | Bindawa
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1193 |          19 | CHARANCHI                       | Charanchi
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1194 |          19 | DAN_MUSA                        | Dan musa
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1195 |          19 | DANDUME                         | Dandume
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1196 |          19 | DANJA                           | Danja
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1197 |          19 | DAURA                           | Daura
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1198 |          19 | DUTSI                           | Dutsi
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1199 |          19 | DUTSIN_MA                       | Dutsin-ma
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1200 |          19 | FASKARI                         | Faskari
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1201 |          19 | FUNTUA                          | Funtua
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1202 |          19 | INGAWA                          | Ingawa
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1203 |          19 | JIBIA                           | Jibia
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1204 |          19 | KAFUR                           | Kafur
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1205 |          19 | KAITA                           | Kaita
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1206 |          19 | KANKARA                         | Kankara
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1207 |          19 | KANKIA                          | Kankia
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1208 |          19 | KATSINA                         | Katsina
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1209 |          19 | KURFI                           | Kurfi
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1210 |          19 | KUSADA                          | Kusada
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1211 |          19 | MAI'ADUA                        | Mai'adua
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1212 |          19 | MALUFASHI                       | Malufashi
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1213 |          19 | MANI                            | Mani
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1214 |          19 | MASHI                           | Mashi
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  831 |           3 | NSIT_ATAI                       | Nsit atai
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  832 |           3 | NSIT_IBOM                       | Nsit ibom
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  833 |           3 | NSIT_UBIUM                      | Nsit ubium
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  834 |           3 | OBOT_AKARA                      | Obot akara
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  835 |           3 | OKOBO                           | Okobo
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  836 |           3 | ONNA                            | Onna
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  837 |           3 | ORON                            | Oron
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  838 |           3 | ORUK_ANAM                       | Oruk anam
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  839 |           3 | UDUNG_UKO                       | Udung uko
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  840 |           3 | UKANAFUN                        | Ukanafun
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  841 |           3 | URUAN                           | Uruan
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  842 |           3 | URUE_OFFONG_ORUKO               | Urue offong oruko
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  844 |           4 | AGUATA                          | Aguata
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  845 |           4 | ANAMBRA_EAST                    | Anambra east
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  846 |           4 | ANAMBRA_WEST                    | Anambra west
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  847 |           4 | ANAOCHA                         | Anaocha
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  848 |           4 | AWKA_NORTH                      | Awka north
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  849 |           4 | AWKA_SOUTH                      | Awka south
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  850 |           4 | AYAMELUM                        | Ayamelum
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  851 |           4 | DUNUKOFIA                       | Dunukofia
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  852 |           4 | EKWUSIGO                        | Ekwusigo
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  853 |           4 | IDEMILI_NORTH                   | Idemili north
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  854 |           4 | IDEMILI_SOUTH                   | Idemili-south
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  855 |           4 | IHALA                           | Ihala
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  856 |           4 | NJIKOKA                         | Njikoka
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  857 |           4 | NNEWI_NORTH                     | Nnewi north
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  858 |           4 | NNEWI_SOUTH                     | Nnewi south
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  859 |           4 | OGBARU                          | Ogbaru
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  860 |           4 | ONITSHA_SOUTH                   | Onitsha -south
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  861 |           4 | ONITSHA_NORTH                   | Onitsha-north
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  862 |           4 | ORUMBA_SOUTH                    | Orumba  south
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  863 |           4 | ORUMBA_NORTH                    | Orumba north
+            39 |  4 | AN   | Anambra                  | Anambra State                    |  864 |           4 | OYI                             | Oyi
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1215 |          19 | MATAZU                          | Matazu
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1216 |          19 | MUSAWA                          | Musawa
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1217 |          19 | RIMI                            | Rimi
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1218 |          19 | SABUWA                          | Sabuwa
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1219 |          19 | SAFANA                          | Safana
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1220 |          19 | SANDAMU                         | Sandamu
+            39 | 19 | KT   | Katsina                  | Katsina State                    | 1221 |          19 | ZANGO                           | Zango
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1222 |          20 | ALIERO                          | Aliero
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1223 |          20 | AREWA                           | Arewa
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1224 |          20 | ARGUNGU                         | Argungu
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1225 |          20 | AUGIE                           | Augie
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1226 |          20 | BAGUDO                          | Bagudo
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1227 |          20 | BIRNIN_KEBBI                    | Birnin kebbi
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1228 |          20 | BUNZA                           | Bunza
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1229 |          20 | DANDI                           | Dandi
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1230 |          20 | FAKAI                           | Fakai
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1231 |          20 | GWANDU                          | Gwandu
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1232 |          20 | JEGA                            | Jega
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1233 |          20 | KALGO                           | Kalgo
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1234 |          20 | KOKO_BESSE                      | Koko/besse
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1235 |          20 | MAIYAMA                         | Maiyama
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1236 |          20 | NGASKI                          | Ngaski
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1237 |          20 | SAKABA                          | Sakaba
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1238 |          20 | SHANGA                          | Shanga
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1239 |          20 | SURU                            | Suru
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1240 |          20 | WASAGU_DANKO                    | Wasagu/danko
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1241 |          20 | YAURI                           | Yauri
+            39 | 20 | KE   | Kebbi                    | Kebbi State                      | 1242 |          20 | ZURU                            | Zuru
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1243 |          21 | ADAVI                           | Adavi
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1244 |          21 | AJAOKUTA                        | Ajaokuta
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1245 |          21 | ANKPA                           | Ankpa
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1246 |          21 | BASSA                           | Bassa
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1247 |          21 | DEKINA                          | Dekina
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1248 |          21 | IBAJI                           | Ibaji
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1249 |          21 | IDAH                            | Idah
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1250 |          21 | IGALAMELA_ODOLU                 | Igalamela/odolu
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1251 |          21 | IJUMU                           | Ijumu
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1252 |          21 | KABBA_BUNU                      | Kabba/bunu
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1253 |          21 | KOGI_._K._K.                    | Kogi . k. k.
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1254 |          21 | LOKOJA                          | Lokoja
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1255 |          21 | MOPA_MORO                       | Mopa moro
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1257 |          21 | OGORI_MANGOGO                   | Ogori mangogo
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1258 |          21 | OKEHI                           | Okehi
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1259 |          21 | OKENE                           | Okene
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1260 |          21 | OLAMABORO                       | Olamaboro
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1261 |          21 | OMALA                           | Omala
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1262 |          21 | YAGBA_EAST                      | Yagba east
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1263 |          21 | YAGBA_WEST                      | Yagba west
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1264 |          21 | ASA                             | Asa
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1265 |          21 | BARUTEN                         | Baruten
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1266 |          21 | EDU                             | Edu
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1267 |          21 | EKITI                           | Ekiti
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1268 |          21 | IFELODUN                        | Ifelodun
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1269 |          21 | ILORIN_EAST                     | Ilorin east
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1270 |          21 | ILORIN_SOUTH                    | Ilorin-south
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1271 |          21 | ILORIN_WEST                     | Ilorin-west
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1272 |          21 | IREPODUN                        | Irepodun
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1273 |          21 | ISIN                            | Isin
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1274 |          21 | KAIAMA                          | Kaiama
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1275 |          21 | MORO                            | Moro
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1276 |          21 | OFFA                            | Offa
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1277 |          21 | OKE__ERO                        | Oke - ero
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1278 |          21 | OYUN                            | Oyun
+            39 | 21 | KO   | Kogi                     | Kogi State                       | 1279 |          21 | PATIGI                          | Patigi
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1280 |          23 | AGEGE                           | Agege
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1281 |          23 | AJEROMI_IFELODUN                | Ajeromi/ifelodun
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1282 |          23 | ALIMOSHO                        | Alimosho
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1283 |          23 | AMUWO_ODOFIN                    | Amuwo-odofin
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1284 |          23 | APAPA                           | Apapa
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1285 |          23 | BADAGRY                         | Badagry
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1286 |          23 | EPE                             | Epe
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1287 |          23 | ETI_OSA                         | Eti-osa
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1288 |          23 | IBEJU_LEKKI                     | Ibeju/lekki
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1289 |          23 | IFAKO_IJAYE                     | Ifako-ijaye
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1290 |          23 | IKEJA                           | Ikeja
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1291 |          23 | IKORODU                         | Ikorodu
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1292 |          23 | KOSOFE                          | Kosofe
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1293 |          23 | LAGOS_ISLAND                    | Lagos island
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1294 |          23 | LAGOS_MAINLAND                  | Lagos mainland
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1295 |          23 | MUSHIN                          | Mushin
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1296 |          23 | OJO                             | Ojo
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1297 |          23 | OSHODI_ISOLO                    | Oshodi/isolo
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1298 |          23 | SOMOLU                          | Somolu
+            39 | 23 | LA   | Lagos                    | Lagos State                      | 1299 |          23 | SURULERE                        | Surulere
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1300 |          24 | AKWANGA                         | Akwanga
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1301 |          24 | AWE                             | Awe
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1302 |          24 | DOMA                            | Doma
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1303 |          24 | KARU                            | Karu
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1304 |          24 | KEANA                           | Keana
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1305 |          24 | KEFFI                           | Keffi
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1306 |          24 | KOKONA                          | Kokona
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1307 |          24 | LAFIA                           | Lafia
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1308 |          24 | NASARAWA                        | Nasarawa
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1309 |          24 | NASARAWA_EGGON                  | Nasarawa eggon
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1310 |          24 | OBI                             | Obi
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1311 |          24 | TOTO                            | Toto
+            39 | 24 | NA   | Nasarawa                 | Nasarawa State                   | 1312 |          24 | WAMBA                           | Wamba
+            39 | 25 | NI   | Niger                    | Niger State                      | 1313 |          25 | AGAIE                           | Agaie
+            39 | 25 | NI   | Niger                    | Niger State                      | 1314 |          25 | AGWARA                          | Agwara
+            39 | 25 | NI   | Niger                    | Niger State                      | 1315 |          25 | BIDA                            | Bida
+            39 | 25 | NI   | Niger                    | Niger State                      | 1316 |          25 | BORGU                           | Borgu
+            39 | 25 | NI   | Niger                    | Niger State                      | 1317 |          25 | BOSSO                           | Bosso
+            39 | 25 | NI   | Niger                    | Niger State                      | 1318 |          25 | CHANCHAGA                       | Chanchaga
+            39 | 25 | NI   | Niger                    | Niger State                      | 1319 |          25 | EDATTI                          | Edatti
+            39 | 25 | NI   | Niger                    | Niger State                      | 1320 |          25 | GBAKO                           | Gbako
+            39 | 25 | NI   | Niger                    | Niger State                      | 1321 |          25 | GURARA                          | Gurara
+            39 | 25 | NI   | Niger                    | Niger State                      | 1322 |          25 | KATCHA                          | Katcha
+            39 | 25 | NI   | Niger                    | Niger State                      | 1323 |          25 | KONTAGORA                       | Kontagora
+            39 | 25 | NI   | Niger                    | Niger State                      | 1324 |          25 | LAPAI                           | Lapai
+            39 | 25 | NI   | Niger                    | Niger State                      | 1325 |          25 | LAVUN                           | Lavun
+            39 | 25 | NI   | Niger                    | Niger State                      | 1326 |          25 | MAGAMA                          | Magama
+            39 | 25 | NI   | Niger                    | Niger State                      | 1327 |          25 | MARIGA                          | Mariga
+            39 | 25 | NI   | Niger                    | Niger State                      | 1328 |          25 | MASHEGU                         | Mashegu
+            39 | 25 | NI   | Niger                    | Niger State                      | 1329 |          25 | MOKWA                           | Mokwa
+            39 | 25 | NI   | Niger                    | Niger State                      | 1330 |          25 | MUNYA                           | Munya
+            39 | 25 | NI   | Niger                    | Niger State                      | 1331 |          25 | PAIKORO                         | Paikoro
+            39 | 25 | NI   | Niger                    | Niger State                      | 1332 |          25 | RAFI                            | Rafi
+            39 | 25 | NI   | Niger                    | Niger State                      | 1333 |          25 | RIJAU                           | Rijau
+            39 | 25 | NI   | Niger                    | Niger State                      | 1334 |          25 | SHIRORO                         | Shiroro
+            39 | 25 | NI   | Niger                    | Niger State                      | 1335 |          25 | SULEJA                          | Suleja
+            39 | 25 | NI   | Niger                    | Niger State                      | 1336 |          25 | TAFA                            | Tafa
+            39 | 25 | NI   | Niger                    | Niger State                      | 1337 |          25 | WUSHISHI                        | Wushishi
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1338 |          26 | ABEOKUTA_NORTH                  | Abeokuta north
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1339 |          26 | ABEOKUTA_SOUTH                  | Abeokuta south
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1340 |          26 | ADO_ODO_OTA                     | Ado odo-ota
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1341 |          26 | EGBADO_NORTH                    | Egbado north
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1342 |          26 | EGBADO_SOUTH                    | Egbado south
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1343 |          26 | EWEKORO                         | Ewekoro
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1344 |          26 | IFO                             | Ifo
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1345 |          26 | IJEBU_EAST                      | Ijebu east
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1346 |          26 | IJEBU_NORTH                     | Ijebu north
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1347 |          26 | IJEBU_NORTH_EAST                | Ijebu north east
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1348 |          26 | IJEBU_ODE                       | Ijebu ode
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1349 |          26 | IKENNE                          | Ikenne
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1350 |          26 | IMEKO_AFON                      | Imeko/afon
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1351 |          26 | IPOKIA                          | Ipokia
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1352 |          26 | OBAFEMI_OWODE                   | Obafemi/owode
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1353 |          26 | ODEDA                           | Odeda
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1354 |          26 | ODOGBOLU                        | Odogbolu
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1355 |          26 | OGUN_WATER_SIDE                 | Ogun water side
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1356 |          26 | REMO_NORTH                      | Remo north
+            39 | 26 | OG   | Ogun                     | Ogun State                       | 1357 |          26 | SAGAMU                          | Sagamu
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1358 |          27 | AKOKO_NORTH_EAST                | Akoko north east
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1359 |          27 | AKOKO_NORTH_WEST                | Akoko north west
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1360 |          27 | AKOKO_SOUTH_EAST                | Akoko south east
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1361 |          27 | AKOKO_SOUTH_WEST                | Akoko south west
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1362 |          27 | AKURE_NORTH                     | Akure north
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1363 |          27 | AKURE_SOUTH                     | Akure south
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1364 |          27 | ESE_ODO                         | Ese-odo
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1365 |          27 | IDANRE                          | Idanre
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1366 |          27 | IFEDORE                         | Ifedore
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1367 |          27 | ILAJE                           | Ilaje
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1368 |          27 | ILEOLUJI_OKEIGBO                | Ileoluji/okeigbo
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1369 |          27 | IRELE                           | Irele
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1370 |          27 | ODIGBO                          | Odigbo
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1371 |          27 | OKITIPUPA                       | Okitipupa
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1372 |          27 | ONDO_EAST                       | Ondo east
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1373 |          27 | ONDO_WEST                       | Ondo west
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1374 |          27 | OSE                             | Ose
+            39 | 27 | ON   | Ondo                     | Ondo State                       | 1375 |          27 | OWO                             | Owo
+            39 | 28 | OS   | Osun                     | Osun State                       | 1376 |          28 | ATAKUMOSA_EAST                  | Atakumosa east
+            39 | 28 | OS   | Osun                     | Osun State                       | 1377 |          28 | ATAKUMOSA_WEST                  | Atakumosa west
+            39 | 28 | OS   | Osun                     | Osun State                       | 1378 |          28 | AYEDAADE                        | Ayedaade
+            39 | 28 | OS   | Osun                     | Osun State                       | 1379 |          28 | AYEDIRE                         | Ayedire
+            39 | 28 | OS   | Osun                     | Osun State                       | 1380 |          28 | BOLUWADURO                      | Boluwaduro
+            39 | 28 | OS   | Osun                     | Osun State                       | 1381 |          28 | BORIPE                          | Boripe
+            39 | 28 | OS   | Osun                     | Osun State                       | 1382 |          28 | EDE_NORTH                       | Ede north
+            39 | 28 | OS   | Osun                     | Osun State                       | 1383 |          28 | EDE_SOUTH                       | Ede south
+            39 | 28 | OS   | Osun                     | Osun State                       | 1392 |          28 | ILA                             | Ila
+            39 | 28 | OS   | Osun                     | Osun State                       | 1393 |          28 | ILESA_EAST                      | Ilesa east
+            39 | 28 | OS   | Osun                     | Osun State                       | 1394 |          28 | ILESA_WEST                      | Ilesa west
+            39 | 28 | OS   | Osun                     | Osun State                       | 1395 |          28 | IREPODUN                        | Irepodun
+            39 | 28 | OS   | Osun                     | Osun State                       | 1396 |          28 | IREWOLE                         | Irewole
+            39 | 28 | OS   | Osun                     | Osun State                       | 1397 |          28 | ISOKAN                          | Isokan
+            39 | 28 | OS   | Osun                     | Osun State                       | 1398 |          28 | IWO                             | Iwo
+            39 | 28 | OS   | Osun                     | Osun State                       | 1399 |          28 | OBOKUN                          | Obokun
+            39 | 28 | OS   | Osun                     | Osun State                       | 1400 |          28 | ODO_OTIN                        | Odo-otin
+            39 | 28 | OS   | Osun                     | Osun State                       | 1401 |          28 | OLA_OLUWA                       | Ola-oluwa
+            39 | 28 | OS   | Osun                     | Osun State                       | 1402 |          28 | OLORUNDA                        | Olorunda
+            39 | 28 | OS   | Osun                     | Osun State                       | 1403 |          28 | ORIADE                          | Oriade
+            39 |  1 | AB   | Abia                     | Abia State                       |  775 |           1 | ABA_NORTH                       | Aba north
+            39 |  1 | AB   | Abia                     | Abia State                       |  776 |           1 | ABA_SOUTH                       | Aba south
+            39 |  1 | AB   | Abia                     | Abia State                       |  777 |           1 | AROCHUKWU                       | Arochukwu
+            39 |  1 | AB   | Abia                     | Abia State                       |  779 |           1 | IKWUANO                         | Ikwuano
+            39 |  1 | AB   | Abia                     | Abia State                       |  780 |           1 | ISIALA_NGWA_NORTH               | Isiala ngwa north
+            39 |  1 | AB   | Abia                     | Abia State                       |  781 |           1 | ISIALA_NGWA_SOUTH               | Isiala ngwa south
+            39 |  1 | AB   | Abia                     | Abia State                       |  782 |           1 | ISUIKWUATO                      | Isuikwuato
+            39 |  1 | AB   | Abia                     | Abia State                       |  783 |           1 | OBINGWA                         | Obingwa
+            39 |  1 | AB   | Abia                     | Abia State                       |  784 |           1 | OHAFIA                          | Ohafia
+            39 |  1 | AB   | Abia                     | Abia State                       |  785 |           1 | OSISIOMA                        | Osisioma
+            39 |  1 | AB   | Abia                     | Abia State                       |  786 |           1 | UGWUNAGBO                       | Ugwunagbo
+            39 |  1 | AB   | Abia                     | Abia State                       |  787 |           1 | UKWA_WEST                       | Ukwa  west
+            39 |  1 | AB   | Abia                     | Abia State                       |  788 |           1 | UKWA_EAST                       | Ukwa east
+            39 |  1 | AB   | Abia                     | Abia State                       |  789 |           1 | UMU__NNEOCHI                    | Umu - nneochi
+            39 |  1 | AB   | Abia                     | Abia State                       |  790 |           1 | UMUAHIA_SOUTH                   | Umuahia  south
+            39 |  1 | AB   | Abia                     | Abia State                       |  791 |           1 | UMUAHIA_NORTH                   | Umuahia north
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  792 |           2 | DEMSA                           | Demsa
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  793 |           2 | FUFORE                          | Fufore
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  794 |           2 | GANYE                           | Ganye
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  795 |           2 | GIRE_1                          | Gire 1
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  796 |           2 | GOMBI                           | Gombi
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  797 |           2 | GUYUK                           | Guyuk
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  798 |           2 | HONG                            | Hong
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  799 |           2 | JADA                            | Jada
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  800 |           2 | LAMURDE                         | Lamurde
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  801 |           2 | MADAGALI                        | Madagali
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  802 |           2 | MAIHA                           | Maiha
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  803 |           2 | MAYO__BELWA                     | Mayo - belwa
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  804 |           2 | MICHIKA                         | Michika
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  805 |           2 | MUBI_NORTH                      | Mubi north
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  806 |           2 | MUBI_SOUTH                      | Mubi south
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  807 |           2 | NUMAN                           | Numan
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  808 |           2 | SHELLENG                        | Shelleng
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  809 |           2 | SONG                            | Song
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  810 |           2 | TOUNGO                          | Toungo
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  811 |           2 | YOLA_NORTH                      | Yola north
+            39 |  2 | AD   | Adamawa                  | Adamawa State                    |  812 |           2 | YOLA_SOUTH                      | Yola south
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  813 |           3 | ABAK                            | Abak
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1412 |          29 | IBADAN_NORTH_EAST               | Ibadan north east
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1413 |          29 | IBADAN_NORTH_WEST               | Ibadan north west
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1414 |          29 | IBADAN_SOUTH_WEST               | Ibadan south west
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1415 |          29 | IBADAN_SOUTH_EAST               | Ibadan south-east
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1416 |          29 | IBARAPA_CENTRAL                 | Ibarapa central
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1417 |          29 | IBARAPA_EAST                    | Ibarapa east
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1418 |          29 | IBARAPA_NORTH                   | Ibarapa north
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1419 |          29 | IDO                             | Ido
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1420 |          29 | IREPO                           | Irepo
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1421 |          29 | ISEYIN                          | Iseyin
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1422 |          29 | ITESIWAJU                       | Itesiwaju
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1423 |          29 | IWAJOWA                         | Iwajowa
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1424 |          29 | KAJOLA                          | Kajola
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1425 |          29 | LAGELU                          | Lagelu
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1426 |          29 | OGBOMOSO_NORTH                  | Ogbomoso north
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1427 |          29 | OGBOMOSO_SOUTH                  | Ogbomoso south
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1428 |          29 | OGO_OLUWA                       | Ogo-oluwa
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1429 |          29 | OLORUNSOGO                      | Olorunsogo
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1430 |          29 | OLUYOLE                         | Oluyole
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1431 |          29 | ONA_ARA                         | Ona-ara
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1432 |          29 | OORELOPE                        | Oorelope
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1433 |          29 | ORI_IRE                         | Ori ire
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1434 |          29 | OYO_EAST                        | Oyo east
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1435 |          29 | OYO_WEST                        | Oyo west
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1436 |          29 | SAKI_EAST                       | Saki east
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1437 |          29 | SAKI_WEST                       | Saki west
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1438 |          29 | SURULERE                        | Surulere
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1439 |          30 | BARIKIN_LADI                    | Barikin ladi
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1440 |          30 | BASSA                           | Bassa
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1457 |          31 | AHOADA_EAST                     | Ahoada east
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1458 |          31 | AHOADA_WEST                     | Ahoada west
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1459 |          31 | AKUKU_TORU                      | Akuku toru
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1460 |          31 | ANDONI                          | Andoni
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1461 |          31 | ASARI_TORU                      | Asari-toru
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1462 |          31 | BONNY                           | Bonny
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1463 |          31 | DEGEMA                          | Degema
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1464 |          31 | ELEME                           | Eleme
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1465 |          31 | EMOHUA                          | Emohua
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1466 |          31 | ETCHE                           | Etche
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1467 |          31 | GOKANA                          | Gokana
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1468 |          31 | IKWERRE                         | Ikwerre
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1469 |          31 | KHANA                           | Khana
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1470 |          31 | OBIO_AKPOR                      | Obio/akpor
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1471 |          31 | OGBA_EGBEMA_NDONI               | Ogba/egbema/ndoni
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1472 |          31 | OGU_BOLO                        | Ogu/bolo
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1473 |          31 | OKRIKA                          | Okrika
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1474 |          31 | OMUMA                           | Omuma
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1475 |          31 | OPOBO_NEKORO                    | Opobo/nekoro
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1476 |          31 | OYIGBO                          | Oyigbo
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1477 |          31 | PORT_HARCOURT                   | Port harcourt
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1478 |          31 | TAI                             | Tai
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1479 |          32 | BINJI                           | Binji
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1480 |          32 | BODINGA                         | Bodinga
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1481 |          32 | DANGE_SHUNI                     | Dange/shuni
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1482 |          32 | GADA                            | Gada
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1483 |          32 | GORONYO                         | Goronyo
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1484 |          32 | GUDU                            | Gudu
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1485 |          32 | GWADABAWA                       | Gwadabawa
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1486 |          32 | ILLELA                          | Illela
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1488 |          32 | KEBBE                           | Kebbe
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1489 |          32 | KWARE                           | Kware
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1490 |          32 | RABAH                           | Rabah
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1491 |          32 | S_BIRNI                         | S/birni
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1492 |          32 | SHAGARI                         | Shagari
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1493 |          32 | SILAME                          | Silame
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1494 |          32 | SOKOTO_NORTH                    | Sokoto north
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1495 |          32 | SOKOTO_SOUTH                    | Sokoto south
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1496 |          32 | TAMBUWAL                        | Tambuwal
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1497 |          32 | TANGAZA                         | Tangaza
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1498 |          32 | TURETA                          | Tureta
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1499 |          32 | WAMAKKO                         | Wamakko
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1500 |          32 | WURNO                           | Wurno
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1501 |          32 | YABO                            | Yabo
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1502 |          33 | ARDO__KOLA                      | Ardo - kola
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1503 |          33 | BALI                            | Bali
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1504 |          33 | DONGA                           | Donga
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1545 |          35 | SHINKAFI                        | Shinkafi
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1546 |          35 | TALATA_MAFARA                   | Talata mafara
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1547 |          35 | TSAFE                           | Tsafe
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1548 |          35 | ZURMI                           | Zurmi
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1121 |          17 | BIRNIN_GWARI                    | Birnin gwari
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1122 |          17 | CHIKUN                          | Chikun
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1123 |          17 | GIWA                            | Giwa
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1124 |          17 | IGABI                           | Igabi
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1125 |          17 | IKARA                           | Ikara
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1126 |          17 | JABA                            | Jaba
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1127 |          17 | JEMA'A                          | Jema'a
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1128 |          17 | KACHIA                          | Kachia
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1129 |          17 | KADUNA_NORTH                    | Kaduna north
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1130 |          17 | KADUNA_SOUTH                    | Kaduna south
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1131 |          17 | KAGARKO                         | Kagarko
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1132 |          17 | KAJURU                          | Kajuru
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1133 |          17 | KAURA                           | Kaura
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1134 |          17 | KAURU                           | Kauru
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1135 |          17 | KUBAU                           | Kubau
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1136 |          17 | KUDAN                           | Kudan
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1137 |          17 | LERE                            | Lere
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1138 |          17 | MAKARFI                         | Makarfi
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1139 |          17 | SABON_GARI                      | Sabon gari
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1140 |          17 | SANGA                           | Sanga
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1141 |          17 | SOBA                            | Soba
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1142 |          17 | ZANGON_KATAF                    | Zangon kataf
+            39 | 17 | KD   | Kaduna                   | Kaduna State                     | 1143 |          17 | ZARIA                           | Zaria
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  822 |           3 | IBIONO_IBOM                     | Ibiono ibom
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  824 |           3 | IKONO                           | Ikono
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  825 |           3 | IKOT_ABASI                      | Ikot abasi
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  826 |           3 | IKOT_EKPENE                     | Ikot ekpene
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  827 |           3 | INI                             | Ini
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  828 |           3 | ITU                             | Itu
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  829 |           3 | MBO                             | Mbo
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  830 |           3 | MKPAT_ENIN                      | Mkpat enin
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  843 |           3 | UYO                             | Uyo
+            39 |  9 | DE   | Delta                    | Delta State                      |  969 |           9 | ISOKO_NORTH                     | Isoko north
+            39 |  9 | DE   | Delta                    | Delta State                      |  970 |           9 | ISOKO_SOUTH                     | Isoko south
+            39 |  9 | DE   | Delta                    | Delta State                      |  971 |           9 | NDOKWA_EAST                     | Ndokwa east
+            39 |  9 | DE   | Delta                    | Delta State                      |  972 |           9 | NDOKWA_WEST                     | Ndokwa west
+            39 |  9 | DE   | Delta                    | Delta State                      |  974 |           9 | OSHIMILI__NORTH                 | Oshimili - north
+            39 |  9 | DE   | Delta                    | Delta State                      |  975 |           9 | OSHIMILI__SOUTH                 | Oshimili - south
+            39 |  9 | DE   | Delta                    | Delta State                      |  976 |           9 | PATANI                          | Patani
+            39 |  9 | DE   | Delta                    | Delta State                      |  977 |           9 | SAPELE                          | Sapele
+            39 |  9 | DE   | Delta                    | Delta State                      |  978 |           9 | UDU                             | Udu
+            39 |  9 | DE   | Delta                    | Delta State                      |  979 |           9 | UGHELLI_NORTH                   | Ughelli north
+            39 |  9 | DE   | Delta                    | Delta State                      |  980 |           9 | UGHELLI_SOUTH                   | Ughelli south
+            39 |  9 | DE   | Delta                    | Delta State                      |  981 |           9 | UKWUANI                         | Ukwuani
+            39 |  9 | DE   | Delta                    | Delta State                      |  982 |           9 | UVWIE                           | Uvwie
+            39 |  9 | DE   | Delta                    | Delta State                      |  983 |           9 | WARRI_NORTH                     | Warri  north
+            39 |  9 | DE   | Delta                    | Delta State                      |  984 |           9 | WARRI_SOUTH                     | Warri south
+            39 | 32 | SO   | Sokoto                   | Sokoto State                     | 1487 |          32 | ISA                             | Isa
+            39 | 28 | OS   | Osun                     | Osun State                       | 1384 |          28 | EGBEDORE                        | Egbedore
+            39 | 28 | OS   | Osun                     | Osun State                       | 1385 |          28 | EJIGBO                          | Ejigbo
+            39 | 28 | OS   | Osun                     | Osun State                       | 1386 |          28 | IFE_CENTRAL                     | Ife central
+            39 | 28 | OS   | Osun                     | Osun State                       | 1387 |          28 | IFE_EAST                        | Ife east
+            39 | 28 | OS   | Osun                     | Osun State                       | 1388 |          28 | IFE_NORTH                       | Ife north
+            39 | 28 | OS   | Osun                     | Osun State                       | 1389 |          28 | IFE_SOUTH                       | Ife south
+            39 | 28 | OS   | Osun                     | Osun State                       | 1390 |          28 | IFEDAYO                         | Ifedayo
+            39 | 28 | OS   | Osun                     | Osun State                       | 1391 |          28 | IFELODUN                        | Ifelodun
+            39 |  7 | BO   | Borno                    | Borno State                      |  935 |           7 | MAGUMERI                        | Magumeri
+            39 |  7 | BO   | Borno                    | Borno State                      |  936 |           7 | MAIDUGURI_M._C.                 | Maiduguri m. c.
+            39 |  7 | BO   | Borno                    | Borno State                      |  937 |           7 | MARTE                           | Marte
+            39 |  7 | BO   | Borno                    | Borno State                      |  938 |           7 | MOBBAR                          | Mobbar
+            39 |  7 | BO   | Borno                    | Borno State                      |  939 |           7 | MONGUNO                         | Monguno
+            39 |  7 | BO   | Borno                    | Borno State                      |  940 |           7 | NGALA                           | Ngala
+            39 |  7 | BO   | Borno                    | Borno State                      |  941 |           7 | NGANZAI                         | Nganzai
+            39 |  7 | BO   | Borno                    | Borno State                      |  942 |           7 | SHANI                           | Shani
+            39 |  8 | CR   | Cross River              | Cross River State                |  943 |           8 | ABI                             | Abi
+            39 |  8 | CR   | Cross River              | Cross River State                |  944 |           8 | AKAMKPA                         | Akamkpa
+            39 |  8 | CR   | Cross River              | Cross River State                |  945 |           8 | AKPABUYO                        | Akpabuyo
+            39 |  8 | CR   | Cross River              | Cross River State                |  946 |           8 | BAKASSI                         | Bakassi
+            39 |  8 | CR   | Cross River              | Cross River State                |  947 |           8 | BEKWARRA                        | Bekwarra
+            39 |  8 | CR   | Cross River              | Cross River State                |  948 |           8 | BIASE                           | Biase
+            39 |  8 | CR   | Cross River              | Cross River State                |  949 |           8 | BOKI                            | Boki
+            39 |  8 | CR   | Cross River              | Cross River State                |  950 |           8 | CALABAR_MUNICIPALITY            | Calabar municipality
+            39 |  8 | CR   | Cross River              | Cross River State                |  951 |           8 | CALABAR_SOUTH                   | Calabar south
+            39 |  8 | CR   | Cross River              | Cross River State                |  952 |           8 | ETUNG                           | Etung
+            39 |  8 | CR   | Cross River              | Cross River State                |  953 |           8 | IKOM                            | Ikom
+            39 |  8 | CR   | Cross River              | Cross River State                |  954 |           8 | OBANLIKU                        | Obanliku
+            39 |  8 | CR   | Cross River              | Cross River State                |  955 |           8 | OBUBRA                          | Obubra
+            39 |  8 | CR   | Cross River              | Cross River State                |  956 |           8 | OBUDU                           | Obudu
+            39 |  8 | CR   | Cross River              | Cross River State                |  957 |           8 | ODUKPANI                        | Odukpani
+            39 |  8 | CR   | Cross River              | Cross River State                |  958 |           8 | OGOJA                           | Ogoja
+            39 |  8 | CR   | Cross River              | Cross River State                |  959 |           8 | YAKURR                          | Yakurr
+            39 |  8 | CR   | Cross River              | Cross River State                |  960 |           8 | YALA                            | Yala
+            39 |  9 | DE   | Delta                    | Delta State                      |  961 |           9 | ANIOCHA__SOUTH                  | Aniocha - south
+            39 |  9 | DE   | Delta                    | Delta State                      |  962 |           9 | ANIOCHA_NORTH                   | Aniocha north
+            39 |  9 | DE   | Delta                    | Delta State                      |  963 |           9 | BOMADI                          | Bomadi
+            39 |  9 | DE   | Delta                    | Delta State                      |  964 |           9 | BURUTU                          | Burutu
+            39 |  9 | DE   | Delta                    | Delta State                      |  965 |           9 | ETHIOPE_EAST                    | Ethiope  east
+            39 |  9 | DE   | Delta                    | Delta State                      |  966 |           9 | ETHIOPE_WEST                    | Ethiope  west
+            39 |  9 | DE   | Delta                    | Delta State                      |  967 |           9 | IKA__SOUTH                      | Ika - south
+            39 |  9 | DE   | Delta                    | Delta State                      |  968 |           9 | IKA_NORTH_EAST                  | Ika north- east
+            39 |  9 | DE   | Delta                    | Delta State                      |  973 |           9 | OKPE                            | Okpe
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  986 |          10 | ABAKALIKI                       | Abakaliki
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  814 |           3 | EASTERN_OBOLO                   | Eastern obolo
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  815 |           3 | EKET                            | Eket
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  816 |           3 | ESIT_EKET_(UQUO)                | Esit eket (uquo)
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  817 |           3 | ESSIEN_UDIM                     | Essien udim
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  818 |           3 | ETIM_EKPO                       | Etim ekpo
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  819 |           3 | ETINAN                          | Etinan
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  820 |           3 | IBENO                           | Ibeno
+            39 |  3 | AK   | Akwa Ibom                | Akwa Ibom State                  |  821 |           3 | IBESIKPO_ASUTAN                 | Ibesikpo asutan
+            39 | 28 | OS   | Osun                     | Osun State                       | 1404 |          28 | OROLU                           | Orolu
+            39 | 28 | OS   | Osun                     | Osun State                       | 1405 |          28 | OSOGBO                          | Osogbo
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1406 |          29 | AFIJIO                          | Afijio
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1407 |          29 | AKINYELE                        | Akinyele
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1408 |          29 | ATIBA                           | Atiba
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1409 |          29 | ATISBO                          | Atisbo
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1410 |          29 | EGBEDA                          | Egbeda
+            39 | 29 | OY   | Oyo                      | Oyo State                        | 1411 |          29 | IBADAN_NORTH                    | Ibadan north
+            39 |  7 | BO   | Borno                    | Borno State                      |  925 |           7 | GUZAMALA                        | Guzamala
+            39 |  7 | BO   | Borno                    | Borno State                      |  926 |           7 | GWOZA                           | Gwoza
+            39 |  7 | BO   | Borno                    | Borno State                      |  927 |           7 | HAWUL                           | Hawul
+            39 |  7 | BO   | Borno                    | Borno State                      |  928 |           7 | JERE                            | Jere
+            39 |  7 | BO   | Borno                    | Borno State                      |  929 |           7 | KAGA                            | Kaga
+            39 |  7 | BO   | Borno                    | Borno State                      |  930 |           7 | KALA_BALGE                      | Kala balge
+            39 |  7 | BO   | Borno                    | Borno State                      |  931 |           7 | KONDUGA                         | Konduga
+            39 |  7 | BO   | Borno                    | Borno State                      |  932 |           7 | KUKAWA                          | Kukawa
+            39 |  7 | BO   | Borno                    | Borno State                      |  933 |           7 | KWAYA_KUSAR                     | Kwaya / kusar
+            39 |  7 | BO   | Borno                    | Borno State                      |  934 |           7 | MAFA                            | Mafa
+            39 |  1 | AB   | Abia                     | Abia State                       |  778 |           1 | BENDE                           | Bende
+            39 |  9 | DE   | Delta                    | Delta State                      |  985 |           9 | WARRI_SOUTH_WEST                | Warri south  west
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  987 |          10 | AFIKPO_SOUTH                    | Afikpo  south
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  988 |          10 | AFIKPO_NORTH                    | Afikpo north
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  989 |          10 | EBONYI                          | Ebonyi
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  990 |          10 | EZZA_NORTH                      | Ezza north
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  991 |          10 | EZZA_SOUTH                      | Ezza south
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  992 |          10 | IKWO                            | Ikwo
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  993 |          10 | ISHIELU                         | Ishielu
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  994 |          10 | IVO                             | Ivo
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  995 |          10 | IZZI                            | Izzi
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  996 |          10 | OHAOZARA                        | Ohaozara
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  997 |          10 | OHAUKWU                         | Ohaukwu
+            39 | 10 | EB   | Ebonyi                   | Ebonyi State                     |  998 |          10 | ONICHA                          | Onicha
+            39 | 11 | ED   | Edo                      | Edo State                        |  999 |          11 | AKOKO_EDO                       | Akoko edo
+            39 | 11 | ED   | Edo                      | Edo State                        | 1000 |          11 | EGOR                            | Egor
+            39 | 11 | ED   | Edo                      | Edo State                        | 1001 |          11 | ESAN_CENTRAL                    | Esan central
+            39 | 11 | ED   | Edo                      | Edo State                        | 1002 |          11 | ESAN_NORTH_EAST                 | Esan north east
+            39 | 11 | ED   | Edo                      | Edo State                        | 1003 |          11 | ESAN_SOUTH_EAST                 | Esan south east
+            39 | 11 | ED   | Edo                      | Edo State                        | 1004 |          11 | ESAN_WEST                       | Esan west
+            39 | 11 | ED   | Edo                      | Edo State                        | 1005 |          11 | ETSAKO_WEST                     | Etsako  west
+            39 | 11 | ED   | Edo                      | Edo State                        | 1006 |          11 | ETSAKO_CENTRAL                  | Etsako central
+            39 | 11 | ED   | Edo                      | Edo State                        | 1007 |          11 | ETSAKO_EAST                     | Etsako east
+            39 | 11 | ED   | Edo                      | Edo State                        | 1008 |          11 | IGUEBEN                         | Igueben
+            39 | 11 | ED   | Edo                      | Edo State                        | 1009 |          11 | IKPOBA_OKHA                     | Ikpoba/okha
+            39 | 11 | ED   | Edo                      | Edo State                        | 1010 |          11 | OREDO                           | Oredo
+            39 | 11 | ED   | Edo                      | Edo State                        | 1011 |          11 | ORHIONMWON                      | Orhionmwon
+            39 | 11 | ED   | Edo                      | Edo State                        | 1012 |          11 | OVIA_NORTH_EAST                 | Ovia north east
+            39 | 11 | ED   | Edo                      | Edo State                        | 1013 |          11 | OVIA_SOUTH_WEST                 | Ovia south west
+            39 | 11 | ED   | Edo                      | Edo State                        | 1014 |          11 | OWAN_EAST                       | Owan east
+            39 | 11 | ED   | Edo                      | Edo State                        | 1015 |          11 | OWAN_WEST                       | Owan west
+            39 | 11 | ED   | Edo                      | Edo State                        | 1016 |          11 | UHUNMWODE                       | Uhunmwode
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1017 |          12 | ADO_EKITI                       | Ado ekiti
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1018 |          12 | EFON                            | Efon
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1019 |          12 | EKITI_EAST                      | Ekiti east
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1020 |          12 | EKITI_SOUTH_WEST                | Ekiti south west
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1021 |          12 | EKITI_WEST                      | Ekiti west
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1022 |          12 | EMURE                           | Emure
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1023 |          12 | GBONYIN                         | Gbonyin
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1024 |          12 | IDO_OSI                         | Ido / osi
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1025 |          12 | IJERO                           | Ijero
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1026 |          12 | IKERE                           | Ikere
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1027 |          12 | IKOLE                           | Ikole
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1028 |          12 | ILEJEMEJE                       | Ilejemeje
+            39 | 12 | EK   | Ekiti                    | Ekiti State                      | 1030 |          12 | ISE_ORUN                        | Ise / orun
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1505 |          33 | GASHAKA                         | Gashaka
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1506 |          33 | GASSOL                          | Gassol
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1507 |          33 | IBI                             | Ibi
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1508 |          33 | JALINGO                         | Jalingo
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1509 |          33 | KARIM_LAMIDO                    | Karim-lamido
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1510 |          33 | KURMI                           | Kurmi
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1511 |          33 | LAU                             | Lau
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1441 |          30 | BOKKOS                          | Bokkos
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1442 |          30 | JOS_EAST                        | Jos east
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1443 |          30 | JOS_NORTH                       | Jos north
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1444 |          30 | JOS_SOUTH                       | Jos south
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1445 |          30 | KANAM                           | Kanam
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1446 |          30 | KANKE                           | Kanke
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1447 |          30 | LANGTANG_NORTH                  | Langtang north
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1448 |          30 | LANGTANG_SOUTH                  | Langtang south
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1449 |          30 | MANGU                           | Mangu
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1450 |          30 | MIKANG                          | Mikang
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1451 |          30 | PANKSHIN                        | Pankshin
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1452 |          30 | QUA'AN_PAN                      | Qua'an pan
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1453 |          30 | RIYOM                           | Riyom
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1454 |          30 | SHENDAM                         | Shendam
+            39 | 30 | PL   | Plateau                  | Plateau State                    | 1455 |          30 | WASE                            | Wase
+            39 | 31 | RI   | Rivers                   | Rivers State                     | 1456 |          31 | ABUA_ODUAL                      | Abua-odual
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1512 |          33 | SARDAUNA                        | Sardauna
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1513 |          33 | TAKUM                           | Takum
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1514 |          33 | USSA                            | Ussa
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1515 |          33 | WUKARI                          | Wukari
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1516 |          33 | YORRO                           | Yorro
+            39 | 33 | TA   | Taraba                   | Taraba State                     | 1517 |          33 | ZING                            | Zing
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1518 |          34 | BADE                            | Bade
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1519 |          34 | BURSARI                         | Bursari
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1520 |          34 | DAMATURU                        | Damaturu
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1521 |          34 | FIKA                            | Fika
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1522 |          34 | FUNE                            | Fune
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1523 |          34 | GEIDAM                          | Geidam
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1524 |          34 | GUJBA                           | Gujba
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1525 |          34 | GULANI                          | Gulani
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1526 |          34 | JAKUSKO                         | Jakusko
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1527 |          34 | KARASAWA                        | Karasawa
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1528 |          34 | MACHINA                         | Machina
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1529 |          34 | NANGERE                         | Nangere
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1530 |          34 | NGURU                           | Nguru
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1531 |          34 | POTISKUM                        | Potiskum
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1532 |          34 | TARMUWA                         | Tarmuwa
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1533 |          34 | YUNUSARI                        | Yunusari
+            39 | 34 | YO   | Yobe                     | Yobe State                       | 1534 |          34 | YUSUFARI                        | Yusufari
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1535 |          35 | ANKA                            | Anka
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1536 |          35 | BAKURA                          | Bakura
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1537 |          35 | BIRNIN_MAGAJI                   | Birnin magaji
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1538 |          35 | BUKKUYUM                        | Bukkuyum
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1539 |          35 | BUNGUDU                         | Bungudu
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1540 |          35 | GUMMI                           | Gummi
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1541 |          35 | GUSAU                           | Gusau
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1542 |          35 | KAURA_NAMODA                    | Kaura namoda
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1543 |          35 | MARADUN                         | Maradun
+            39 | 35 | ZA   | Zamfara                  | Zamfara State                    | 1544 |          35 | MARU                            | Maru
+(774 rows)
+

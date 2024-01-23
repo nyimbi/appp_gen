@@ -1,3 +1,6 @@
+# from flask_appbuilder import Model
+# from flask_appbuilder.models.mixins import ImageColumn
+
     def ViewName(self):
         return self.__class__.__name__ +'View'
 

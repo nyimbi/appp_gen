@@ -13,6 +13,7 @@ from sqlalchemy.orm import relationship, backref
 
 import os
 import sys
+import enum
 import inspect
 import datetime
 import shutils

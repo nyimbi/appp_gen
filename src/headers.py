@@ -123,6 +123,7 @@ from sqlalchemy.dialects.postgresql import (
 
 from flask_appbuilder import Model
 from flask_appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn, UserExtensionMixin
+from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder.filemanager import ImageManager
 
 from flask_appbuilder.models.decorators import renders
@@ -132,7 +133,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 
 from flask_appbuilder.security.sqla.models import User
 from geoalchemy2 import Geometry
-
+from flask_mail import Mail, Message  # Requires Flask-Mail
 # To create GraphSQL API
 # import graphene
 # from graphene_sqlalchemy import SQLAlchemyObjectType
@@ -690,9 +691,11 @@ def gen_gql_header():
 import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from graphene import relay
+from flask_graphql import GraphQLView
 
 from flask_appbuilder.security.sqla.models import User, Role, Permission, PermissionView, RegisterUser
 from .models import *
+from . import app
 """
     return DOC_HEADER + GQL_HEADER # + MODEL_HEADER
 
@@ -727,6 +730,11 @@ def gen_gql_query(table):
 
 GQL_FOOTER = f"""
 schema = graphene.Schema(query=Query)
+app.add_url_rule('/graphql', view_func=GraphQLView.as_view(
+    'graphql',
+    schema=schema,
+    graphiql=True,
+))
 """
 
 

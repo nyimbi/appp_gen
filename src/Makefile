@@ -4,6 +4,7 @@ DB_NAME := $(if $(DB),$(DB),wakala1)  # Default to "wakala1" if no parameter is 
 db:
 	dropdb $(DB_NAME)
 	createdb $(DB_NAME)
+	psql wakala1 -f 
 
 # Other targets (no changes needed)
 codegen:
@@ -13,6 +14,6 @@ test:
     # python test1.py  # Uncomment if you want to run the test
 
 copy_files:
-	cp apis.py gql.py models.py views.py view_mixins.py model_mixins.py ../tmp/apg_test/app
+	cp apis.py gql.py models.py views.py view_mixins.py model_mixins.py sec.py sec_forms.py sec_views.py __init__.py  ../tmp/apg_test/app
 
 all: db codegen copy_files  # test  # Uncomment if you want to include testing

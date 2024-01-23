@@ -1810,13 +1810,6 @@ class State_LgaMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(State_LgaMasterDetailView, "States", icon="fa-folder-open-o", category="Review")
 
-class Agent_AgentMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Agent)
-    related_views = [AgentModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Agent_AgentMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
-
 class AgentTier_AgentMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(AgentTier)
     related_views = [AgentModelView]
@@ -1824,12 +1817,26 @@ class AgentTier_AgentMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(AgentTier_AgentMasterDetailView, "AgentTiers", icon="fa-folder-open-o", category="Review")
 
+class State_AgentMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(State)
+    related_views = [AgentModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(State_AgentMasterDetailView, "States", icon="fa-folder-open-o", category="Review")
+
 class UserExt_AgentMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(UserExt)
     related_views = [AgentModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
 appbuilder.add_view(UserExt_AgentMasterDetailView, "UserExts", icon="fa-folder-open-o", category="Review")
+
+class Agent_AgentMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Agent)
+    related_views = [AgentModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(Agent_AgentMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
 
 class Bank_AgentMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Bank)
@@ -1852,19 +1859,12 @@ class Country_AgentMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(Country_AgentMasterDetailView, "Countrys", icon="fa-folder-open-o", category="Review")
 
-class State_AgentMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(State)
-    related_views = [AgentModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(State_AgentMasterDetailView, "States", icon="fa-folder-open-o", category="Review")
-
-class UserExt_PosMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(UserExt)
+class Lga_PosMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Lga)
     related_views = [PosModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(UserExt_PosMasterDetailView, "UserExts", icon="fa-folder-open-o", category="Review")
+appbuilder.add_view(Lga_PosMasterDetailView, "Lgas", icon="fa-folder-open-o", category="Review")
 
 class State_PosMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(State)
@@ -1873,19 +1873,12 @@ class State_PosMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(State_PosMasterDetailView, "States", icon="fa-folder-open-o", category="Review")
 
-class Lga_PosMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Lga)
+class UserExt_PosMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(UserExt)
     related_views = [PosModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Lga_PosMasterDetailView, "Lgas", icon="fa-folder-open-o", category="Review")
-
-class Agent_AgentPosLinkMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Agent)
-    related_views = [AgentPosLinkModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Agent_AgentPosLinkMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+appbuilder.add_view(UserExt_PosMasterDetailView, "UserExts", icon="fa-folder-open-o", category="Review")
 
 class Pos_AgentPosLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Pos)
@@ -1894,12 +1887,12 @@ class Pos_AgentPosLinkMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(Pos_AgentPosLinkMasterDetailView, "Poss", icon="fa-folder-open-o", category="Review")
 
-class Agent_CommRefMasterDetailView(MasterDetailView):
+class Agent_AgentPosLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Agent)
-    related_views = [CommRefModelView]
+    related_views = [AgentPosLinkModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Agent_CommRefMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+appbuilder.add_view(Agent_AgentPosLinkMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
 
 class CustomerSegment_CommRefMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(CustomerSegment)
@@ -1907,27 +1900,6 @@ class CustomerSegment_CommRefMasterDetailView(MasterDetailView):
     show_template = 'appbuilder/general/model/show_cascade.html'
 
 appbuilder.add_view(CustomerSegment_CommRefMasterDetailView, "CustomerSegments", icon="fa-folder-open-o", category="Review")
-
-class BillerOffering_CommRefMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(BillerOffering)
-    related_views = [CommRefModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(BillerOffering_CommRefMasterDetailView, "BillerOfferings", icon="fa-folder-open-o", category="Review")
-
-class AgentTier_CommRefMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(AgentTier)
-    related_views = [CommRefModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(AgentTier_CommRefMasterDetailView, "AgentTiers", icon="fa-folder-open-o", category="Review")
-
-class Biller_CommRefMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Biller)
-    related_views = [CommRefModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Biller_CommRefMasterDetailView, "Billers", icon="fa-folder-open-o", category="Review")
 
 class Lga_CommRefMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Lga)
@@ -1943,13 +1915,6 @@ class Promotion_CommRefMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(Promotion_CommRefMasterDetailView, "Promotions", icon="fa-folder-open-o", category="Review")
 
-class State_CommRefMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(State)
-    related_views = [CommRefModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(State_CommRefMasterDetailView, "States", icon="fa-folder-open-o", category="Review")
-
 class TransType_CommRefMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(TransType)
     related_views = [CommRefModelView]
@@ -1957,12 +1922,40 @@ class TransType_CommRefMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(TransType_CommRefMasterDetailView, "TransTypes", icon="fa-folder-open-o", category="Review")
 
-class Agent_PersonMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Agent)
-    related_views = [PersonModelView]
+class BillerOffering_CommRefMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(BillerOffering)
+    related_views = [CommRefModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Agent_PersonMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+appbuilder.add_view(BillerOffering_CommRefMasterDetailView, "BillerOfferings", icon="fa-folder-open-o", category="Review")
+
+class Agent_CommRefMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Agent)
+    related_views = [CommRefModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(Agent_CommRefMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+
+class State_CommRefMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(State)
+    related_views = [CommRefModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(State_CommRefMasterDetailView, "States", icon="fa-folder-open-o", category="Review")
+
+class AgentTier_CommRefMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(AgentTier)
+    related_views = [CommRefModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(AgentTier_CommRefMasterDetailView, "AgentTiers", icon="fa-folder-open-o", category="Review")
+
+class Biller_CommRefMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Biller)
+    related_views = [CommRefModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(Biller_CommRefMasterDetailView, "Billers", icon="fa-folder-open-o", category="Review")
 
 class Person_PersonMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Person)
@@ -1971,12 +1964,12 @@ class Person_PersonMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(Person_PersonMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
 
-class Agent_WalletMasterDetailView(MasterDetailView):
+class Agent_PersonMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Agent)
-    related_views = [WalletModelView]
+    related_views = [PersonModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Agent_WalletMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+appbuilder.add_view(Agent_PersonMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
 
 class Pos_WalletMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Pos)
@@ -1985,12 +1978,12 @@ class Pos_WalletMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(Pos_WalletMasterDetailView, "Poss", icon="fa-folder-open-o", category="Review")
 
-class Agent_AgentPersonLinkMasterDetailView(MasterDetailView):
+class Agent_WalletMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Agent)
-    related_views = [AgentPersonLinkModelView]
+    related_views = [WalletModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Agent_AgentPersonLinkMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+appbuilder.add_view(Agent_WalletMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
 
 class Person_AgentPersonLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Person)
@@ -1998,6 +1991,20 @@ class Person_AgentPersonLinkMasterDetailView(MasterDetailView):
     show_template = 'appbuilder/general/model/show_cascade.html'
 
 appbuilder.add_view(Person_AgentPersonLinkMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
+
+class Agent_AgentPersonLinkMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Agent)
+    related_views = [AgentPersonLinkModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(Agent_AgentPersonLinkMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+
+class ContactType_ContactMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(ContactType)
+    related_views = [ContactModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(ContactType_ContactMasterDetailView, "ContactTypes", icon="fa-folder-open-o", category="Review")
 
 class Person_ContactMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Person)
@@ -2013,26 +2020,12 @@ class Agent_ContactMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(Agent_ContactMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
 
-class ContactType_ContactMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(ContactType)
-    related_views = [ContactModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(ContactType_ContactMasterDetailView, "ContactTypes", icon="fa-folder-open-o", category="Review")
-
 class Person_DocMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Person)
     related_views = [DocModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
 appbuilder.add_view(Person_DocMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
-
-class DocType_DocMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(DocType)
-    related_views = [DocModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(DocType_DocMasterDetailView, "DocTypes", icon="fa-folder-open-o", category="Review")
 
 class MimeType_DocMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(MimeType)
@@ -2047,6 +2040,13 @@ class Agent_DocMasterDetailView(MasterDetailView):
     show_template = 'appbuilder/general/model/show_cascade.html'
 
 appbuilder.add_view(Agent_DocMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+
+class DocType_DocMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(DocType)
+    related_views = [DocModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(DocType_DocMasterDetailView, "DocTypes", icon="fa-folder-open-o", category="Review")
 
 class Country_PersonAdditionalDataMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Country)
@@ -2069,54 +2069,12 @@ class Person_PersonAdminDataMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(Person_PersonAdminDataMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
 
-class AgentTier_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(AgentTier)
+class Coupon_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Coupon)
     related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(AgentTier_TransMasterDetailView, "AgentTiers", icon="fa-folder-open-o", category="Review")
-
-class TransRoutingThresholds_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(TransRoutingThresholds)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(TransRoutingThresholds_TransMasterDetailView, "TransRoutingThresholdss", icon="fa-folder-open-o", category="Review")
-
-class Promotion_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Promotion)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Promotion_TransMasterDetailView, "Promotions", icon="fa-folder-open-o", category="Review")
-
-class Wallet_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Wallet)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Wallet_TransMasterDetailView, "Wallets", icon="fa-folder-open-o", category="Review")
-
-class PaymentCard_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(PaymentCard)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(PaymentCard_TransMasterDetailView, "PaymentCards", icon="fa-folder-open-o", category="Review")
-
-class Pos_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Pos)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Pos_TransMasterDetailView, "Poss", icon="fa-folder-open-o", category="Review")
-
-class CustomerSegment_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(CustomerSegment)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(CustomerSegment_TransMasterDetailView, "CustomerSegments", icon="fa-folder-open-o", category="Review")
+appbuilder.add_view(Coupon_TransMasterDetailView, "Coupons", icon="fa-folder-open-o", category="Review")
 
 class Bank_TransMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Bank)
@@ -2125,26 +2083,19 @@ class Bank_TransMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(Bank_TransMasterDetailView, "Banks", icon="fa-folder-open-o", category="Review")
 
-class Coupon_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Coupon)
+class Pos_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Pos)
     related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Coupon_TransMasterDetailView, "Coupons", icon="fa-folder-open-o", category="Review")
+appbuilder.add_view(Pos_TransMasterDetailView, "Poss", icon="fa-folder-open-o", category="Review")
 
-class Currency_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Currency)
+class TransRoutingThresholds_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(TransRoutingThresholds)
     related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Currency_TransMasterDetailView, "Currencys", icon="fa-folder-open-o", category="Review")
-
-class Agent_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Agent)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Agent_TransMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+appbuilder.add_view(TransRoutingThresholds_TransMasterDetailView, "TransRoutingThresholdss", icon="fa-folder-open-o", category="Review")
 
 class BillerOffering_TransMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(BillerOffering)
@@ -2153,6 +2104,27 @@ class BillerOffering_TransMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(BillerOffering_TransMasterDetailView, "BillerOfferings", icon="fa-folder-open-o", category="Review")
 
+class Currency_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Currency)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(Currency_TransMasterDetailView, "Currencys", icon="fa-folder-open-o", category="Review")
+
+class Promotion_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Promotion)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(Promotion_TransMasterDetailView, "Promotions", icon="fa-folder-open-o", category="Review")
+
+class AgentTier_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(AgentTier)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(AgentTier_TransMasterDetailView, "AgentTiers", icon="fa-folder-open-o", category="Review")
+
 class Biller_TransMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Biller)
     related_views = [TransModelView]
@@ -2160,12 +2132,33 @@ class Biller_TransMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(Biller_TransMasterDetailView, "Billers", icon="fa-folder-open-o", category="Review")
 
-class Agent_AgentDocLinkMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Agent)
-    related_views = [AgentDocLinkModelView]
+class CustomerSegment_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(CustomerSegment)
+    related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Agent_AgentDocLinkMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+appbuilder.add_view(CustomerSegment_TransMasterDetailView, "CustomerSegments", icon="fa-folder-open-o", category="Review")
+
+class PaymentCard_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(PaymentCard)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(PaymentCard_TransMasterDetailView, "PaymentCards", icon="fa-folder-open-o", category="Review")
+
+class Wallet_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Wallet)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(Wallet_TransMasterDetailView, "Wallets", icon="fa-folder-open-o", category="Review")
+
+class Agent_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Agent)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(Agent_TransMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
 
 class Doc_AgentDocLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Doc)
@@ -2173,6 +2166,13 @@ class Doc_AgentDocLinkMasterDetailView(MasterDetailView):
     show_template = 'appbuilder/general/model/show_cascade.html'
 
 appbuilder.add_view(Doc_AgentDocLinkMasterDetailView, "Docs", icon="fa-folder-open-o", category="Review")
+
+class Agent_AgentDocLinkMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Agent)
+    related_views = [AgentDocLinkModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+appbuilder.add_view(Agent_AgentDocLinkMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
 
 class Doc_PersonDocLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Doc)
@@ -2188,59 +2188,41 @@ class Person_PersonDocLinkMasterDetailView(MasterDetailView):
 
 appbuilder.add_view(Person_PersonDocLinkMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
 
+class CountryMultipleView(MultipleView):
+    datamodel = SQLAInterface(Country)
+    views = [CountryModelView, AgentModelView, StateModelView, LgaModelView, AgentTierModelView, BankModelView, UserExtModelView]
+
+appbuilder.add_view(CountryMultipleView, "Countrys", icon="fa-folder-open-o", category="Inspect")
+
 class UserExtMultipleView(MultipleView):
     datamodel = SQLAInterface(UserExt)
-    views = [UserExtModelView, AgentTierModelView, BankModelView, StateModelView, LgaModelView, CountryModelView, AgentModelView]
+    views = [StateModelView, LgaModelView, UserExtModelView]
 
 appbuilder.add_view(UserExtMultipleView, "UserExts", icon="fa-folder-open-o", category="Inspect")
 
-class LgaMultipleView(MultipleView):
-    datamodel = SQLAInterface(Lga)
-    views = [LgaModelView, StateModelView, UserExtModelView]
-
-appbuilder.add_view(LgaMultipleView, "Lgas", icon="fa-folder-open-o", category="Inspect")
-
-class PosMultipleView(MultipleView):
-    datamodel = SQLAInterface(Pos)
-    views = [PosModelView, AgentModelView]
-
-appbuilder.add_view(PosMultipleView, "Poss", icon="fa-folder-open-o", category="Inspect")
-
-class TransTypeMultipleView(MultipleView):
-    datamodel = SQLAInterface(TransType)
-    views = [CustomerSegmentModelView, BillerModelView, PromotionModelView, AgentTierModelView, BillerOfferingModelView, StateModelView, TransTypeModelView, LgaModelView, AgentModelView]
-
-appbuilder.add_view(TransTypeMultipleView, "TransTypes", icon="fa-folder-open-o", category="Inspect")
-
-class PersonMultipleView(MultipleView):
-    datamodel = SQLAInterface(Person)
-    views = [PersonModelView, AgentModelView]
-
-appbuilder.add_view(PersonMultipleView, "People", icon="fa-folder-open-o", category="Inspect")
-
-class ContactTypeMultipleView(MultipleView):
-    datamodel = SQLAInterface(ContactType)
-    views = [ContactTypeModelView, PersonModelView, AgentModelView]
-
-appbuilder.add_view(ContactTypeMultipleView, "ContactTypes", icon="fa-folder-open-o", category="Inspect")
-
 class AgentMultipleView(MultipleView):
     datamodel = SQLAInterface(Agent)
-    views = [DocTypeModelView, PersonModelView, AgentModelView, MimeTypeModelView]
+    views = [PosModelView, AgentModelView]
 
 appbuilder.add_view(AgentMultipleView, "Agents", icon="fa-folder-open-o", category="Inspect")
 
 class BillerMultipleView(MultipleView):
     datamodel = SQLAInterface(Biller)
-    views = [CustomerSegmentModelView, BillerModelView, PromotionModelView, AgentTierModelView, BillerOfferingModelView, WalletModelView, BankModelView, TransRoutingThresholdsModelView, CouponModelView, PaymentCardModelView, PosModelView, CurrencyModelView, AgentModelView]
+    views = [AgentModelView, BillerModelView, StateModelView, LgaModelView, BillerOfferingModelView, CustomerSegmentModelView, PromotionModelView, AgentTierModelView, TransTypeModelView]
 
 appbuilder.add_view(BillerMultipleView, "Billers", icon="fa-folder-open-o", category="Inspect")
 
-class DocMultipleView(MultipleView):
-    datamodel = SQLAInterface(Doc)
-    views = [DocModelView, AgentModelView]
+class DocTypeMultipleView(MultipleView):
+    datamodel = SQLAInterface(DocType)
+    views = [AgentModelView, DocTypeModelView, PersonModelView, MimeTypeModelView]
 
-appbuilder.add_view(DocMultipleView, "Docs", icon="fa-folder-open-o", category="Inspect")
+appbuilder.add_view(DocTypeMultipleView, "DocTypes", icon="fa-folder-open-o", category="Inspect")
+
+class PersonMultipleView(MultipleView):
+    datamodel = SQLAInterface(Person)
+    views = [CountryModelView, PersonModelView]
+
+appbuilder.add_view(PersonMultipleView, "People", icon="fa-folder-open-o", category="Inspect")
 
 
 appbuilder.add_link("rest_api", href="/swagger/v1", icon="fa-sliders", label="REST Api", category="Utilities")

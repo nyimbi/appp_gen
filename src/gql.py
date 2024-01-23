@@ -8,83 +8,28 @@
 import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from graphene import relay
+from flask_graphql import GraphQLView
 
 from flask_appbuilder.security.sqla.models import User, Role, Permission, PermissionView, RegisterUser
 from .models import *
+from . import app
 
-import os
-import sys
-import enum
-import inspect
-import datetime
-import shutils
-from datetime import timedelta, datetime, date
-
-from sqlalchemy.orm import relationship, query, defer, deferred, column_property, mapper
-from sqlalchemy.schema import FetchedValue
-from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlalchemy import (Column, Integer, String, ForeignKey,
-    Sequence, Float, Text, BigInteger, Date, SmallInteger, BigInteger, 
-    DateTime, Time, Boolean, Index, CheckConstraint, Interval, # MatchType  
-    UniqueConstraint, ForeignKeyConstraint, Numeric, LargeBinary , Table, func, Enum,
-    text)
-
-# IMPORT Postgresql Specific Types
-from sqlalchemy.dialects.postgresql import *
-from sqlalchemy.dialects.postgresql import (
-    ARRAY, BIGINT, BIT, BOOLEAN, BYTEA, CHAR, CIDR, DATE,
-    DOUBLE_PRECISION, ENUM, FLOAT, HSTORE, INET, INTEGER,
-    INTERVAL, JSON, JSONB, MACADDR, NUMERIC, OID, REAL, SMALLINT, TEXT,
-    TIME, TIMESTAMP, UUID, VARCHAR, INT4RANGE, INT8RANGE, NUMRANGE,
-    DATERANGE, TSRANGE, TSTZRANGE, TSVECTOR, aggregate_order_by )
-
-from flask_appbuilder import Model
-from flask_appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn, UserExtensionMixin
-from flask_appbuilder.filemanager import ImageManager
-
-from flask_appbuilder.models.decorators import renders
-from sqlalchemy_utils import aggregated, force_auto_coercion, observes
-from sqlalchemy_utils.types import TSVectorType   #Searchability look at DocMixin
-from sqlalchemy.ext.associationproxy import association_proxy
-
-from flask_appbuilder.security.sqla.models import User
-from geoalchemy2 import Geometry
-
-# To create GraphSQL API
-# import graphene
-# from graphene_sqlalchemy import SQLAlchemyObjectType
-
-# Versioning Mixin
-# from sqlalchemy_continuum import make_versioned
-#Add __versioned__ = {}
-
-
-# from sqlalchemy_searchable import make_searchable
-# from flask_graphql import GraphQLView
-
-# ActiveRecord Model Features
-# from sqlalchemy_mixins import AllFeaturesMixin, ActiveRecordMixin
-
-
-# from .model_mixins import *
-
-# Here is how to extend the User model
-#class UserExtended(Model, UserExtensionMixin):
-#    contact_group_id = Column(Integer, ForeignKey('contact_group.id'), nullable=True)
-#    contact_group = relationship('ContactGroup')
-
-# UTILITY CLASSES
-# import arrow,
-
-
-# Initialize sqlalchemy_utils
-#force_auto_coercion()
-# Keep versions of all data
-# make_versioned()
-# make_searchable()
-
-
-
+t_doc_category_gql = graphene.Enum.from_enum(t_doc_category)
+t_verification_status_gql = graphene.Enum.from_enum(t_verification_status)
+t_org_type_gql = graphene.Enum.from_enum(t_org_type)
+t_agent_role_gql = graphene.Enum.from_enum(t_agent_role)
+t_verification_status_gql = graphene.Enum.from_enum(t_verification_status)
+t_org_type_gql = graphene.Enum.from_enum(t_org_type)
+t_person_role_gql = graphene.Enum.from_enum(t_person_role)
+t_gender_gql = graphene.Enum.from_enum(t_gender)
+t_gender_gql = graphene.Enum.from_enum(t_gender)
+t_payment_method_gql = graphene.Enum.from_enum(t_payment_method)
+t_card_trans_type_gql = graphene.Enum.from_enum(t_card_trans_type)
+t_transaction_status_gql = graphene.Enum.from_enum(t_transaction_status)
+t_payment_method_gql = graphene.Enum.from_enum(t_payment_method)
+t_payment_method_gql = graphene.Enum.from_enum(t_payment_method)
+t_verification_status_gql = graphene.Enum.from_enum(t_verification_status)
+t_verification_status_gql = graphene.Enum.from_enum(t_verification_status)
 
 class AgentTierGql(SQLAlchemyObjectType):
     class Meta:
@@ -184,6 +129,7 @@ class DocTypeGql(SQLAlchemyObjectType):
         # exclude_fields = ("last_name",)
         
 
+    doc_category = graphene.Field(t_doc_category_gql)
 
 class MimeTypeGql(SQLAlchemyObjectType):
     class Meta:
@@ -349,6 +295,10 @@ class AgentGql(SQLAlchemyObjectType):
         # exclude_fields = ("last_name",)
         
 
+    verification_status = graphene.Field(t_verification_status_gql)
+    agent_type = graphene.Field(t_org_type_gql)
+    agent_role = graphene.Field(t_agent_role_gql)
+    kyc_verification_status = graphene.Field(t_verification_status_gql)
 
 class PosGql(SQLAlchemyObjectType):
     class Meta:
@@ -382,6 +332,7 @@ class CommRefGql(SQLAlchemyObjectType):
         # exclude_fields = ("last_name",)
         
 
+    agent_type = graphene.Field(t_org_type_gql)
 
 class PersonGql(SQLAlchemyObjectType):
     class Meta:
@@ -393,6 +344,8 @@ class PersonGql(SQLAlchemyObjectType):
         # exclude_fields = ("last_name",)
         
 
+    person_role = graphene.Field(t_person_role_gql)
+    gender = graphene.Field(t_gender_gql)
 
 class WalletGql(SQLAlchemyObjectType):
     class Meta:
@@ -448,6 +401,7 @@ class PersonAdditionalDataGql(SQLAlchemyObjectType):
         # exclude_fields = ("last_name",)
         
 
+    gender = graphene.Field(t_gender_gql)
 
 class PersonAdminDataGql(SQLAlchemyObjectType):
     class Meta:
@@ -470,6 +424,11 @@ class TransGql(SQLAlchemyObjectType):
         # exclude_fields = ("last_name",)
         
 
+    transaction_type = graphene.Field(t_payment_method_gql)
+    card_trans_type = graphene.Field(t_card_trans_type_gql)
+    trans_status = graphene.Field(t_transaction_status_gql)
+    origin_source = graphene.Field(t_payment_method_gql)
+    trans_dest = graphene.Field(t_payment_method_gql)
 
 class AgentDocLinkGql(SQLAlchemyObjectType):
     class Meta:
@@ -481,6 +440,7 @@ class AgentDocLinkGql(SQLAlchemyObjectType):
         # exclude_fields = ("last_name",)
         
 
+    verification_status = graphene.Field(t_verification_status_gql)
 
 class PersonDocLinkGql(SQLAlchemyObjectType):
     class Meta:
@@ -492,6 +452,7 @@ class PersonDocLinkGql(SQLAlchemyObjectType):
         # exclude_fields = ("last_name",)
         
 
+    verification_status = graphene.Field(t_verification_status_gql)
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
@@ -571,3 +532,8 @@ class Query(graphene.ObjectType):
     all_person_doc_link = SQLAlchemyConnectionField(PersonDocLinkGql.connection) #sort=PersonDocLinkGql.sort_argument())
 
 schema = graphene.Schema(query=Query)
+app.add_url_rule('/graphql', view_func=GraphQLView.as_view(
+    'graphql',
+    schema=schema,
+    graphiql=True,
+))

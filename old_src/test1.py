@@ -4,17 +4,23 @@
 #   - association tables should end in _link, _map or _assoc
 #   - Timestamps always default to func.now(), change generated code manually
 #
+from sqlalchemy import Enum
+from sqlalchemy import create_engine, inspect, MetaData
 
+import headers
+import utils, db_utils
 
-from sqlalchemy import create_engine, inspect
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum
-import enum
-import utils, headers
-from collections import defaultdict
+## Globals
+# DATABASE_URI = 'postgresql://username:password@localhost:5432/mydatabase'
+DATABASE_URI = "postgresql:///wakala"
+OUTPUT_MODELS_FILE = 'models.py'
+OUTPUT_VIEWS_FILE = 'views.py'
 
-
-engine = create_engine("postgresql:///wakala")
+engine = create_engine(DATABASE_URI)
+metadata = MetaData()
+metadata.reflect(bind=engine)
 inspector = inspect(engine)
+
 
 # Remove columns that end in _id
 def remove_id_columns(column_names):
@@ -31,6 +37,7 @@ def remove_id_columns(column_names):
             cleaned_names.append(name)
 
     return cleaned_names
+
 
 # This checks if a table is an association table
 # As Assoc table should only have two FKs
@@ -61,6 +68,7 @@ def is_association_table(table_name):
 
     return False
 
+
 # Selects the best display name given a list of column names
 def get_display_column(column_names):
     priorities = ['name', 'alias', 'title', 'label', 'display_name', 'code']
@@ -74,6 +82,7 @@ def get_display_column(column_names):
             return name
 
     return column_names[0]
+
 
 # In order to generate tables in topological sort order
 # -  get table dependencies
@@ -109,8 +118,9 @@ def topological_sort(graph):
 
     return sorted_list
 
+
 tables = inspector.get_table_names()
-mtbl = inspector.get_multi_columns() # https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.reflection.Inspector.get_multi_columns
+mtbl = inspector.get_multi_columns()  # https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.reflection.Inspector.get_multi_columns
 table_dependencies = get_table_dependencies()
 sorted_tables = topological_sort(table_dependencies)
 
@@ -126,7 +136,7 @@ with open("models.py", "w") as f:
     # Write the models.py header file first
     f.write(headers.MODEL_HEADER)
 
-    cnam = [] #Temporary holder for a tables column names
+    cnam = []  # Temporary holder for a tables column names
 
     # In order to Guarantee successful generation we want to do a topological sort of tables
     table_dependencies = get_table_dependencies()
@@ -149,22 +159,21 @@ with open("models.py", "w") as f:
                 enum_names.append(enum_name)
                 f.write("\n\n")
 
-
     # Now generate Models
     for table in sorted_tables:
-        column_names_list =[]
+        column_names_list = []
         cols = inspector.get_columns(table)
-        pks  = inspector.get_pk_constraint(table)
-        fks  = inspector.get_foreign_keys(table)
-        uqs  = inspector.get_unique_constraints(table)
-        cck  = inspector.get_check_constraints(table)
+        pks = inspector.get_pk_constraint(table)
+        fks = inspector.get_foreign_keys(table)
+        uqs = inspector.get_unique_constraints(table)
+        cck = inspector.get_check_constraints(table)
         t_comment = inspector.get_table_comment(table)  # Table Comment
 
         table_class = utils.snake_to_pascal(table)
         f.write(f"class {table_class}(Model):\n")
         f.write(f'    __tablename__ = "{table}"\n\n')
         if t_comment['text']:
-            f.write(f'    __doc__ = "{t_comment["text"] }"\n') # Use the table comment in the docstring
+            f.write(f'    __doc__ = "{t_comment["text"]}"\n')  # Use the table comment in the docstring
         # Put check constraints
         # __table_args__ = ( )
 
@@ -196,7 +205,7 @@ with open("models.py", "w") as f:
                 )
             else:
                 ctype = col["type"].compile()
-                ctype = utils.map_pgsql_datatypes(ctype.lower())
+                ctype = db_utils.map_pgsql_datatypes(ctype.lower())
 
                 # First Primary Keys
                 if col["name"] in pks["constrained_columns"]:
@@ -215,7 +224,7 @@ with open("models.py", "w") as f:
                         fkey = fk["referred_table"] + "." + fk["referred_columns"][0]
 
                         # Is this a self-referential column
-                        if table == referred_table: # means it is self-referential
+                        if table == referred_table:  # means it is self-referential
                             c_pk = ""
                             c_fk = f", ForeignKey('{fkey}')"
                         else:
@@ -230,37 +239,41 @@ with open("models.py", "w") as f:
                 if col['nullable'] == True:
                     c_nullable = ", nullable=True"
                 else:
-                    c_nullable = "" # default behaviour is nullable
+                    c_nullable = ""  # default behaviour is nullable
 
                 if col['autoincrement'] == True:
                     c_autoincrement = ", autoincrement=True"
 
                 if col['comment'] != None:
-                    c_comment = ', comment="'+col['comment']+'"'
+                    c_comment = ', comment="' + col['comment'] + '"'
 
                 if col['default'] != None:
                     c_default = f", default = {col['default']}"  # Might include sqltext, so we process further
-                    if col['default'] == 'false': c_default = ', default = False'
-                    if col['default'] == 'true': c_default = ', default = True'
-                    if col['default'] == 'now()': c_default = ', default = func.now()'
-                    if ":" in col['default']: c_default = ', default = '+ col['default'].split(':')[0]
-
-                    if col['default'].startswith('nextval'): # Means it is autoincrement and uses a sequence
+                    if col['default'] == 'false':
+                        c_default = ', default=False'
+                    elif col['default'] == 'true':
+                        c_default = ', default=True'
+                    elif col['default'] == 'now()':
+                        c_default = ', default=func.now()'
+                    elif ":" in col['default']:
+                        c_default = ''  # , default = ' + col['default'].split(':')[0]
+                    elif col['default'].startswith('nextval'):  # Means it is autoincrement and uses a sequence
                         c_autoincrement = ", autoincrement=True"
-                        c_default =""
+                        c_default = ""
+                    else:
+                        c_default = ''
 
                 f.write(
                     f"    {col['name']} = Column({ctype}{c_fk}{c_pk}{c_unique}{c_autoincrement}{c_default}{c_comment})\n"
                 )
-
 
         # Now generate relationships for all fks
         # constrained_columns, options, referred_columns, referred_schema, referred_table
         # https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedForeignKeyConstraint
         for fk in fks:
             fkname = fk["name"].split('_id_')[0]
-            qsr = "" # Quote Self Referential Tasble Name
-            fk_ref_table =  utils.snake_to_pascal(fk["referred_table"])
+            qsr = ""  # Quote Self Referential Tasble Name
+            fk_ref_table = utils.snake_to_pascal(fk["referred_table"])
             fk_ref_col = fk["referred_columns"][0]
             fkcol = fk["constrained_columns"][0]
             pjoin = f", primaryjoin='{utils.snake_to_pascal(table)}.{fkcol} == {fk_ref_table}.{fk_ref_col}'"
@@ -269,7 +282,8 @@ with open("models.py", "w") as f:
             for_keys = f", foreign_keys=[{qsr}{fk_ref_table}.{fk_ref_col}{qsr}]"
             rem_side = ""
 
-            if utils.snake_to_pascal(table) == fk_ref_table:         # We have a self-referential join, so we have to quote the table name
+            if utils.snake_to_pascal(
+                    table) == fk_ref_table:  # We have a self-referential join, so we have to quote the table name
                 qsr = "'"
                 rem_side = f", remote_side=[{fk_ref_col}]"
                 for_keys = f", foreign_keys=[{fkcol}]"
@@ -290,20 +304,18 @@ with open("models.py", "w") as f:
                     f"    CheckConstraint('{sql_expression}', name={constraint_name})\n"
                 )
         f.write("\n    def __repr__(self):\n")
-        f.write("       return self."+ get_display_column(column_names_list)+"\n")
+        f.write("       return self." + get_display_column(column_names_list) + "\n")
         f.write("\n ### \n\n")
-
-
 
 ####### Generate views #####
 
 with open('views.py', 'w') as f:
-    f.write(headers.VIEW_FILE_HEADER)
+    f.write(headers.VIEW_HEADER)
     md_views = set()
     for table in sorted_tables:
         columns = inspector.get_columns(table)
         fks = inspector.get_foreign_keys(table)
-        all_field_names =[]
+        all_field_names = []
         # Collect the column and foreign key names
         # all_field_names = [col["name"].lower() for col in columns]
         all_field_names = [col["name"] for col in columns]
@@ -314,11 +326,11 @@ with open('views.py', 'w') as f:
         class_name = utils.snake_to_pascal(table)
         snk_table_name = utils.snake_to_pascal(table)
         col_names = [col["name"] for col in columns]
-        rt_cols = [] #str(RefTypeMixin.mixin_fields())
-        rt_fld_set = [] #str(RefTypeMixin.mixin_fieldset())
+        rt_cols = []  # str(RefTypeMixin.mixin_fields())
+        rt_fld_set = []  # str(RefTypeMixin.mixin_fieldset())
         # lbl_cols = [utils.snake_to_label(col["name"]) for col in columns]
         # lbl_cols = {['col': utils.snake_to_label(col.split('_id_fke')[0]) for col in all_field_names]}
-        lbl_cols ={}
+        lbl_cols = {}
         for col in all_field_names:
             lbl_cols[col.split('_id_fke')[0]] = utils.snake_to_label(col.split('_id_fke')[0])
         print(lbl_cols)
@@ -336,7 +348,7 @@ with open('views.py', 'w') as f:
             rt_fld_set=rt_fld_set,
             lbl_cols=lbl_cols)
         )
-        f.write(headers.VIEW_REGY.format(class_name=class_name,table_title =table_title))
+        f.write(headers.VIEW_REGY.format(class_name=class_name, table_title=table_title))
     for table in tables:
         columns = inspector.get_columns(table)
         fks = inspector.get_foreign_keys(table)
@@ -349,13 +361,13 @@ with open('views.py', 'w') as f:
             fkref = fk["referred_columns"][0]
             pjoin = utils.snake_to_pascal(table) + '.' + fkcol + ' == ' + fktable + '.' + fkref
             class_name = utils.snake_to_pascal(fktable)
-            mv_name = class_name+detail_class_name+'View'
+            mv_name = class_name + detail_class_name + 'View'
             if mv_name not in md_views:
                 f.write(headers.VIEW_MASTER_DETAILX.format(
-                    class_name= class_name,
-                    detail_class_name = detail_class_name,
+                    class_name=class_name,
+                    detail_class_name=detail_class_name,
                     pjoin=pjoin
-                    )
+                )
                 )
                 md_views.add(mv_name)
     f.write(headers.VIEW_FILE_FOOTER)
