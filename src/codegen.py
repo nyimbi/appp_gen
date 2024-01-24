@@ -197,8 +197,11 @@ def gen_models(metadata, inspector):
                         c_default = ""
                     else:
                         c_default =''
-
-                model_code.append(
+                # Address the case of a photo/doc/image
+                if col["name"].endswith('_img') or col["name"].endswith('_photo'):
+                    model_code.append(f"    {col['name']} = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))")
+                else:
+                    model_code.append(
                     f"    {col['name']} = Column({ctype}{c_fk}{c_pk}{c_unique}{c_autoincrement}{c_default}{c_nullable}{c_comment})"
                 )
 
