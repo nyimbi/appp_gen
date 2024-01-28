@@ -4,9 +4,11 @@ from sqlalchemy import create_engine, inspect, MetaData, FetchedValue
 # from sqlalchemy.orm import relationship, DeclarativeBase, mapped_column, Mapped, sessionmaker
 # from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import (
-    Enum, ForeignKey, ARRAY, JSON, PickleType, LargeBinary, Boolean, Date, DateTime, Float, Integer, Interval, Numeric, SmallInteger,
-    String, Text, Time, BigInteger, Unicode, UnicodeText, CHAR, VARBINARY, TIMESTAMP, CLOB, BLOB, NCHAR, NVARCHAR, INTEGER, TEXT, VARCHAR,
-    NUMERIC, BOOLEAN,  Time, DECIMAL, Column
+    Enum, ForeignKey, ARRAY, JSON, PickleType, LargeBinary, Boolean, Date, DateTime, Float, Integer, Interval, Numeric,
+    SmallInteger,
+    String, Text, Time, BigInteger, Unicode, UnicodeText, CHAR, VARBINARY, TIMESTAMP, CLOB, BLOB, NCHAR, NVARCHAR,
+    INTEGER, TEXT, VARCHAR,
+    NUMERIC, BOOLEAN, Time, DECIMAL, Column
 )
 from sqlalchemy.dialects.postgresql import (
     ARRAY, BIGINT, BIT, BOOLEAN, BYTEA, CHAR, CIDR, CITEXT, DATE, DATEMULTIRANGE,
@@ -16,7 +18,6 @@ from sqlalchemy.dialects.postgresql import (
     REGCONFIG, SMALLINT, TEXT, TIME, TIMESTAMP, TSMULTIRANGE, TSQUERY, TSRANGE,
     TSTZMULTIRANGE, TSTZRANGE, TSVECTOR, UUID, VARCHAR,
 )
-
 
 
 def map_dbml_datatypes(datatype: str):
@@ -141,7 +142,7 @@ def map_oracle_datatypes(oracle_type):
         return 'Numeric'
     elif oracle_type.startswith('VARCHAR2') or oracle_type.startswith('NVARCHAR2') or oracle_type.startswith(
             'CHAR') or oracle_type.startswith('NCHAR') or oracle_type.startswith('CLOB') or oracle_type.startswith(
-            'NCLOB'):
+        'NCLOB'):
         return 'String'
     elif oracle_type.startswith('DATE') or oracle_type.startswith('TIMESTAMP') or oracle_type.startswith(
             'TIMESTAMP WITH TIME ZONE') or oracle_type.startswith('TIMESTAMP WITH LOCAL TIME ZONE'):
@@ -164,7 +165,7 @@ def map_sqlite_datatypes(sqlite_type):
     """
     if sqlite_type.startswith('integer') or sqlite_type.startswith('tinyint') or sqlite_type.startswith(
             'smallint') or sqlite_type.startswith('mediumint') or sqlite_type.startswith(
-            'int') or sqlite_type.startswith('bigint'):
+        'int') or sqlite_type.startswith('bigint'):
         return 'Integer'
     elif sqlite_type.startswith('real') or sqlite_type.startswith('float') or sqlite_type.startswith(
             'double') or sqlite_type.startswith('decimal'):
@@ -225,6 +226,7 @@ def pg_to_fabtypes(postgres_type):
         "xml": "String",
     }
     return type_mapping.get(postgres_type.lower(), "String")
+
 
 ### Using Marshmallow
 def get_marshmallow_field_type(column_type):
@@ -382,8 +384,6 @@ def get_table_schema(metadata):
     return schema
 
 
-
-
 # Remove columns that end in _id
 def remove_id_columns(column_names):
     cleaned_names = []
@@ -479,4 +479,3 @@ def topological_sort(graph):
             dfs(node)
 
     return sorted_list
-

@@ -14,20 +14,20 @@
     </style>
 </head>
 <body>
-    <h1>{{ model_name }} Data</h1>
-    <table>
-        <tr>
-            {% for column_name in column_names %}
-            <th>{{ column_name }}</th>
-            {% endfor %}
-        </tr>
-        {% for item in items %}
-        <tr>
-            {% for column_name in column_names %}
-            <td>{{ getattr(item, column_name) }}</td>
-            {% endfor %}
-        </tr>
+<h1>{{ model_name }} Data</h1>
+<table>
+    <tr>
+        {% for column_name in column_names %}
+        <th>{{ column_name }}</th>
         {% endfor %}
-    </table>
+    </tr>
+    {% for item in items %}
+    <tr>
+        {% for column_name in column_names %}
+        <td>{{ getattr(item, column_name) }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
 </body>
 </html>

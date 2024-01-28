@@ -1,4 +1,5 @@
 # TODO: Process _img fields in views to make them uploadable
+# TODO: when it is all satisfactorily working, make into a python package
 # Conventions: PostgreSQL Database
 #   - id fields should always be in id serial and called id
 #   - Foreign Keys should ALWAYS end in _id_fk
@@ -8,9 +9,10 @@
 #   - Comments on fields are used to give descriptions in the UI
 #
 import inflect
+
 p = inflect.engine()
 
-from db_utils  import *
+from db_utils import *
 import headers
 from py_templates.utils import *
 
@@ -21,7 +23,6 @@ def inspect_metadata(database_uri):
     metadata.reflect(bind=engine)
     inspector = inspect(engine)
     return metadata, inspector
-
 
 
 def gen_models(metadata, inspector):
@@ -70,7 +71,7 @@ def gen_models(metadata, inspector):
 
     model_code.extend(gen_domains(inspector))
 
-    def gen_enums( inspector):
+    def gen_enums(inspector):
         enum_code = []
         enum_code.append('# Enums defined in the database')
         enums = inspector.get_enums()
@@ -128,8 +129,19 @@ def gen_models(metadata, inspector):
         for col in cols:
             # String parts to compose a column definition
             # https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedColumn
-            c_pk = ""; c_fk = ""; c_autoincrement = ""; c_comment = ""; c_computed = ""; c_ck = ""  # Check constraints
-            c_default = ""; c_dialect_options = ""; c_identity = ""; c_column_name = ""; c_nullable = ""; c_type = ""; c_unique = ""
+            c_pk = "";
+            c_fk = "";
+            c_autoincrement = "";
+            c_comment = "";
+            c_computed = "";
+            c_ck = ""  # Check constraints
+            c_default = "";
+            c_dialect_options = "";
+            c_identity = "";
+            c_column_name = "";
+            c_nullable = "";
+            c_type = "";
+            c_unique = ""
 
             column_names_list.append(col["name"])
 
@@ -188,22 +200,27 @@ def gen_models(metadata, inspector):
 
                 if col['default'] != None:
                     c_default = f", default = {col['default']}"  # Might include sqltext, so we process further
-                    if col['default'] == 'false': c_default = ', default=False'
-                    elif col['default'] == 'true': c_default = ', default=True'
-                    elif col['default'] == 'now()': c_default = ', default=func.now()'
-                    elif ":" in col['default']: c_default = '' #, default = ' + col['default'].split(':')[0]
+                    if col['default'] == 'false':
+                        c_default = ', default=False'
+                    elif col['default'] == 'true':
+                        c_default = ', default=True'
+                    elif col['default'] == 'now()':
+                        c_default = ', default=func.now()'
+                    elif ":" in col['default']:
+                        c_default = ''  # , default = ' + col['default'].split(':')[0]
                     elif col['default'].startswith('nextval'):  # Means it is autoincrement and uses a sequence
                         c_autoincrement = ", autoincrement=True"
                         c_default = ""
                     else:
-                        c_default =''
+                        c_default = ''
                 # Address the case of a photo/doc/image
                 if col["name"].endswith('_img') or col["name"].endswith('_photo'):
-                    model_code.append(f"    {col['name']} = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))")
+                    model_code.append(
+                        f"    {col['name']} = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))")
                 else:
                     model_code.append(
-                    f"    {col['name']} = Column({ctype}{c_fk}{c_pk}{c_unique}{c_autoincrement}{c_default}{c_nullable}{c_comment})"
-                )
+                        f"    {col['name']} = Column({ctype}{c_fk}{c_pk}{c_unique}{c_autoincrement}{c_default}{c_nullable}{c_comment})"
+                    )
 
         # Now generate relationships for all fks
         # constrained_columns, options, referred_columns, referred_schema, referred_table
@@ -225,7 +242,8 @@ def gen_models(metadata, inspector):
             for_keys = f", foreign_keys=[{qsr}{fk_ref_table}.{fk_ref_col}{qsr}]"
             rem_side = ""
 
-            if snake_to_pascal(table) == fk_ref_table:  # We have a self-referential join, so we have to quote the table name
+            if snake_to_pascal(
+                    table) == fk_ref_table:  # We have a self-referential join, so we have to quote the table name
                 qsr = "'"
                 rem_side = f", remote_side=[{fk_ref_col}]"
                 for_keys = f", foreign_keys=[{fkcol}]"
@@ -250,8 +268,9 @@ def gen_models(metadata, inspector):
 
     # model_gql = gen_graphql(metadata, inspector)    #Test TODO: delete
     # model_code.extend(model_gql)                    #Test TODO: delete
-    return model_code                                #Test TODO delete
+    return model_code  # Test TODO delete
     # return model_code
+
 
 def gen_views(metadata, inspector):
     views = []
@@ -261,12 +280,12 @@ def gen_views(metadata, inspector):
     def gen_col_names(table):
         col_names = []
         for col in table.columns:
-            s =  col.name
+            s = col.name
             if col.name == 'id': continue
             if s.endswith('_id_fk'):
-                s = col.name[:-6]  #.split('_id')[0]
-            # if s.endswith('_id'):
-            #     s = s[:-6]
+                s = col.name[:-6]  # .split('_id')[0]
+                # if s.endswith('_id'):
+                #     s = s[:-6]
                 col_names.append(f"'{s}'")
                 continue
             col_names.append(f"'{s}'")
@@ -294,9 +313,10 @@ def gen_views(metadata, inspector):
             desc.append(f"        '{col.name}' : '{col.comment}',")
         desc.append('    }')
         return desc
+
     def gen_titles(table):
         titles = []
-        titles.append(f"    list_title = 'List {snake_to_words(table.name)}'") # title()
+        titles.append(f"    list_title = 'List {snake_to_words(table.name)}'")  # title()
         titles.append(f"    show_title = 'Show {snake_to_words(table.name)}'")
         titles.append(f"    edit_title = 'Edit {snake_to_words(table.name)}'")
         titles.append(f"    add_title  = 'Add {snake_to_words(table.name)}'")
@@ -323,7 +343,8 @@ def gen_views(metadata, inspector):
         # titles.append(f"    ")
         # titles.append(f"    ")
         # titles.append(f"    ")
-        titles.append(f"    # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]")
+        titles.append(
+            f"    # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]")
         titles.append(f'    # base_order = ("name", "asc")')
         # titles.append(f"    ")
         # titles.append(f"    ")
@@ -334,11 +355,9 @@ def gen_views(metadata, inspector):
         titles.append(f'    # page_size = 100 ')
         return titles
 
-
-
     # Generate ModelViews for all tables
     for table in metadata.sorted_tables:
-        model_name = snake_to_pascal(table.name) #.capitalize()
+        model_name = snake_to_pascal(table.name)  # .capitalize()
         if model_name.lower().startswith('ab_'):
             continue
         views.append(f'class {model_name}ModelView(ModelView):')
@@ -347,15 +366,15 @@ def gen_views(metadata, inspector):
         views.extend(gen_titles(table))
         views.append(f'#    list_columns = [{c}]')
         view_regs.append(
-                f'appbuilder.add_view({model_name}ModelView, "{pascal_to_words(model_name)}", icon="fa-folder-open-o", category="Setup")\n')
+            f'appbuilder.add_view({model_name}ModelView, "{pascal_to_words(model_name)}", icon="fa-folder-open-o", category="Setup")\n')
 
     # Generate MasterDetailView for tables with foreign keys
     for table in metadata.sorted_tables:
         mviews = set()
         for fk in table.foreign_keys:
             parent_table = fk.column.table.name
-            parent_model_name = snake_to_pascal(parent_table) #.capitalize()
-            child_model_name = snake_to_pascal(fk.parent.table.name) #.capitalize()
+            parent_model_name = snake_to_pascal(parent_table)  # .capitalize()
+            child_model_name = snake_to_pascal(fk.parent.table.name)  # .capitalize()
             detail_view_name = f'{child_model_name}ModelView'
 
             # Generate a unique master-detail view class name
@@ -367,7 +386,7 @@ def gen_views(metadata, inspector):
                 views.append(f"    show_template = 'appbuilder/general/model/show_cascade.html'")
                 views.append('')
                 view_regs.append(
-                f'appbuilder.add_view({master_detail_view_name}, "{pascal_to_words(parent_model_name)}", icon="fa-folder-open-o", category="Review")\n')
+                    f'appbuilder.add_view({master_detail_view_name}, "{pascal_to_words(parent_model_name)}", icon="fa-folder-open-o", category="Review")\n')
                 mviews.add(master_detail_view_name)
 
     # Generate MultipleViews for tables that have multiple Foreign Keys
@@ -393,15 +412,16 @@ def gen_views(metadata, inspector):
                 views.append('')
                 # view_regs.append(
                 view_regs.append(
-                f'appbuilder.add_view({multiple_view_name}, "{pascal_to_words(parent_model_name)}", icon="fa-folder-open-o", category="Inspect")\n')
+                    f'appbuilder.add_view({multiple_view_name}, "{pascal_to_words(parent_model_name)}", icon="fa-folder-open-o", category="Inspect")\n')
                 mviews.add(multiple_view_name)
 
     views.extend(view_regs)
     views.append(headers.VIEW_FILE_FOOTER)
     return views
 
+
 def gen_api(metadata, inspector):
-    api_code =[]
+    api_code = []
     api_code.extend(headers.gen_api_header())
     for t in metadata.sorted_tables:
         table = t.name
@@ -414,6 +434,7 @@ def gen_api(metadata, inspector):
         api_code.append(f'appbuilder.add_api({table_class}Api)\n\n')
 
     return api_code
+
 
 def gen_graphql(metadata, inspector):
     gql_code = []
@@ -428,7 +449,7 @@ def gen_graphql(metadata, inspector):
         # Find excluded fields
         for col in inspector.get_columns(table):
             if col["name"].endswith('_img'):
-                exclude_fields.append('"' + col["name"]+ '"')
+                exclude_fields.append('"' + col["name"] + '"')
         gql_code.append(headers.gen_gql_class(snake_to_pascal(table), ', '.join(exclude_fields)))
         query_code.append(headers.gen_gql_query(table))
         cols = inspector.get_columns(table)
@@ -443,7 +464,7 @@ def gen_graphql(metadata, inspector):
                     f"{enum_name}_gql = graphene.Enum.from_enum({enum_name})"
                 )
 
-    gql =[]
+    gql = []
     gql.append(headers.gen_gql_header())
     gql.extend(gql_hdr)
     gql.extend(gql_code)
@@ -457,8 +478,8 @@ def gen_dbml(metadata, inspector):
     for t in metadata.sorted_tables:
         table = t.name
 
-
     pass
+
 
 def gen_kivy(metadata, inspector):
     kivy_code = []
@@ -478,8 +499,6 @@ def gen_kivy(metadata, inspector):
         kivy_code.append(form_code)
 
     return kivy_code
-
-
 
 
 if __name__ == '__main__':

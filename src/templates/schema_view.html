@@ -3,7 +3,7 @@
 {% extends "appbuilder/base.html" %}
 {% block head_css %}
 {{ super() }}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-network.min.css" rel="stylesheet" type="text/css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-network.min.css" rel="stylesheet" type="text/css"/>
 {% endblock %}
 
 {% block content %}
@@ -11,50 +11,50 @@
 <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 
 <script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function() {
-    // Get the schema information from the Flask view
-    var schema = JSON.parse('{{ schema | tojson | safe }}');
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the schema information from the Flask view
+        var schema = JSON.parse('{{ schema | tojson | safe }}');
 
-    // JavaScript code to create the network diagram will go here
-    // JavaScript code inside schema_view.html
+        // JavaScript code to create the network diagram will go here
+        // JavaScript code inside schema_view.html
 
-    var nodes = new vis.DataSet([]);
-    var edges = new vis.DataSet([]);
+        var nodes = new vis.DataSet([]);
+        var edges = new vis.DataSet([]);
 
-    // Add tables as nodes
-    schema.tables.forEach((table) => {
-        const label = `<b>${table.name}</b><br/>${table.columns.map(column => `${column.name}: ${column.type}`).join('<br/>')}`;
-        nodes.add({ id: table.id, label, shape: "box", font: { multi: "html" } });
-    });
+        // Add tables as nodes
+        schema.tables.forEach((table) => {
+            const label = `<b>${table.name}</b><br/>${table.columns.map(column => `${column.name}: ${column.type}`).join('<br/>')}`;
+            nodes.add({ id: table.id, label, shape: "box", font: { multi: "html" } });
+        });
 
-    // Add relationships as edges (assuming you have a relationships array in schema)
-    schema.relationships.forEach((rel) => {
-        const arrowType = rel.type === "one-to-many" ? "arrow" : "bar";
-        edges.add({ from: rel.from, to: rel.to, arrows: `${arrowType} to` });
-    });
+        // Add relationships as edges (assuming you have a relationships array in schema)
+        schema.relationships.forEach((rel) => {
+            const arrowType = rel.type === "one-to-many" ? "arrow" : "bar";
+            edges.add({ from: rel.from, to: rel.to, arrows: `${arrowType} to` });
+        });
 
-    // create a network
-    var container = document.getElementById("schema-network");
+        // create a network
+        var container = document.getElementById("schema-network");
 
-    var data = {
-        nodes: nodes,
-        edges: edges,
-    };
+        var data = {
+            nodes: nodes,
+            edges: edges,
+        };
 
-    var options = {
-        edges: {
-            font: {
-                size: 12,
+        var options = {
+            edges: {
+                font: {
+                    size: 12,
+                },
             },
-        },
-        physics: {
-            enabled: true,
-            solver: "barnesHut",
-        },
-    };
+            physics: {
+                enabled: true,
+                solver: "barnesHut",
+            },
+        };
 
-    var network = new vis.Network(container, data, options);
-    });
+        var network = new vis.Network(container, data, options);
+        });
 
 </script>
 {% endblock %}

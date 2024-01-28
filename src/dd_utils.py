@@ -37,18 +37,18 @@ def pop_data_dict(metadata, inspector, session):
         # Columns
         for column in table.columns:
             column_entry = app_Columns(
-                name = column.name,
-                data_type = str(column.type),
-                nullable = column.nullable,
-                primary_key = column.primary_key,
-                autoincrement = column.autoincrement,
-                unique = column.unique,
-                default = column.default,
-                server_default = column.server_default,
-                check_constraint = column.info.get('check_constraint', None),
-                comment = column.comment,
-                indexed = any(index for index in table.indexes if column in index.columns),
-                table = table_entry
+                name=column.name,
+                data_type=str(column.type),
+                nullable=column.nullable,
+                primary_key=column.primary_key,
+                autoincrement=column.autoincrement,
+                unique=column.unique,
+                default=column.default,
+                server_default=column.server_default,
+                check_constraint=column.info.get('check_constraint', None),
+                comment=column.comment,
+                indexed=any(index for index in table.indexes if column in index.columns),
+                table=table_entry
             )
             session.add(column_entry)
 
@@ -79,11 +79,11 @@ def pop_data_dict(metadata, inspector, session):
             continue  # If the referred column entry doesn't exist, skip to the next foreign key
         for fk in table.foreign_keys:
             relation_entry = app_Relations(
-                name = fk.name,
-                source_table_id = source_table_entry.id,
-                source_column_id = source_column_entry.id,
-                referred_table_id = referred_table_entry.id,
-                referred_column_id = referred_column_entry.id,
+                name=fk.name,
+                source_table_id=source_table_entry.id,
+                source_column_id=source_column_entry.id,
+                referred_table_id=referred_table_entry.id,
+                referred_column_id=referred_column_entry.id,
                 # Additional fields can be set here as needed
             )
             session.add(relation_entry)
