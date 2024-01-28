@@ -1,8 +1,0 @@
-import EntityRelationshipModelParserConfig from './EntityRelationshipModelParserConfig';
-import entityRelationshipModelParserConfigManager, {EntityRelationshipModelParserConfigManager} from './EntityRelationshipModelParserConfigManager';
-
-export {
-	EntityRelationshipModelParserConfig,
-	EntityRelationshipModelParserConfigManager,
-	entityRelationshipModelParserConfigManager
-};

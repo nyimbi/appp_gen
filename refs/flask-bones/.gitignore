@@ -1,8 +1,0 @@
-*.pyc
-.DS_Store
-.coverage
-.env
-gen/
-.webassets-cache
-bower_components/
-node_modules/

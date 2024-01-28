@@ -1,9 +1,0 @@
-node_modules
-docs
-.git
-test/jdl/**/.jhipster/**
-.vscode
-**/templates/**/
-**/jdl-core.min.js
-**/generated-serialized-grammar.js
-test/fixtures/**
