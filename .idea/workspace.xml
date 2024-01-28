@@ -9,21 +9,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="beef659a-f4de-45e7-80c5-ef056e8b7ba6" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/old-README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/codegen.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/codegen.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/db_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dd_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dd_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/headers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/headers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/templates/chart_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/templates/chart_view.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/templates/erd_confirm_changes.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/templates/erd_confirm_changes.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/templates/erd_template.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/templates/erd_template.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/templates/my_index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/templates/my_index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/templates/pdf_template.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/templates/pdf_template.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/templates/print_template.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/templates/print_template.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/templates/schema_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/templates/schema_view.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/templates/search_template.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/templates/search_template.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/templates/tabbed_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/templates/tabbed_edit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
