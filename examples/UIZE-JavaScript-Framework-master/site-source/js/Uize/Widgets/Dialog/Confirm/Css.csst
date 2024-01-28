@@ -1,4 +1,0 @@
-.`alert` .`cancelButton` {
-	display: none;
-}
-

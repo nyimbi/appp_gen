@@ -7,17 +7,7 @@
  
 
 import calendar
-from flask import redirect, flash, url_for, Markup, g
 from flask import render_template
-from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.views import ModelView, BaseView, MasterDetailView, MultipleView, RestCRUDView, CompactCRUDMixin
-from flask_appbuilder import ModelView, ModelRestApi, CompactCRUDMixin, aggregate_count, action, expose, BaseView, has_access
-from flask_appbuilder.charts.views import ChartView, TimeChartView, GroupByChartView
-from flask_appbuilder.models.group import aggregate_count
-from flask_appbuilder.widgets import ListThumbnail, ListWidget
-from flask_appbuilder.widgets import FormVerticalWidget, FormInlineWidget, FormHorizontalWidget, ShowBlockWidget
-from flask_appbuilder.models.sqla.filters import FilterStartsWith, FilterEqualFunction as FA
-from flask_appbuilder.api import ModelRestApi
 # from flask_mail import Message, Mail
 # from flask.ext.babel import lazy_gettext as _
 from flask import g
@@ -25,11 +15,8 @@ from flask import g
 # If you want to enable search
 # from elasticsearch import Elasticsearch
 
-from . import appbuilder, db
-
-from .models import *
-from .view_mixins import *
-from .apis import *
+# from .view_mixins import *
+from py_templates.apis import *
 
 ##########
 # Various Utilities
@@ -73,11 +60,11 @@ class AgentTierModelView(ModelView):
     # show_columns = ['name', 'notes']
     # edit_columns = ['name', 'notes']
     add_columns = ['name', 'notes']
-    search_columns = ['name', 'notes']
+    # search_columns = ['name', 'notes']
     description_columns = {
-        'id' : 'None',
-        'name' : 'None',
-        'notes' : 'None',
+        'id' : 'Identity column - Unique identifier for the agent tier.',
+        'name' : 'Name of the agent tier - Descriptive name or title of the agent tier.',
+        'notes' : 'Additional notes or remarks about the agent tier, if necessary.',
     }
     # list_exclude_columns = ['name', 'notes']
     # show_exclude_columns = ['name', 'notes']
@@ -89,13 +76,11 @@ class AgentTierModelView(ModelView):
     # add_columns = ['name', 'notes']
     # add_columns = ['name', 'notes']
     
-    # label_columns = {'name':'Name', 'notes':'Notes'}
+    label_columns = {'name':'Name', 'notes':'Notes'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['name', 'notes']
-appbuilder.add_view(AgentTierModelView, "AgentTiers", icon="fa-folder-open-o", category="Setup")
-
 class BankModelView(ModelView):
     datamodel = SQLAInterface(Bank)
     list_title = 'List Bank'
@@ -103,42 +88,38 @@ class BankModelView(ModelView):
     edit_title = 'Edit Bank'
     add_title  = 'Add Bank'
  
-    list_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    # show_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    # edit_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    add_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    search_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
+    list_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    # show_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    # edit_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    add_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    # search_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
     description_columns = {
-        'id' : 'None',
-        'code' : 'NIBSS institutionCode',
-        'name' : 'None',
-        'category' : 'category',
-        'swift_code' : 'None',
-        'sort_code' : 'None',
-        'iban' : 'None',
-        'cust_care_phone' : 'None',
-        'cust_care_email' : 'None',
-        'escalation_contact' : 'None',
-        'created_on' : 'None',
-        'updated_on' : 'None',
+        'id' : 'Unique identifier for the bank.',
+        'code' : 'NIBSS institutionCode, a unique code identifying the bank.',
+        'name' : 'Name of the Bank.',
+        'category' : 'Bank Category, representing the category of the bank.',
+        'swift_code' : 'SWIFT Code, a unique international bank identifier.',
+        'sort_code' : 'SORT Code, a unique bank sorting code.',
+        'iban' : 'IBAN Code, a unique international bank account number.',
+        'cust_care_phone' : 'Contact phone number for customer care.',
+        'cust_care_email' : 'Contact email for customer care.',
+        'escalation_contact' : 'Contact information for escalation purposes.',
     }
-    # list_exclude_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    # show_exclude_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    # edit_exclude_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    # add_exclude_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    # search_exclude_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    # order_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    # add_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    # add_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-    # add_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
+    # list_exclude_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    # show_exclude_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    # edit_exclude_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    # add_exclude_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    # search_exclude_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    # order_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    # add_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    # add_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
+    # add_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
     
-    # label_columns = {'code':'Code', 'name':'Name', 'category':'Category', 'swift_code':'Swift Code', 'sort_code':'Sort Code', 'iban':'Iban', 'cust_care_phone':'Cust Care Phone', 'cust_care_email':'Cust Care Email', 'escalation_contact':'Escalation Contact', 'created_on':'Created On', 'updated_on':'Updated On'}
+    label_columns = {'code':'Code', 'name':'Name', 'category':'Category', 'swift_code':'Swift Code', 'sort_code':'Sort Code', 'iban':'Iban', 'cust_care_phone':'Cust Care Phone', 'cust_care_email':'Cust Care Email', 'escalation_contact':'Escalation Contact'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact', 'created_on', 'updated_on']
-appbuilder.add_view(BankModelView, "Banks", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['code', 'name', 'category', 'swift_code', 'sort_code', 'iban', 'cust_care_phone', 'cust_care_email', 'escalation_contact']
 class BillerCategoryModelView(ModelView):
     datamodel = SQLAInterface(BillerCategory)
     list_title = 'List Biller Category'
@@ -150,11 +131,11 @@ class BillerCategoryModelView(ModelView):
     # show_columns = ['name', 'notes']
     # edit_columns = ['name', 'notes']
     add_columns = ['name', 'notes']
-    search_columns = ['name', 'notes']
+    # search_columns = ['name', 'notes']
     description_columns = {
-        'id' : 'None',
-        'name' : 'None',
-        'notes' : 'None',
+        'id' : 'Unique identifier for the biller category.',
+        'name' : 'Name or title of the biller category.',
+        'notes' : 'Additional notes or remarks about the biller category.',
     }
     # list_exclude_columns = ['name', 'notes']
     # show_exclude_columns = ['name', 'notes']
@@ -166,13 +147,11 @@ class BillerCategoryModelView(ModelView):
     # add_columns = ['name', 'notes']
     # add_columns = ['name', 'notes']
     
-    # label_columns = {'name':'Name', 'notes':'Notes'}
+    label_columns = {'name':'Name', 'notes':'Notes'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['name', 'notes']
-appbuilder.add_view(BillerCategoryModelView, "BillerCategorys", icon="fa-folder-open-o", category="Setup")
-
 class ContactTypeModelView(ModelView):
     datamodel = SQLAInterface(ContactType)
     list_title = 'List Contact Type'
@@ -184,7 +163,7 @@ class ContactTypeModelView(ModelView):
     # show_columns = ['name', 'description', 'is_digital', 'requires_verification', 'max_length', 'icon_url', 'created_at', 'updated_at']
     # edit_columns = ['name', 'description', 'is_digital', 'requires_verification', 'max_length', 'icon_url', 'created_at', 'updated_at']
     add_columns = ['name', 'description', 'is_digital', 'requires_verification', 'max_length', 'icon_url', 'created_at', 'updated_at']
-    search_columns = ['name', 'description', 'is_digital', 'requires_verification', 'max_length', 'icon_url', 'created_at', 'updated_at']
+    # search_columns = ['name', 'description', 'is_digital', 'requires_verification', 'max_length', 'icon_url', 'created_at', 'updated_at']
     description_columns = {
         'id' : 'Unique identifier for the address type.',
         'name' : 'Name or type of contact method, e.g., Mobile, Email, WhatsApp.',
@@ -206,13 +185,11 @@ class ContactTypeModelView(ModelView):
     # add_columns = ['name', 'description', 'is_digital', 'requires_verification', 'max_length', 'icon_url', 'created_at', 'updated_at']
     # add_columns = ['name', 'description', 'is_digital', 'requires_verification', 'max_length', 'icon_url', 'created_at', 'updated_at']
     
-    # label_columns = {'name':'Name', 'description':'Description', 'is_digital':'Is Digital', 'requires_verification':'Requires Verification', 'max_length':'Max Length', 'icon_url':'Icon Url', 'created_at':'Created At', 'updated_at':'Updated At'}
+    label_columns = {'name':'Name', 'description':'Description', 'is_digital':'Is Digital', 'requires_verification':'Requires Verification', 'max_length':'Max Length', 'icon_url':'Icon Url', 'created_at':'Created At', 'updated_at':'Updated At'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['name', 'description', 'is_digital', 'requires_verification', 'max_length', 'icon_url', 'created_at', 'updated_at']
-appbuilder.add_view(ContactTypeModelView, "ContactTypes", icon="fa-folder-open-o", category="Setup")
-
 class CountryModelView(ModelView):
     datamodel = SQLAInterface(Country)
     list_title = 'List Country'
@@ -224,7 +201,7 @@ class CountryModelView(ModelView):
     # show_columns = ['name', 'code', 'phone_code']
     # edit_columns = ['name', 'code', 'phone_code']
     add_columns = ['name', 'code', 'phone_code']
-    search_columns = ['name', 'code', 'phone_code']
+    # search_columns = ['name', 'code', 'phone_code']
     description_columns = {
         'id' : 'None',
         'name' : ' Country Name',
@@ -241,13 +218,11 @@ class CountryModelView(ModelView):
     # add_columns = ['name', 'code', 'phone_code']
     # add_columns = ['name', 'code', 'phone_code']
     
-    # label_columns = {'name':'Name', 'code':'Code', 'phone_code':'Phone Code'}
+    label_columns = {'name':'Name', 'code':'Code', 'phone_code':'Phone Code'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['name', 'code', 'phone_code']
-appbuilder.add_view(CountryModelView, "Countrys", icon="fa-folder-open-o", category="Setup")
-
 class CouponModelView(ModelView):
     datamodel = SQLAInterface(Coupon)
     list_title = 'List Coupon'
@@ -255,49 +230,48 @@ class CouponModelView(ModelView):
     edit_title = 'Edit Coupon'
     add_title  = 'Add Coupon'
  
-    list_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    # show_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    # edit_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    add_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    search_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    list_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # show_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # edit_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    add_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # search_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
     description_columns = {
-        'coupon_id' : 'None',
-        'coupon_value' : 'None',
-        'active' : 'None',
-        'used' : 'None',
-        'used_date' : 'None',
-        'primary_scan_code_label' : 'None',
-        'is_return_coupon' : 'None',
-        'expiration_date' : 'None',
-        'generation_date' : 'None',
-        'activation_date' : 'None',
-        'secondary_scan_code_label' : 'None',
-        'scan_code_img' : 'None',
-        'coupon_code' : 'None',
-        'return_coupon_reason' : 'None',
-        'is_valid' : 'None',
-        'coupon_status' : 'None',
-        'discount_percentage' : 'None',
-        'coupon_count' : 'None',
-        'payment_method_status' : 'None',
+        'id' : 'Unique identifier for the coupon.',
+        'value' : 'The monetary value of the coupon.',
+        'serial_no' : 'Serial number or code associated with the coupon.',
+        'active' : 'Indicates whether the coupon is active.',
+        'used' : 'Indicates whether the coupon has been used.',
+        'used_date' : 'Date and time when the coupon was used.',
+        'primary_scan_code_label' : 'Primary scan code label associated with the coupon.',
+        'is_return_coupon' : 'Indicates whether the coupon is a return coupon.',
+        'expiration_date' : 'Date when the coupon expires.',
+        'generation_date' : 'Date and time when the coupon was generated.',
+        'activation_date' : 'Date and time when the coupon was activated.',
+        'secondary_scan_code_label' : 'Secondary scan code label associated with the coupon.',
+        'scan_code_img' : 'Image or code used for scanning the coupon.',
+        'coupon_code' : 'Code associated with the coupon.',
+        'return_coupon_reason' : 'Reason for returning the coupon.',
+        'is_valid' : 'Indicates whether the coupon is valid.',
+        'coupon_status' : 'Status of the coupon.',
+        'discount_percentage' : 'Percentage discount offered by the coupon.',
+        'coupon_count' : 'Number of coupons available.',
+        'payment_method_status' : 'Status of the payment method associated with the coupon.',
     }
-    # list_exclude_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    # show_exclude_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    # edit_exclude_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    # add_exclude_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    # search_exclude_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    # order_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    # add_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    # add_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-    # add_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # list_exclude_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # show_exclude_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # edit_exclude_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # add_exclude_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # search_exclude_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # order_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # add_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # add_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
+    # add_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
     
-    # label_columns = {'coupon_id':'Coupon Id', 'coupon_value':'Coupon Value', 'active':'Active', 'used':'Used', 'used_date':'Used Date', 'primary_scan_code_label':'Primary Scan Code Label', 'is_return_coupon':'Is Return Coupon', 'expiration_date':'Expiration Date', 'generation_date':'Generation Date', 'activation_date':'Activation Date', 'secondary_scan_code_label':'Secondary Scan Code Label', 'scan_code_img':'Scan Code Img', 'coupon_code':'Coupon Code', 'return_coupon_reason':'Return Coupon Reason', 'is_valid':'Is Valid', 'coupon_status':'Coupon Status', 'discount_percentage':'Discount Percentage', 'coupon_count':'Coupon Count', 'payment_method_status':'Payment Method Status'}
+    label_columns = {'value':'Value', 'serial_no':'Serial No', 'active':'Active', 'used':'Used', 'used_date':'Used Date', 'primary_scan_code_label':'Primary Scan Code Label', 'is_return_coupon':'Is Return Coupon', 'expiration_date':'Expiration Date', 'generation_date':'Generation Date', 'activation_date':'Activation Date', 'secondary_scan_code_label':'Secondary Scan Code Label', 'scan_code_img':'Scan Code Img', 'coupon_code':'Coupon Code', 'return_coupon_reason':'Return Coupon Reason', 'is_valid':'Is Valid', 'coupon_status':'Coupon Status', 'discount_percentage':'Discount Percentage', 'coupon_count':'Coupon Count', 'payment_method_status':'Payment Method Status'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['coupon_id', 'coupon_value', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
-appbuilder.add_view(CouponModelView, "Coupons", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['value', 'serial_no', 'active', 'used', 'used_date', 'primary_scan_code_label', 'is_return_coupon', 'expiration_date', 'generation_date', 'activation_date', 'secondary_scan_code_label', 'scan_code_img', 'coupon_code', 'return_coupon_reason', 'is_valid', 'coupon_status', 'discount_percentage', 'coupon_count', 'payment_method_status']
 class CurrencyModelView(ModelView):
     datamodel = SQLAInterface(Currency)
     list_title = 'List Currency'
@@ -309,15 +283,15 @@ class CurrencyModelView(ModelView):
     # show_columns = ['name', 'symbol', 'numeric_code', 'full_name', 'decimal_places', 'internationalized_name_code']
     # edit_columns = ['name', 'symbol', 'numeric_code', 'full_name', 'decimal_places', 'internationalized_name_code']
     add_columns = ['name', 'symbol', 'numeric_code', 'full_name', 'decimal_places', 'internationalized_name_code']
-    search_columns = ['name', 'symbol', 'numeric_code', 'full_name', 'decimal_places', 'internationalized_name_code']
+    # search_columns = ['name', 'symbol', 'numeric_code', 'full_name', 'decimal_places', 'internationalized_name_code']
     description_columns = {
-        'id' : 'None',
-        'name' : 'None',
-        'symbol' : 'None',
-        'numeric_code' : 'None',
-        'full_name' : 'None',
-        'decimal_places' : 'None',
-        'internationalized_name_code' : 'None',
+        'id' : 'Unique identifier for the currency.',
+        'name' : 'Short name or code of the currency.',
+        'symbol' : 'Symbol representing the currency.',
+        'numeric_code' : 'Numeric code for the currency.',
+        'full_name' : 'Full name or description of the currency.',
+        'decimal_places' : 'Number of decimal places for the currency.',
+        'internationalized_name_code' : 'Code for the internationalized name of the currency.',
     }
     # list_exclude_columns = ['name', 'symbol', 'numeric_code', 'full_name', 'decimal_places', 'internationalized_name_code']
     # show_exclude_columns = ['name', 'symbol', 'numeric_code', 'full_name', 'decimal_places', 'internationalized_name_code']
@@ -329,13 +303,11 @@ class CurrencyModelView(ModelView):
     # add_columns = ['name', 'symbol', 'numeric_code', 'full_name', 'decimal_places', 'internationalized_name_code']
     # add_columns = ['name', 'symbol', 'numeric_code', 'full_name', 'decimal_places', 'internationalized_name_code']
     
-    # label_columns = {'name':'Name', 'symbol':'Symbol', 'numeric_code':'Numeric Code', 'full_name':'Full Name', 'decimal_places':'Decimal Places', 'internationalized_name_code':'Internationalized Name Code'}
+    label_columns = {'name':'Name', 'symbol':'Symbol', 'numeric_code':'Numeric Code', 'full_name':'Full Name', 'decimal_places':'Decimal Places', 'internationalized_name_code':'Internationalized Name Code'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['name', 'symbol', 'numeric_code', 'full_name', 'decimal_places', 'internationalized_name_code']
-appbuilder.add_view(CurrencyModelView, "Currencys", icon="fa-folder-open-o", category="Setup")
-
 class CustomerSegmentModelView(ModelView):
     datamodel = SQLAInterface(CustomerSegment)
     list_title = 'List Customer Segment'
@@ -343,33 +315,31 @@ class CustomerSegmentModelView(ModelView):
     edit_title = 'Edit Customer Segment'
     add_title  = 'Add Customer Segment'
  
-    list_columns = ['cs_id', 'cs_name', 'cs_notes']
-    # show_columns = ['cs_id', 'cs_name', 'cs_notes']
-    # edit_columns = ['cs_id', 'cs_name', 'cs_notes']
-    add_columns = ['cs_id', 'cs_name', 'cs_notes']
-    search_columns = ['cs_id', 'cs_name', 'cs_notes']
+    list_columns = ['name', 'notes']
+    # show_columns = ['name', 'notes']
+    # edit_columns = ['name', 'notes']
+    add_columns = ['name', 'notes']
+    # search_columns = ['name', 'notes']
     description_columns = {
-        'cs_id' : 'None',
-        'cs_name' : 'None',
-        'cs_notes' : 'None',
+        'id' : 'Unique identifier for the customer segment.',
+        'name' : 'Name or title of the customer segment.',
+        'notes' : 'Additional notes or descriptions related to the customer segment.',
     }
-    # list_exclude_columns = ['cs_id', 'cs_name', 'cs_notes']
-    # show_exclude_columns = ['cs_id', 'cs_name', 'cs_notes']
-    # edit_exclude_columns = ['cs_id', 'cs_name', 'cs_notes']
-    # add_exclude_columns = ['cs_id', 'cs_name', 'cs_notes']
-    # search_exclude_columns = ['cs_id', 'cs_name', 'cs_notes']
-    # order_columns = ['cs_id', 'cs_name', 'cs_notes']
-    # add_columns = ['cs_id', 'cs_name', 'cs_notes']
-    # add_columns = ['cs_id', 'cs_name', 'cs_notes']
-    # add_columns = ['cs_id', 'cs_name', 'cs_notes']
+    # list_exclude_columns = ['name', 'notes']
+    # show_exclude_columns = ['name', 'notes']
+    # edit_exclude_columns = ['name', 'notes']
+    # add_exclude_columns = ['name', 'notes']
+    # search_exclude_columns = ['name', 'notes']
+    # order_columns = ['name', 'notes']
+    # add_columns = ['name', 'notes']
+    # add_columns = ['name', 'notes']
+    # add_columns = ['name', 'notes']
     
-    # label_columns = {'cs_id':'Cs Id', 'cs_name':'Cs Name', 'cs_notes':'Cs Notes'}
+    label_columns = {'name':'Name', 'notes':'Notes'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['cs_id', 'cs_name', 'cs_notes']
-appbuilder.add_view(CustomerSegmentModelView, "CustomerSegments", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['name', 'notes']
 class DocTypeModelView(ModelView):
     datamodel = SQLAInterface(DocType)
     list_title = 'List Doc Type'
@@ -381,16 +351,16 @@ class DocTypeModelView(ModelView):
     # show_columns = ['name', 'doc_category', 'notes', 'required_information', 'is_serialized', 'serial_length', 'expires', 'validity_period', 'renewal_frequency', 'is_government_issued', 'is_digital', 'template_url', 'example_image_url', 'created_at', 'updated_at']
     # edit_columns = ['name', 'doc_category', 'notes', 'required_information', 'is_serialized', 'serial_length', 'expires', 'validity_period', 'renewal_frequency', 'is_government_issued', 'is_digital', 'template_url', 'example_image_url', 'created_at', 'updated_at']
     add_columns = ['name', 'doc_category', 'notes', 'required_information', 'is_serialized', 'serial_length', 'expires', 'validity_period', 'renewal_frequency', 'is_government_issued', 'is_digital', 'template_url', 'example_image_url', 'created_at', 'updated_at']
-    search_columns = ['name', 'doc_category', 'notes', 'required_information', 'is_serialized', 'serial_length', 'expires', 'validity_period', 'renewal_frequency', 'is_government_issued', 'is_digital', 'template_url', 'example_image_url', 'created_at', 'updated_at']
+    # search_columns = ['name', 'doc_category', 'notes', 'required_information', 'is_serialized', 'serial_length', 'expires', 'validity_period', 'renewal_frequency', 'is_government_issued', 'is_digital', 'template_url', 'example_image_url', 'created_at', 'updated_at']
     description_columns = {
         'id' : 'Unique identifier for the document type.',
         'name' : 'Name or title of the document type e.g. Passport, Drivers License.',
         'doc_category' : 'category of this docunment',
         'notes' : 'Any additional remarks or details about the document type.',
         'required_information' : 'List or description of required fields/information for this document type.',
-        'is_serialized' : 'None',
-        'serial_length' : 'None',
-        'expires' : 'None',
+        'is_serialized' : 'Does this document type have a serial number',
+        'serial_length' : 'Typical length of a serial number for this document type',
+        'expires' : 'Does this type of document expire',
         'validity_period' : 'Standard validity duration of this type of document in days.',
         'renewal_frequency' : 'Frequency at which this document typically needs renewal, in days. Useful for setting reminders.',
         'is_government_issued' : 'Indicates if this document is typically issued by a government authority.',
@@ -410,13 +380,11 @@ class DocTypeModelView(ModelView):
     # add_columns = ['name', 'doc_category', 'notes', 'required_information', 'is_serialized', 'serial_length', 'expires', 'validity_period', 'renewal_frequency', 'is_government_issued', 'is_digital', 'template_url', 'example_image_url', 'created_at', 'updated_at']
     # add_columns = ['name', 'doc_category', 'notes', 'required_information', 'is_serialized', 'serial_length', 'expires', 'validity_period', 'renewal_frequency', 'is_government_issued', 'is_digital', 'template_url', 'example_image_url', 'created_at', 'updated_at']
     
-    # label_columns = {'name':'Name', 'doc_category':'Doc Category', 'notes':'Notes', 'required_information':'Required Information', 'is_serialized':'Is Serialized', 'serial_length':'Serial Length', 'expires':'Expires', 'validity_period':'Validity Period', 'renewal_frequency':'Renewal Frequency', 'is_government_issued':'Is Government Issued', 'is_digital':'Is Digital', 'template_url':'Template Url', 'example_image_url':'Example Image Url', 'created_at':'Created At', 'updated_at':'Updated At'}
+    label_columns = {'name':'Name', 'doc_category':'Doc Category', 'notes':'Notes', 'required_information':'Required Information', 'is_serialized':'Is Serialized', 'serial_length':'Serial Length', 'expires':'Expires', 'validity_period':'Validity Period', 'renewal_frequency':'Renewal Frequency', 'is_government_issued':'Is Government Issued', 'is_digital':'Is Digital', 'template_url':'Template Url', 'example_image_url':'Example Image Url', 'created_at':'Created At', 'updated_at':'Updated At'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['name', 'doc_category', 'notes', 'required_information', 'is_serialized', 'serial_length', 'expires', 'validity_period', 'renewal_frequency', 'is_government_issued', 'is_digital', 'template_url', 'example_image_url', 'created_at', 'updated_at']
-appbuilder.add_view(DocTypeModelView, "DocTypes", icon="fa-folder-open-o", category="Setup")
-
 class MimeTypeModelView(ModelView):
     datamodel = SQLAInterface(MimeType)
     list_title = 'List Mime Type'
@@ -428,12 +396,12 @@ class MimeTypeModelView(ModelView):
     # show_columns = ['label', 'mime_type', 'file_extension']
     # edit_columns = ['label', 'mime_type', 'file_extension']
     add_columns = ['label', 'mime_type', 'file_extension']
-    search_columns = ['label', 'mime_type', 'file_extension']
+    # search_columns = ['label', 'mime_type', 'file_extension']
     description_columns = {
         'id' : 'None',
-        'label' : 'None',
+        'label' : 'Label of this mime type',
         'mime_type' : 'None',
-        'file_extension' : 'None',
+        'file_extension' : 'File extensions for this mime type',
     }
     # list_exclude_columns = ['label', 'mime_type', 'file_extension']
     # show_exclude_columns = ['label', 'mime_type', 'file_extension']
@@ -445,13 +413,11 @@ class MimeTypeModelView(ModelView):
     # add_columns = ['label', 'mime_type', 'file_extension']
     # add_columns = ['label', 'mime_type', 'file_extension']
     
-    # label_columns = {'label':'Label', 'mime_type':'Mime Type', 'file_extension':'File Extension'}
+    label_columns = {'label':'Label', 'mime_type':'Mime Type', 'file_extension':'File Extension'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['label', 'mime_type', 'file_extension']
-appbuilder.add_view(MimeTypeModelView, "MimeTypes", icon="fa-folder-open-o", category="Setup")
-
 class MimeTypeMapModelView(ModelView):
     datamodel = SQLAInterface(MimeTypeMap)
     list_title = 'List Mime Type Map'
@@ -463,11 +429,11 @@ class MimeTypeMapModelView(ModelView):
     # show_columns = ['extension', 'mime_type']
     # edit_columns = ['extension', 'mime_type']
     add_columns = ['extension', 'mime_type']
-    search_columns = ['extension', 'mime_type']
+    # search_columns = ['extension', 'mime_type']
     description_columns = {
-        'id' : 'None',
-        'extension' : 'None',
-        'mime_type' : 'None',
+        'id' : 'Unique identifier for the MIME type mapping.',
+        'extension' : 'File extension, such as jpg or pdf',
+        'mime_type' : 'MIME type associated with the file extension.',
     }
     # list_exclude_columns = ['extension', 'mime_type']
     # show_exclude_columns = ['extension', 'mime_type']
@@ -479,13 +445,11 @@ class MimeTypeMapModelView(ModelView):
     # add_columns = ['extension', 'mime_type']
     # add_columns = ['extension', 'mime_type']
     
-    # label_columns = {'extension':'Extension', 'mime_type':'Mime Type'}
+    label_columns = {'extension':'Extension', 'mime_type':'Mime Type'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['extension', 'mime_type']
-appbuilder.add_view(MimeTypeMapModelView, "MimeTypeMaps", icon="fa-folder-open-o", category="Setup")
-
 class PaymentCardModelView(ModelView):
     datamodel = SQLAInterface(PaymentCard)
     list_title = 'List Payment Card'
@@ -497,34 +461,34 @@ class PaymentCardModelView(ModelView):
     # show_columns = ['bin', 'pan', 'credit_card_expired', 'card_token', 'issue_number', 'bill_to_city', 'masked_number', 'name', 'company_name', 'card_holder_name', 'number_last_digits', 'payment_card_type', 'derived_card_type_code', 'expiration_year', 'expiration_month', 'bill_to_street', 'bill_to_street2', 'bill_to_first_name', 'bill_to_last_name', 'payment_method_status', 'card_number', 'cardholder_name', 'card_expiration', 'service_code', 'cvv']
     # edit_columns = ['bin', 'pan', 'credit_card_expired', 'card_token', 'issue_number', 'bill_to_city', 'masked_number', 'name', 'company_name', 'card_holder_name', 'number_last_digits', 'payment_card_type', 'derived_card_type_code', 'expiration_year', 'expiration_month', 'bill_to_street', 'bill_to_street2', 'bill_to_first_name', 'bill_to_last_name', 'payment_method_status', 'card_number', 'cardholder_name', 'card_expiration', 'service_code', 'cvv']
     add_columns = ['bin', 'pan', 'credit_card_expired', 'card_token', 'issue_number', 'bill_to_city', 'masked_number', 'name', 'company_name', 'card_holder_name', 'number_last_digits', 'payment_card_type', 'derived_card_type_code', 'expiration_year', 'expiration_month', 'bill_to_street', 'bill_to_street2', 'bill_to_first_name', 'bill_to_last_name', 'payment_method_status', 'card_number', 'cardholder_name', 'card_expiration', 'service_code', 'cvv']
-    search_columns = ['bin', 'pan', 'credit_card_expired', 'card_token', 'issue_number', 'bill_to_city', 'masked_number', 'name', 'company_name', 'card_holder_name', 'number_last_digits', 'payment_card_type', 'derived_card_type_code', 'expiration_year', 'expiration_month', 'bill_to_street', 'bill_to_street2', 'bill_to_first_name', 'bill_to_last_name', 'payment_method_status', 'card_number', 'cardholder_name', 'card_expiration', 'service_code', 'cvv']
+    # search_columns = ['bin', 'pan', 'credit_card_expired', 'card_token', 'issue_number', 'bill_to_city', 'masked_number', 'name', 'company_name', 'card_holder_name', 'number_last_digits', 'payment_card_type', 'derived_card_type_code', 'expiration_year', 'expiration_month', 'bill_to_street', 'bill_to_street2', 'bill_to_first_name', 'bill_to_last_name', 'payment_method_status', 'card_number', 'cardholder_name', 'card_expiration', 'service_code', 'cvv']
     description_columns = {
-        'id' : 'None',
-        'bin' : 'None',
-        'pan' : 'None',
-        'credit_card_expired' : 'None',
-        'card_token' : 'None',
-        'issue_number' : 'None',
-        'bill_to_city' : 'None',
-        'masked_number' : 'None',
-        'name' : 'None',
-        'company_name' : 'None',
-        'card_holder_name' : 'None',
-        'number_last_digits' : 'None',
-        'payment_card_type' : 'None',
-        'derived_card_type_code' : 'None',
-        'expiration_year' : 'None',
-        'expiration_month' : 'None',
-        'bill_to_street' : 'None',
-        'bill_to_street2' : 'None',
-        'bill_to_first_name' : 'None',
-        'bill_to_last_name' : 'None',
-        'payment_method_status' : 'None',
-        'card_number' : 'Mask this number',
-        'cardholder_name' : 'None',
-        'card_expiration' : 'None',
-        'service_code' : 'None',
-        'cvv' : 'mask or hash the cvv',
+        'id' : 'Unique identifier for the payment card.',
+        'bin' : 'Bank Identification Number (BIN) of the card.',
+        'pan' : 'Primary Account Number (PAN) of the card.',
+        'credit_card_expired' : 'Indicates whether the credit card has expired.',
+        'card_token' : 'Tokenized representation of the card.',
+        'issue_number' : 'Issue number of the card.',
+        'bill_to_city' : 'City associated with the billing address.',
+        'masked_number' : 'Masked version of the card number.',
+        'name' : 'Name associated with the card.',
+        'company_name' : 'Company name associated with the card.',
+        'card_holder_name' : 'Name of the cardholder.',
+        'number_last_digits' : 'Last digits of the card number.',
+        'payment_card_type' : 'Type of payment card (e.g., Visa, Mastercard).',
+        'derived_card_type_code' : 'Derived card type code.',
+        'expiration_year' : 'Year of card expiration.',
+        'expiration_month' : 'Month of card expiration.',
+        'bill_to_street' : 'Street address associated with the billing address.',
+        'bill_to_street2' : 'Additional street address information.',
+        'bill_to_first_name' : 'First name associated with the billing address.',
+        'bill_to_last_name' : 'Last name associated with the billing address.',
+        'payment_method_status' : 'Status of the payment method.',
+        'card_number' : 'Masked version of the card number.',
+        'cardholder_name' : 'Name of the cardholder.',
+        'card_expiration' : 'Expiration date of the card (stored as MM/YY format).',
+        'service_code' : 'Service code associated with the card.',
+        'cvv' : 'Masked or hashed version of the CVV (Card Verification Value).',
     }
     # list_exclude_columns = ['bin', 'pan', 'credit_card_expired', 'card_token', 'issue_number', 'bill_to_city', 'masked_number', 'name', 'company_name', 'card_holder_name', 'number_last_digits', 'payment_card_type', 'derived_card_type_code', 'expiration_year', 'expiration_month', 'bill_to_street', 'bill_to_street2', 'bill_to_first_name', 'bill_to_last_name', 'payment_method_status', 'card_number', 'cardholder_name', 'card_expiration', 'service_code', 'cvv']
     # show_exclude_columns = ['bin', 'pan', 'credit_card_expired', 'card_token', 'issue_number', 'bill_to_city', 'masked_number', 'name', 'company_name', 'card_holder_name', 'number_last_digits', 'payment_card_type', 'derived_card_type_code', 'expiration_year', 'expiration_month', 'bill_to_street', 'bill_to_street2', 'bill_to_first_name', 'bill_to_last_name', 'payment_method_status', 'card_number', 'cardholder_name', 'card_expiration', 'service_code', 'cvv']
@@ -536,13 +500,11 @@ class PaymentCardModelView(ModelView):
     # add_columns = ['bin', 'pan', 'credit_card_expired', 'card_token', 'issue_number', 'bill_to_city', 'masked_number', 'name', 'company_name', 'card_holder_name', 'number_last_digits', 'payment_card_type', 'derived_card_type_code', 'expiration_year', 'expiration_month', 'bill_to_street', 'bill_to_street2', 'bill_to_first_name', 'bill_to_last_name', 'payment_method_status', 'card_number', 'cardholder_name', 'card_expiration', 'service_code', 'cvv']
     # add_columns = ['bin', 'pan', 'credit_card_expired', 'card_token', 'issue_number', 'bill_to_city', 'masked_number', 'name', 'company_name', 'card_holder_name', 'number_last_digits', 'payment_card_type', 'derived_card_type_code', 'expiration_year', 'expiration_month', 'bill_to_street', 'bill_to_street2', 'bill_to_first_name', 'bill_to_last_name', 'payment_method_status', 'card_number', 'cardholder_name', 'card_expiration', 'service_code', 'cvv']
     
-    # label_columns = {'bin':'Bin', 'pan':'Pan', 'credit_card_expired':'Credit Card Expired', 'card_token':'Card Token', 'issue_number':'Issue Number', 'bill_to_city':'Bill To City', 'masked_number':'Masked Number', 'name':'Name', 'company_name':'Company Name', 'card_holder_name':'Card Holder Name', 'number_last_digits':'Number Last Digits', 'payment_card_type':'Payment Card Type', 'derived_card_type_code':'Derived Card Type Code', 'expiration_year':'Expiration Year', 'expiration_month':'Expiration Month', 'bill_to_street':'Bill To Street', 'bill_to_street2':'Bill To Street2', 'bill_to_first_name':'Bill To First Name', 'bill_to_last_name':'Bill To Last Name', 'payment_method_status':'Payment Method Status', 'card_number':'Card Number', 'cardholder_name':'Cardholder Name', 'card_expiration':'Card Expiration', 'service_code':'Service Code', 'cvv':'Cvv'}
+    label_columns = {'bin':'Bin', 'pan':'Pan', 'credit_card_expired':'Credit Card Expired', 'card_token':'Card Token', 'issue_number':'Issue Number', 'bill_to_city':'Bill To City', 'masked_number':'Masked Number', 'name':'Name', 'company_name':'Company Name', 'card_holder_name':'Card Holder Name', 'number_last_digits':'Number Last Digits', 'payment_card_type':'Payment Card Type', 'derived_card_type_code':'Derived Card Type Code', 'expiration_year':'Expiration Year', 'expiration_month':'Expiration Month', 'bill_to_street':'Bill To Street', 'bill_to_street2':'Bill To Street2', 'bill_to_first_name':'Bill To First Name', 'bill_to_last_name':'Bill To Last Name', 'payment_method_status':'Payment Method Status', 'card_number':'Card Number', 'cardholder_name':'Cardholder Name', 'card_expiration':'Card Expiration', 'service_code':'Service Code', 'cvv':'Cvv'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['bin', 'pan', 'credit_card_expired', 'card_token', 'issue_number', 'bill_to_city', 'masked_number', 'name', 'company_name', 'card_holder_name', 'number_last_digits', 'payment_card_type', 'derived_card_type_code', 'expiration_year', 'expiration_month', 'bill_to_street', 'bill_to_street2', 'bill_to_first_name', 'bill_to_last_name', 'payment_method_status', 'card_number', 'cardholder_name', 'card_expiration', 'service_code', 'cvv']
-appbuilder.add_view(PaymentCardModelView, "PaymentCards", icon="fa-folder-open-o", category="Setup")
-
 class PromotionModelView(ModelView):
     datamodel = SQLAInterface(Promotion)
     list_title = 'List Promotion'
@@ -550,35 +512,77 @@ class PromotionModelView(ModelView):
     edit_title = 'Edit Promotion'
     add_title  = 'Add Promotion'
  
-    list_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    # show_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    # edit_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    add_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    search_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
+    list_columns = ['name', 'notes', 'start_date', 'end_date']
+    # show_columns = ['name', 'notes', 'start_date', 'end_date']
+    # edit_columns = ['name', 'notes', 'start_date', 'end_date']
+    add_columns = ['name', 'notes', 'start_date', 'end_date']
+    # search_columns = ['name', 'notes', 'start_date', 'end_date']
     description_columns = {
-        'promo_id' : 'None',
-        'promo_name' : 'None',
-        'promo_notes' : 'None',
-        'promo_start_date' : 'None',
-        'promo_end_date' : 'None',
+        'id' : 'Unique identifier for the promotion.',
+        'name' : 'Name or title of the promotion.',
+        'notes' : 'Additional remarks or details about the promotion.',
+        'start_date' : 'Start date of the promotion.',
+        'end_date' : 'End date of the promotion.',
     }
-    # list_exclude_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    # show_exclude_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    # edit_exclude_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    # add_exclude_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    # search_exclude_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    # order_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    # add_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    # add_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-    # add_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
+    # list_exclude_columns = ['name', 'notes', 'start_date', 'end_date']
+    # show_exclude_columns = ['name', 'notes', 'start_date', 'end_date']
+    # edit_exclude_columns = ['name', 'notes', 'start_date', 'end_date']
+    # add_exclude_columns = ['name', 'notes', 'start_date', 'end_date']
+    # search_exclude_columns = ['name', 'notes', 'start_date', 'end_date']
+    # order_columns = ['name', 'notes', 'start_date', 'end_date']
+    # add_columns = ['name', 'notes', 'start_date', 'end_date']
+    # add_columns = ['name', 'notes', 'start_date', 'end_date']
+    # add_columns = ['name', 'notes', 'start_date', 'end_date']
     
-    # label_columns = {'promo_id':'Promo Id', 'promo_name':'Promo Name', 'promo_notes':'Promo Notes', 'promo_start_date':'Promo Start Date', 'promo_end_date':'Promo End Date'}
+    label_columns = {'name':'Name', 'notes':'Notes', 'start_date':'Start Date', 'end_date':'End Date'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['promo_id', 'promo_name', 'promo_notes', 'promo_start_date', 'promo_end_date']
-appbuilder.add_view(PromotionModelView, "Promotions", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['name', 'notes', 'start_date', 'end_date']
+class RiskProfileModelView(ModelView):
+    datamodel = SQLAInterface(RiskProfile)
+    list_title = 'List Risk Profile'
+    show_title = 'Show Risk Profile'
+    edit_title = 'Edit Risk Profile'
+    add_title  = 'Add Risk Profile'
+ 
+    list_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    # show_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    # edit_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    add_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    # search_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    description_columns = {
+        'id' : 'Unique identifier for each risk profile',
+        'name' : 'Name of the risk profile',
+        'description' : 'Detailed description of the risk profile',
+        'risk_score' : 'Quantitative measure of risk, often based on a specific scoring system',
+        'risk_category' : 'Categorization of risk (e.g., Low, Moderate, High)',
+        'max_acceptable_loss' : 'Maximum financial loss that is acceptable for this risk profile, usually a percentage or monetary value',
+        'probability_of_loss' : 'Likelihood of incurring a loss, often expressed as a percentage',
+        'historical_volatility' : 'Measure of the variation in the price of the asset over time',
+        'liquidity_rating' : 'Rating representing the ease of converting the asset to cash without significant loss of value',
+        'regulatory_compliance' : 'Indication of any specific regulatory compliance considerations relevant to the risk profile',
+        'market_sensitivity' : 'Measure of how sensitive the asset is to market fluctuations',
+        'credit_rating' : 'Creditworthiness of a debtor, particularly relevant in the context of credit risk',
+        'investment_horizon' : 'Expected duration for holding the investment',
+        'sector_exposure' : 'Indicates the sectors to which the investment is exposed',
+        'geographic_exposure' : 'Highlights the geographical regions involved in the transaction',
+    }
+    # list_exclude_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    # show_exclude_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    # edit_exclude_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    # add_exclude_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    # search_exclude_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    # order_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    # add_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    # add_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    # add_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
+    
+    label_columns = {'name':'Name', 'description':'Description', 'risk_score':'Risk Score', 'risk_category':'Risk Category', 'max_acceptable_loss':'Max Acceptable Loss', 'probability_of_loss':'Probability Of Loss', 'historical_volatility':'Historical Volatility', 'liquidity_rating':'Liquidity Rating', 'regulatory_compliance':'Regulatory Compliance', 'market_sensitivity':'Market Sensitivity', 'credit_rating':'Credit Rating', 'investment_horizon':'Investment Horizon', 'sector_exposure':'Sector Exposure', 'geographic_exposure':'Geographic Exposure'}
+    # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
+    # base_order = ("name", "asc")
+    # page_size = 100 
+#    list_columns = ['name', 'description', 'risk_score', 'risk_category', 'max_acceptable_loss', 'probability_of_loss', 'historical_volatility', 'liquidity_rating', 'regulatory_compliance', 'market_sensitivity', 'credit_rating', 'investment_horizon', 'sector_exposure', 'geographic_exposure']
 class TechparamsModelView(ModelView):
     datamodel = SQLAInterface(Techparams)
     list_title = 'List Techparams'
@@ -590,13 +594,13 @@ class TechparamsModelView(ModelView):
     # show_columns = ['tp_key', 'tp_value', 'enabled', 'notes']
     # edit_columns = ['tp_key', 'tp_value', 'enabled', 'notes']
     add_columns = ['tp_key', 'tp_value', 'enabled', 'notes']
-    search_columns = ['tp_key', 'tp_value', 'enabled', 'notes']
+    # search_columns = ['tp_key', 'tp_value', 'enabled', 'notes']
     description_columns = {
         'id' : 'None',
-        'tp_key' : 'None',
-        'tp_value' : 'None',
-        'enabled' : 'None',
-        'notes' : 'None',
+        'tp_key' : 'Tech Param Key',
+        'tp_value' : 'Tech Param Value',
+        'enabled' : 'Is this param used',
+        'notes' : 'Notes on this parameter',
     }
     # list_exclude_columns = ['tp_key', 'tp_value', 'enabled', 'notes']
     # show_exclude_columns = ['tp_key', 'tp_value', 'enabled', 'notes']
@@ -608,13 +612,11 @@ class TechparamsModelView(ModelView):
     # add_columns = ['tp_key', 'tp_value', 'enabled', 'notes']
     # add_columns = ['tp_key', 'tp_value', 'enabled', 'notes']
     
-    # label_columns = {'tp_key':'Tp Key', 'tp_value':'Tp Value', 'enabled':'Enabled', 'notes':'Notes'}
+    label_columns = {'tp_key':'Tp Key', 'tp_value':'Tp Value', 'enabled':'Enabled', 'notes':'Notes'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['tp_key', 'tp_value', 'enabled', 'notes']
-appbuilder.add_view(TechparamsModelView, "Techparamss", icon="fa-folder-open-o", category="Setup")
-
 class TokenProviderModelView(ModelView):
     datamodel = SQLAInterface(TokenProvider)
     list_title = 'List Token Provider'
@@ -622,42 +624,40 @@ class TokenProviderModelView(ModelView):
     edit_title = 'Edit Token Provider'
     add_title  = 'Add Token Provider'
  
-    list_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    # show_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    # edit_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    add_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    search_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
+    list_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    # show_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    # edit_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    add_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    # search_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
     description_columns = {
-        'token_provider_id' : 'None',
-        'token_provider_name' : 'None',
-        'token_provioder_notes' : 'None',
-        'token_provider_priv_key' : 'None',
-        'token_provider_pub_key' : 'None',
-        'token_provider_endpoint' : 'None',
-        'token_provider_protocol' : 'None',
-        'token_provider_auth' : 'None',
-        'token_provider_ssl' : 'None',
-        'token_provider_ip_whitelist' : 'None',
-        'token_provider_password' : 'None',
-        'enabled' : 'None',
+        'id' : 'Unique identifier for the token provider.',
+        'name' : 'Name of the token provider.',
+        'notes' : 'Additional notes or remarks about the token provider.',
+        'priv_key' : 'Private key used for authentication and encryption.',
+        'pub_key' : 'Public key used for authentication and encryption.',
+        'endpoint' : 'Endpoint URL for communication with the token provider.',
+        'protocol' : 'Communication protocol used with the token provider (e.g., HTTPS).',
+        'auth' : 'Authentication mechanism or credentials required for access.',
+        'ssl' : 'SSL/TLS configuration or settings for secure communication.',
+        'ip_whitelist' : 'List of whitelisted IP addresses for accessing the token provider.',
+        'password' : 'Password associated with the token provider.',
+        'enabled' : 'Indicates if the token provider is enabled or disabled.',
     }
-    # list_exclude_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    # show_exclude_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    # edit_exclude_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    # add_exclude_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    # search_exclude_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    # order_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    # add_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    # add_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-    # add_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
+    # list_exclude_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    # show_exclude_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    # edit_exclude_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    # add_exclude_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    # search_exclude_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    # order_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    # add_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    # add_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
+    # add_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
     
-    # label_columns = {'token_provider_id':'Token Provider Id', 'token_provider_name':'Token Provider Name', 'token_provioder_notes':'Token Provioder Notes', 'token_provider_priv_key':'Token Provider Priv Key', 'token_provider_pub_key':'Token Provider Pub Key', 'token_provider_endpoint':'Token Provider Endpoint', 'token_provider_protocol':'Token Provider Protocol', 'token_provider_auth':'Token Provider Auth', 'token_provider_ssl':'Token Provider Ssl', 'token_provider_ip_whitelist':'Token Provider Ip Whitelist', 'token_provider_password':'Token Provider Password', 'enabled':'Enabled'}
+    label_columns = {'name':'Name', 'notes':'Notes', 'priv_key':'Priv Key', 'pub_key':'Pub Key', 'endpoint':'Endpoint', 'protocol':'Protocol', 'auth':'Auth', 'ssl':'Ssl', 'ip_whitelist':'Ip Whitelist', 'password':'Password', 'enabled':'Enabled'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['token_provider_id', 'token_provider_name', 'token_provioder_notes', 'token_provider_priv_key', 'token_provider_pub_key', 'token_provider_endpoint', 'token_provider_protocol', 'token_provider_auth', 'token_provider_ssl', 'token_provider_ip_whitelist', 'token_provider_password', 'enabled']
-appbuilder.add_view(TokenProviderModelView, "TokenProviders", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['name', 'notes', 'priv_key', 'pub_key', 'endpoint', 'protocol', 'auth', 'ssl', 'ip_whitelist', 'password', 'enabled']
 class TransRoutingThresholdsModelView(ModelView):
     datamodel = SQLAInterface(TransRoutingThresholds)
     list_title = 'List Trans Routing Thresholds'
@@ -669,13 +669,13 @@ class TransRoutingThresholdsModelView(ModelView):
     # show_columns = ['name', 'min_amount', 'max_amount', 'priority']
     # edit_columns = ['name', 'min_amount', 'max_amount', 'priority']
     add_columns = ['name', 'min_amount', 'max_amount', 'priority']
-    search_columns = ['name', 'min_amount', 'max_amount', 'priority']
+    # search_columns = ['name', 'min_amount', 'max_amount', 'priority']
     description_columns = {
-        'id' : 'None',
-        'name' : 'None',
-        'min_amount' : 'None',
-        'max_amount' : 'None',
-        'priority' : 'None',
+        'id' : 'Unique identifier for the threshold.',
+        'name' : 'Name or description of the threshold.',
+        'min_amount' : 'Minimum transaction amount that triggers this threshold.',
+        'max_amount' : 'Maximum transaction amount that triggers this threshold.',
+        'priority' : 'Priority level for this threshold.',
     }
     # list_exclude_columns = ['name', 'min_amount', 'max_amount', 'priority']
     # show_exclude_columns = ['name', 'min_amount', 'max_amount', 'priority']
@@ -687,13 +687,11 @@ class TransRoutingThresholdsModelView(ModelView):
     # add_columns = ['name', 'min_amount', 'max_amount', 'priority']
     # add_columns = ['name', 'min_amount', 'max_amount', 'priority']
     
-    # label_columns = {'name':'Name', 'min_amount':'Min Amount', 'max_amount':'Max Amount', 'priority':'Priority'}
+    label_columns = {'name':'Name', 'min_amount':'Min Amount', 'max_amount':'Max Amount', 'priority':'Priority'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['name', 'min_amount', 'max_amount', 'priority']
-appbuilder.add_view(TransRoutingThresholdsModelView, "TransRoutingThresholdss", icon="fa-folder-open-o", category="Setup")
-
 class TransTypeModelView(ModelView):
     datamodel = SQLAInterface(TransType)
     list_title = 'List Trans Type'
@@ -701,33 +699,31 @@ class TransTypeModelView(ModelView):
     edit_title = 'Edit Trans Type'
     add_title  = 'Add Trans Type'
  
-    list_columns = ['tt_id', 'tt_name', 'tt_notes']
-    # show_columns = ['tt_id', 'tt_name', 'tt_notes']
-    # edit_columns = ['tt_id', 'tt_name', 'tt_notes']
-    add_columns = ['tt_id', 'tt_name', 'tt_notes']
-    search_columns = ['tt_id', 'tt_name', 'tt_notes']
+    list_columns = ['name', 'notes']
+    # show_columns = ['name', 'notes']
+    # edit_columns = ['name', 'notes']
+    add_columns = ['name', 'notes']
+    # search_columns = ['name', 'notes']
     description_columns = {
-        'tt_id' : 'None',
-        'tt_name' : 'Deposit, Withdrawal, Transfer, Bill Payment, etc',
-        'tt_notes' : 'None',
+        'id' : 'Unique identifier for the transaction type.',
+        'name' : 'Name or title of the transaction type, e.g., Deposit, Withdrawal, Transfer, Bill Payment, etc.',
+        'notes' : 'Additional notes or descriptions related to the transaction type.',
     }
-    # list_exclude_columns = ['tt_id', 'tt_name', 'tt_notes']
-    # show_exclude_columns = ['tt_id', 'tt_name', 'tt_notes']
-    # edit_exclude_columns = ['tt_id', 'tt_name', 'tt_notes']
-    # add_exclude_columns = ['tt_id', 'tt_name', 'tt_notes']
-    # search_exclude_columns = ['tt_id', 'tt_name', 'tt_notes']
-    # order_columns = ['tt_id', 'tt_name', 'tt_notes']
-    # add_columns = ['tt_id', 'tt_name', 'tt_notes']
-    # add_columns = ['tt_id', 'tt_name', 'tt_notes']
-    # add_columns = ['tt_id', 'tt_name', 'tt_notes']
+    # list_exclude_columns = ['name', 'notes']
+    # show_exclude_columns = ['name', 'notes']
+    # edit_exclude_columns = ['name', 'notes']
+    # add_exclude_columns = ['name', 'notes']
+    # search_exclude_columns = ['name', 'notes']
+    # order_columns = ['name', 'notes']
+    # add_columns = ['name', 'notes']
+    # add_columns = ['name', 'notes']
+    # add_columns = ['name', 'notes']
     
-    # label_columns = {'tt_id':'Tt Id', 'tt_name':'Tt Name', 'tt_notes':'Tt Notes'}
+    label_columns = {'name':'Name', 'notes':'Notes'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['tt_id', 'tt_name', 'tt_notes']
-appbuilder.add_view(TransTypeModelView, "TransTypes", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['name', 'notes']
 class UserExtModelView(ModelView):
     datamodel = SQLAInterface(UserExt)
     list_title = 'List User Ext'
@@ -735,40 +731,36 @@ class UserExtModelView(ModelView):
     edit_title = 'Edit User Ext'
     add_title  = 'Add User Ext'
  
-    list_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    # show_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    # edit_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    add_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    search_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    list_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # show_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # edit_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    add_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # search_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
     description_columns = {
-        'id' : 'None',
-        'manager_id_fk' : 'None',
-        'first_name' : 'None',
-        'middle_name' : 'None',
-        'surname' : 'None',
-        'employee_number' : 'None',
-        'job_title' : 'None',
-        'phone_number' : 'None',
-        'email' : 'None',
-        'user_data' : 'None',
+        'id' : 'Unique identifier for the user.',
+        'manager_id_fk' : 'Manager ID - References the manager of the user, if applicable.',
+        'middle_name' : 'Middle name of the user, if available.',
+        'employee_number' : 'Employee number assigned to the user, if applicable.',
+        'job_title' : 'Job title or position of the user within the organization.',
+        'phone_number' : 'Phone number for contacting the user.',
+        'email' : 'Email address of the user, used for communication.',
+        'user_data' : 'Additional user data or information, such as user preferences or details.',
     }
-    # list_exclude_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    # show_exclude_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    # edit_exclude_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    # add_exclude_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    # search_exclude_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    # order_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    # add_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    # add_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-    # add_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # list_exclude_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # show_exclude_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # edit_exclude_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # add_exclude_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # search_exclude_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # order_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # add_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # add_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
+    # add_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
     
-    # label_columns = {'manager', 'first_name':'First Name', 'middle_name':'Middle Name', 'surname':'Surname', 'employee_number':'Employee Number', 'job_title':'Job Title', 'phone_number':'Phone Number', 'email':'Email', 'user_data':'User Data'}
+    label_columns = {'manager':'Manager', 'middle_name':'Middle Name', 'employee_number':'Employee Number', 'job_title':'Job Title', 'phone_number':'Phone Number', 'email':'Email', 'user_data':'User Data'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['manager', 'first_name', 'middle_name', 'surname', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
-appbuilder.add_view(UserExtModelView, "UserExts", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['manager', 'middle_name', 'employee_number', 'job_title', 'phone_number', 'email', 'user_data']
 class BillerModelView(ModelView):
     datamodel = SQLAInterface(Biller)
     list_title = 'List Biller'
@@ -780,14 +772,14 @@ class BillerModelView(ModelView):
     # show_columns = ['category', 'code', 'name', 'url', 'note']
     # edit_columns = ['category', 'code', 'name', 'url', 'note']
     add_columns = ['category', 'code', 'name', 'url', 'note']
-    search_columns = ['category', 'code', 'name', 'url', 'note']
+    # search_columns = ['category', 'code', 'name', 'url', 'note']
     description_columns = {
-        'id' : 'None',
-        'category_id_fk' : 'None',
-        'code' : 'None',
-        'name' : 'None',
-        'url' : 'None',
-        'note' : 'None',
+        'id' : 'Unique identifier for the biller.',
+        'category_id_fk' : 'Foreign key referencing the biller category to which this biller belongs.',
+        'code' : 'Unique code or identifier for the biller.',
+        'name' : 'Name or title of the biller.',
+        'url' : 'URL or link associated with the biller.',
+        'note' : 'Additional notes or remarks about the biller.',
     }
     # list_exclude_columns = ['category', 'code', 'name', 'url', 'note']
     # show_exclude_columns = ['category', 'code', 'name', 'url', 'note']
@@ -799,13 +791,11 @@ class BillerModelView(ModelView):
     # add_columns = ['category', 'code', 'name', 'url', 'note']
     # add_columns = ['category', 'code', 'name', 'url', 'note']
     
-    # label_columns = {'category', 'code':'Code', 'name':'Name', 'url':'Url', 'note':'Note'}
+    label_columns = {'category':'Category', 'code':'Code', 'name':'Name', 'url':'Url', 'note':'Note'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['category', 'code', 'name', 'url', 'note']
-appbuilder.add_view(BillerModelView, "Billers", icon="fa-folder-open-o", category="Setup")
-
 class StateModelView(ModelView):
     datamodel = SQLAInterface(State)
     list_title = 'List State'
@@ -813,35 +803,33 @@ class StateModelView(ModelView):
     edit_title = 'Edit State'
     add_title  = 'Add State'
  
-    list_columns = ['country', 'code', 'name', 'desc']
-    # show_columns = ['country', 'code', 'name', 'desc']
-    # edit_columns = ['country', 'code', 'name', 'desc']
-    add_columns = ['country', 'code', 'name', 'desc']
-    search_columns = ['country', 'code', 'name', 'desc']
+    list_columns = ['country', 'code', 'name', 'description']
+    # show_columns = ['country', 'code', 'name', 'description']
+    # edit_columns = ['country', 'code', 'name', 'description']
+    add_columns = ['country', 'code', 'name', 'description']
+    # search_columns = ['country', 'code', 'name', 'description']
     description_columns = {
         'country_id_fk' : 'None',
-        'id' : 'None',
-        'code' : 'None',
-        'name' : 'None',
-        'desc' : 'None',
+        'id' : 'ID of this column',
+        'code' : 'State Code',
+        'name' : 'Name of the state',
+        'description' : 'Brief description of the state',
     }
-    # list_exclude_columns = ['country', 'code', 'name', 'desc']
-    # show_exclude_columns = ['country', 'code', 'name', 'desc']
-    # edit_exclude_columns = ['country', 'code', 'name', 'desc']
-    # add_exclude_columns = ['country', 'code', 'name', 'desc']
-    # search_exclude_columns = ['country', 'code', 'name', 'desc']
-    # order_columns = ['country', 'code', 'name', 'desc']
-    # add_columns = ['country', 'code', 'name', 'desc']
-    # add_columns = ['country', 'code', 'name', 'desc']
-    # add_columns = ['country', 'code', 'name', 'desc']
+    # list_exclude_columns = ['country', 'code', 'name', 'description']
+    # show_exclude_columns = ['country', 'code', 'name', 'description']
+    # edit_exclude_columns = ['country', 'code', 'name', 'description']
+    # add_exclude_columns = ['country', 'code', 'name', 'description']
+    # search_exclude_columns = ['country', 'code', 'name', 'description']
+    # order_columns = ['country', 'code', 'name', 'description']
+    # add_columns = ['country', 'code', 'name', 'description']
+    # add_columns = ['country', 'code', 'name', 'description']
+    # add_columns = ['country', 'code', 'name', 'description']
     
-    # label_columns = {'country', 'code':'Code', 'name':'Name', 'desc':'Desc'}
+    label_columns = {'country':'Country', 'code':'Code', 'name':'Name', 'description':'Description'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['country', 'code', 'name', 'desc']
-appbuilder.add_view(StateModelView, "States", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['country', 'code', 'name', 'description']
 class TokenModelView(ModelView):
     datamodel = SQLAInterface(Token)
     list_title = 'List Token'
@@ -849,43 +837,41 @@ class TokenModelView(ModelView):
     edit_title = 'Edit Token'
     add_title  = 'Add Token'
  
-    list_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    # show_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    # edit_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    add_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    search_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    list_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # show_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # edit_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    add_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # search_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
     description_columns = {
-        'token_id' : 'None',
-        'token_provider_id_fk' : 'None',
-        'token_name' : 'None',
-        'token_issue_date' : 'None',
-        'token_expiry_date' : 'None',
-        'token_validity' : 'None',
-        'token_expired' : 'None',
-        'token_value' : 'None',
-        'token_username' : 'None',
-        'token_password' : 'None',
-        'token_notes' : 'None',
-        'token_client_secret' : 'None',
-        'enabled' : 'None',
+        'id' : 'Unique identifier for the token.',
+        'token_provider_id_fk' : 'Foreign key referencing the associated token provider.',
+        'token_name' : 'Name or identifier for the token.',
+        'token_issue_date' : 'Timestamp when the token was issued.',
+        'token_expiry_date' : 'Timestamp when the token expires.',
+        'token_validity' : 'Duration of token validity in seconds.',
+        'token_expired' : 'Indicates if the token has expired.',
+        'token_value' : 'Actual token value or token string.',
+        'token_username' : 'Username associated with the token.',
+        'token_password' : 'Password associated with the token.',
+        'token_notes' : 'Additional notes or remarks about the token.',
+        'token_client_secret' : 'Client secret associated with the token.',
+        'enabled' : 'Indicates if the token is enabled or disabled.',
     }
-    # list_exclude_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    # show_exclude_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    # edit_exclude_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    # add_exclude_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    # search_exclude_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    # order_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    # add_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    # add_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-    # add_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # list_exclude_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # show_exclude_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # edit_exclude_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # add_exclude_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # search_exclude_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # order_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # add_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # add_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
+    # add_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
     
-    # label_columns = {'token_id':'Token Id', 'token_provider', 'token_name':'Token Name', 'token_issue_date':'Token Issue Date', 'token_expiry_date':'Token Expiry Date', 'token_validity':'Token Validity', 'token_expired':'Token Expired', 'token_value':'Token Value', 'token_username':'Token Username', 'token_password':'Token Password', 'token_notes':'Token Notes', 'token_client_secret':'Token Client Secret', 'enabled':'Enabled'}
+    label_columns = {'token_provider':'Token Provider', 'token_name':'Token Name', 'token_issue_date':'Token Issue Date', 'token_expiry_date':'Token Expiry Date', 'token_validity':'Token Validity', 'token_expired':'Token Expired', 'token_value':'Token Value', 'token_username':'Token Username', 'token_password':'Token Password', 'token_notes':'Token Notes', 'token_client_secret':'Token Client Secret', 'enabled':'Enabled'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['token_id', 'token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
-appbuilder.add_view(TokenModelView, "Tokens", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['token_provider', 'token_name', 'token_issue_date', 'token_expiry_date', 'token_validity', 'token_expired', 'token_value', 'token_username', 'token_password', 'token_notes', 'token_client_secret', 'enabled']
 class BillerOfferingModelView(ModelView):
     datamodel = SQLAInterface(BillerOffering)
     list_title = 'List Biller Offering'
@@ -893,35 +879,33 @@ class BillerOfferingModelView(ModelView):
     edit_title = 'Edit Biller Offering'
     add_title  = 'Add Biller Offering'
  
-    list_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    # show_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    # edit_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    add_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    search_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
+    list_columns = ['biller', 'name', 'description', 'price']
+    # show_columns = ['biller', 'name', 'description', 'price']
+    # edit_columns = ['biller', 'name', 'description', 'price']
+    add_columns = ['biller', 'name', 'description', 'price']
+    # search_columns = ['biller', 'name', 'description', 'price']
     description_columns = {
-        'biller_id_fk' : 'None',
-        'offering_id' : 'None',
-        'offering_name' : 'None',
-        'offering_description' : 'None',
-        'offering_price' : 'None',
+        'biller_id_fk' : 'Foreign key referencing the biller to which this offering belongs.',
+        'id' : 'Unique identifier for the biller offering.',
+        'name' : 'Name or title of the biller offering.',
+        'description' : 'Description of the biller offering.',
+        'price' : 'Price or cost associated with the biller offering.',
     }
-    # list_exclude_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    # show_exclude_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    # edit_exclude_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    # add_exclude_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    # search_exclude_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    # order_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    # add_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    # add_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-    # add_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
+    # list_exclude_columns = ['biller', 'name', 'description', 'price']
+    # show_exclude_columns = ['biller', 'name', 'description', 'price']
+    # edit_exclude_columns = ['biller', 'name', 'description', 'price']
+    # add_exclude_columns = ['biller', 'name', 'description', 'price']
+    # search_exclude_columns = ['biller', 'name', 'description', 'price']
+    # order_columns = ['biller', 'name', 'description', 'price']
+    # add_columns = ['biller', 'name', 'description', 'price']
+    # add_columns = ['biller', 'name', 'description', 'price']
+    # add_columns = ['biller', 'name', 'description', 'price']
     
-    # label_columns = {'biller', 'offering_id':'Offering Id', 'offering_name':'Offering Name', 'offering_description':'Offering Description', 'offering_price':'Offering Price'}
+    label_columns = {'biller':'Biller', 'name':'Name', 'description':'Description', 'price':'Price'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['biller', 'offering_id', 'offering_name', 'offering_description', 'offering_price']
-appbuilder.add_view(BillerOfferingModelView, "BillerOfferings", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['biller', 'name', 'description', 'price']
 class LgaModelView(ModelView):
     datamodel = SQLAInterface(Lga)
     list_title = 'List Lga'
@@ -933,12 +917,12 @@ class LgaModelView(ModelView):
     # show_columns = ['state', 'code', 'lga_name']
     # edit_columns = ['state', 'code', 'lga_name']
     add_columns = ['state', 'code', 'lga_name']
-    search_columns = ['state', 'code', 'lga_name']
+    # search_columns = ['state', 'code', 'lga_name']
     description_columns = {
-        'id' : 'None',
-        'state_id_fk' : 'None',
-        'code' : 'None',
-        'lga_name' : 'None',
+        'id' : 'ID of this column',
+        'state_id_fk' : 'Foreign Key of the state',
+        'code' : 'Local Government Code',
+        'lga_name' : 'LGA Name',
     }
     # list_exclude_columns = ['state', 'code', 'lga_name']
     # show_exclude_columns = ['state', 'code', 'lga_name']
@@ -950,13 +934,11 @@ class LgaModelView(ModelView):
     # add_columns = ['state', 'code', 'lga_name']
     # add_columns = ['state', 'code', 'lga_name']
     
-    # label_columns = {'state', 'code':'Code', 'lga_name':'Lga Name'}
+    label_columns = {'state':'State', 'code':'Code', 'lga_name':'Lga Name'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['state', 'code', 'lga_name']
-appbuilder.add_view(LgaModelView, "Lgas", icon="fa-folder-open-o", category="Setup")
-
 class AgentModelView(ModelView):
     datamodel = SQLAInterface(Agent)
     list_title = 'List Agent'
@@ -968,80 +950,80 @@ class AgentModelView(ModelView):
     # show_columns = ['aggregator', 'is_aggregator', 'became_aggregator_date', 'assigned_pos_count', 'aggregator_pos_threshold', 'verification_status', 'verification_status_notes', 'agent_type', 'agent_role', 'agent_tier', 'account_manager', 'agent_name', 'alias', 'phone_country', 'phone', 'phone_ext', 'alt_phone_country', 'alt_phone', 'alt_phone_ext', 'email', 'alt_email', 'bvn', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'bank', 'bank_acc_no', 'biz_name', 'biz_state', 'biz_lga', 'biz_city', 'biz_city_area', 'biz_street', 'biz_building', 'biz_address', 'biz_poa_img', 'biz_poa_desc', 'biz_poa_valid', 'biz_lat', 'biz_lon', 'biz_loc', 'biz_ggl_code', 'company_name', 'cac_number', 'cac_reg_date', 'cac_cert_img', 'cac_cert_no', 'ref_code', 'access_pin', 'registered_by', 'registration_date', 'reviewed_by', 'review_date', 'approved_by', 'approval_date', 'approval_narrative', 'kyc_submit_date', 'kyc_verification_status', 'kyc_approval_date', 'kyc_ref_code', 'kyc_rejection_narrative', 'kyc_rejection_by', 'rejection_date', 'rejection_narrative', 'rejected_by', 'face_matrix', 'finger_print_img', 'agent_public_key', 'agent_pj_expiry', 'agent_history']
     # edit_columns = ['aggregator', 'is_aggregator', 'became_aggregator_date', 'assigned_pos_count', 'aggregator_pos_threshold', 'verification_status', 'verification_status_notes', 'agent_type', 'agent_role', 'agent_tier', 'account_manager', 'agent_name', 'alias', 'phone_country', 'phone', 'phone_ext', 'alt_phone_country', 'alt_phone', 'alt_phone_ext', 'email', 'alt_email', 'bvn', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'bank', 'bank_acc_no', 'biz_name', 'biz_state', 'biz_lga', 'biz_city', 'biz_city_area', 'biz_street', 'biz_building', 'biz_address', 'biz_poa_img', 'biz_poa_desc', 'biz_poa_valid', 'biz_lat', 'biz_lon', 'biz_loc', 'biz_ggl_code', 'company_name', 'cac_number', 'cac_reg_date', 'cac_cert_img', 'cac_cert_no', 'ref_code', 'access_pin', 'registered_by', 'registration_date', 'reviewed_by', 'review_date', 'approved_by', 'approval_date', 'approval_narrative', 'kyc_submit_date', 'kyc_verification_status', 'kyc_approval_date', 'kyc_ref_code', 'kyc_rejection_narrative', 'kyc_rejection_by', 'rejection_date', 'rejection_narrative', 'rejected_by', 'face_matrix', 'finger_print_img', 'agent_public_key', 'agent_pj_expiry', 'agent_history']
     add_columns = ['aggregator', 'is_aggregator', 'became_aggregator_date', 'assigned_pos_count', 'aggregator_pos_threshold', 'verification_status', 'verification_status_notes', 'agent_type', 'agent_role', 'agent_tier', 'account_manager', 'agent_name', 'alias', 'phone_country', 'phone', 'phone_ext', 'alt_phone_country', 'alt_phone', 'alt_phone_ext', 'email', 'alt_email', 'bvn', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'bank', 'bank_acc_no', 'biz_name', 'biz_state', 'biz_lga', 'biz_city', 'biz_city_area', 'biz_street', 'biz_building', 'biz_address', 'biz_poa_img', 'biz_poa_desc', 'biz_poa_valid', 'biz_lat', 'biz_lon', 'biz_loc', 'biz_ggl_code', 'company_name', 'cac_number', 'cac_reg_date', 'cac_cert_img', 'cac_cert_no', 'ref_code', 'access_pin', 'registered_by', 'registration_date', 'reviewed_by', 'review_date', 'approved_by', 'approval_date', 'approval_narrative', 'kyc_submit_date', 'kyc_verification_status', 'kyc_approval_date', 'kyc_ref_code', 'kyc_rejection_narrative', 'kyc_rejection_by', 'rejection_date', 'rejection_narrative', 'rejected_by', 'face_matrix', 'finger_print_img', 'agent_public_key', 'agent_pj_expiry', 'agent_history']
-    search_columns = ['aggregator', 'is_aggregator', 'became_aggregator_date', 'assigned_pos_count', 'aggregator_pos_threshold', 'verification_status', 'verification_status_notes', 'agent_type', 'agent_role', 'agent_tier', 'account_manager', 'agent_name', 'alias', 'phone_country', 'phone', 'phone_ext', 'alt_phone_country', 'alt_phone', 'alt_phone_ext', 'email', 'alt_email', 'bvn', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'bank', 'bank_acc_no', 'biz_name', 'biz_state', 'biz_lga', 'biz_city', 'biz_city_area', 'biz_street', 'biz_building', 'biz_address', 'biz_poa_img', 'biz_poa_desc', 'biz_poa_valid', 'biz_lat', 'biz_lon', 'biz_loc', 'biz_ggl_code', 'company_name', 'cac_number', 'cac_reg_date', 'cac_cert_img', 'cac_cert_no', 'ref_code', 'access_pin', 'registered_by', 'registration_date', 'reviewed_by', 'review_date', 'approved_by', 'approval_date', 'approval_narrative', 'kyc_submit_date', 'kyc_verification_status', 'kyc_approval_date', 'kyc_ref_code', 'kyc_rejection_narrative', 'kyc_rejection_by', 'rejection_date', 'rejection_narrative', 'rejected_by', 'face_matrix', 'finger_print_img', 'agent_public_key', 'agent_pj_expiry', 'agent_history']
+    # search_columns = ['aggregator', 'is_aggregator', 'became_aggregator_date', 'assigned_pos_count', 'aggregator_pos_threshold', 'verification_status', 'verification_status_notes', 'agent_type', 'agent_role', 'agent_tier', 'account_manager', 'agent_name', 'alias', 'phone_country', 'phone', 'phone_ext', 'alt_phone_country', 'alt_phone', 'alt_phone_ext', 'email', 'alt_email', 'bvn', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'bank', 'bank_acc_no', 'biz_name', 'biz_state', 'biz_lga', 'biz_city', 'biz_city_area', 'biz_street', 'biz_building', 'biz_address', 'biz_poa_img', 'biz_poa_desc', 'biz_poa_valid', 'biz_lat', 'biz_lon', 'biz_loc', 'biz_ggl_code', 'company_name', 'cac_number', 'cac_reg_date', 'cac_cert_img', 'cac_cert_no', 'ref_code', 'access_pin', 'registered_by', 'registration_date', 'reviewed_by', 'review_date', 'approved_by', 'approval_date', 'approval_narrative', 'kyc_submit_date', 'kyc_verification_status', 'kyc_approval_date', 'kyc_ref_code', 'kyc_rejection_narrative', 'kyc_rejection_by', 'rejection_date', 'rejection_narrative', 'rejected_by', 'face_matrix', 'finger_print_img', 'agent_public_key', 'agent_pj_expiry', 'agent_history']
     description_columns = {
-        'id' : 'None',
-        'aggregator_id_fk' : 'None',
-        'is_aggregator' : 'None',
-        'became_aggregator_date' : 'None',
-        'assigned_pos_count' : 'None',
-        'aggregator_pos_threshold' : 'None',
-        'verification_status' : 'the status of this agent',
-        'verification_status_notes' : 'None',
-        'agent_type' : 'None',
-        'agent_role' : 'None',
-        'agent_tier_id_fk' : 'None',
-        'account_manager_id_fk' : 'None',
-        'agent_name' : 'None',
-        'alias' : 'Use this for reports if available',
-        'phone_country_id_fk' : 'None',
-        'phone' : 'None',
-        'phone_ext' : 'None',
-        'alt_phone_country_id_fk' : 'None',
-        'alt_phone' : 'None',
-        'alt_phone_ext' : 'None',
-        'email' : 'None',
-        'alt_email' : 'None',
-        'bvn' : 'None',
-        'bvn_verified' : 'None',
-        'bvn_verification_date' : 'None',
-        'bvn_verification_code' : 'None',
-        'tax_id' : 'None',
-        'bank_id_fk' : 'None',
-        'bank_acc_no' : 'Transactions to this bank are free?',
-        'biz_name' : 'None',
-        'biz_state_id_fk' : 'None',
-        'biz_lga_id_fk' : 'None',
-        'biz_city' : 'None',
-        'biz_city_area' : 'None',
-        'biz_street' : 'None',
-        'biz_building' : 'None',
-        'biz_address' : 'None',
-        'biz_poa_img' : 'None',
-        'biz_poa_desc' : 'None',
-        'biz_poa_valid' : 'None',
-        'biz_lat' : 'None',
-        'biz_lon' : 'None',
-        'biz_loc' : 'None',
-        'biz_ggl_code' : 'None',
-        'company_name' : 'None',
-        'cac_number' : 'None',
-        'cac_reg_date' : 'None',
-        'cac_cert_img' : 'None',
-        'cac_cert_no' : 'None',
-        'ref_code' : 'None',
-        'access_pin' : 'None',
-        'registered_by_id_fk' : 'None',
-        'registration_date' : 'None',
-        'reviewed_by_id_fk' : 'None',
-        'review_date' : 'None',
-        'approved_by_id_fk' : 'None',
-        'approval_date' : 'None',
-        'approval_narrative' : 'None',
-        'kyc_submit_date' : 'None',
-        'kyc_verification_status' : 'None',
-        'kyc_approval_date' : 'None',
-        'kyc_ref_code' : 'None',
-        'kyc_rejection_narrative' : 'None',
-        'kyc_rejection_by_id_fk' : 'None',
-        'rejection_date' : 'None',
-        'rejection_narrative' : 'None',
-        'rejected_by_id_fk' : 'None',
-        'face_matrix' : 'None',
-        'finger_print_img' : 'None',
-        'agent_public_key' : 'None',
-        'agent_pj_expiry' : 'None',
-        'agent_history' : 'None',
+        'id' : 'Unique identifier for the agent.',
+        'aggregator_id_fk' : 'References the aggregator agent if applicable.',
+        'is_aggregator' : 'Indicates whether the agent is an aggregator.',
+        'became_aggregator_date' : 'Timestamp when the agent became an aggregator, if applicable.',
+        'assigned_pos_count' : 'Count of assigned point-of-sale (POS) devices.',
+        'aggregator_pos_threshold' : 'Threshold for becoming an aggregator based on POS device count.',
+        'verification_status' : 'The status of this agent, such as pending, active, etc.',
+        'verification_status_notes' : 'Additional notes or remarks about the agents verification status.',
+        'agent_type' : 'Type of agent, e.g., Individual, Business.',
+        'agent_role' : 'Role of the agent, e.g., agent, sub-agent, aggregator.',
+        'agent_tier_id_fk' : 'References the agents tier.',
+        'account_manager_id_fk' : 'References the account manager responsible for this agent.',
+        'agent_name' : 'Name of the agent.',
+        'alias' : 'Alias or alternate name for reporting purposes, if available.',
+        'phone_country_id_fk' : 'References the country of the agents phone number.',
+        'phone' : 'Primary phone number of the agent.',
+        'phone_ext' : 'Extension for the primary phone number.',
+        'alt_phone_country_id_fk' : 'References the country of the alternate phone number.',
+        'alt_phone' : 'Alternate phone number for the agent.',
+        'alt_phone_ext' : 'Extension for the alternate phone number.',
+        'email' : 'Email address of the agent.',
+        'alt_email' : 'Alternate email address for the agent.',
+        'bvn' : 'Bank Verification Number (BVN) of the agent.',
+        'bvn_verified' : 'Indicates whether the BVN is verified.',
+        'bvn_verification_date' : 'Timestamp of BVN verification.',
+        'bvn_verification_code' : 'Verification code for BVN.',
+        'tax_id' : 'Tax identification number of the agent.',
+        'bank_id_fk' : 'References the bank where the agent has an account.',
+        'bank_acc_no' : 'Agent bank account number.',
+        'biz_name' : 'Name of the agents business, if applicable.',
+        'biz_state_id_fk' : 'References the state where the business is located.',
+        'biz_lga_id_fk' : 'References the LGA where the business is located.',
+        'biz_city' : 'City where the business is located.',
+        'biz_city_area' : 'Specific area within the city where the business is located.',
+        'biz_street' : 'Street address of the business.',
+        'biz_building' : 'Building name or number of the business location.',
+        'biz_address' : 'Detailed address information for the business.',
+        'biz_poa_img' : 'Image of Proof of Address (POA) for the business.',
+        'biz_poa_desc' : 'Description of the Proof of Address document.',
+        'biz_poa_valid' : 'Indicates if the Proof of Address is valid.',
+        'biz_lat' : 'Latitude coordinates of the business location.',
+        'biz_lon' : 'Longitude coordinates of the business location.',
+        'biz_loc' : 'Location description of the business.',
+        'biz_ggl_code' : 'Google Maps code for the business location.',
+        'company_name' : 'Name of the company associated with the agent.',
+        'cac_number' : 'Corporate Affairs Commission (CAC) registration number.',
+        'cac_reg_date' : 'Date of CAC registration.',
+        'cac_cert_img' : 'Image of the CAC certificate.',
+        'cac_cert_no' : 'Certificate number issued by CAC.',
+        'ref_code' : 'Reference code associated with the agent.',
+        'access_pin' : 'Access PIN for agent transactions.',
+        'registered_by_id_fk' : 'References the user who registered the agent.',
+        'registration_date' : 'Timestamp of agent registration.',
+        'reviewed_by_id_fk' : 'References the user who reviewed the agent.',
+        'review_date' : 'Timestamp of agent review.',
+        'approved_by_id_fk' : 'References the user who approved the agent.',
+        'approval_date' : 'Timestamp of agent approval.',
+        'approval_narrative' : 'Narrative or notes related to agent approval.',
+        'kyc_submit_date' : 'Timestamp of KYC document submission.',
+        'kyc_verification_status' : 'KYC verification status, e.g., pending, approved.',
+        'kyc_approval_date' : 'Timestamp of KYC document approval.',
+        'kyc_ref_code' : 'Reference code associated with KYC.',
+        'kyc_rejection_narrative' : 'Narrative or notes related to KYC rejection.',
+        'kyc_rejection_by_id_fk' : 'References the user who rejected KYC.',
+        'rejection_date' : 'Timestamp of agent rejection.',
+        'rejection_narrative' : 'Narrative or notes related to agent rejection.',
+        'rejected_by_id_fk' : 'References the user who rejected the agent.',
+        'face_matrix' : 'Biometric data for face recognition.',
+        'finger_print_img' : 'Image of fingerprint data.',
+        'agent_public_key' : 'Public key for cryptographic operations.',
+        'agent_pj_expiry' : 'Timestamp of public key expiration.',
+        'agent_history' : 'Textual history of agent-related events.',
     }
     # list_exclude_columns = ['aggregator', 'is_aggregator', 'became_aggregator_date', 'assigned_pos_count', 'aggregator_pos_threshold', 'verification_status', 'verification_status_notes', 'agent_type', 'agent_role', 'agent_tier', 'account_manager', 'agent_name', 'alias', 'phone_country', 'phone', 'phone_ext', 'alt_phone_country', 'alt_phone', 'alt_phone_ext', 'email', 'alt_email', 'bvn', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'bank', 'bank_acc_no', 'biz_name', 'biz_state', 'biz_lga', 'biz_city', 'biz_city_area', 'biz_street', 'biz_building', 'biz_address', 'biz_poa_img', 'biz_poa_desc', 'biz_poa_valid', 'biz_lat', 'biz_lon', 'biz_loc', 'biz_ggl_code', 'company_name', 'cac_number', 'cac_reg_date', 'cac_cert_img', 'cac_cert_no', 'ref_code', 'access_pin', 'registered_by', 'registration_date', 'reviewed_by', 'review_date', 'approved_by', 'approval_date', 'approval_narrative', 'kyc_submit_date', 'kyc_verification_status', 'kyc_approval_date', 'kyc_ref_code', 'kyc_rejection_narrative', 'kyc_rejection_by', 'rejection_date', 'rejection_narrative', 'rejected_by', 'face_matrix', 'finger_print_img', 'agent_public_key', 'agent_pj_expiry', 'agent_history']
     # show_exclude_columns = ['aggregator', 'is_aggregator', 'became_aggregator_date', 'assigned_pos_count', 'aggregator_pos_threshold', 'verification_status', 'verification_status_notes', 'agent_type', 'agent_role', 'agent_tier', 'account_manager', 'agent_name', 'alias', 'phone_country', 'phone', 'phone_ext', 'alt_phone_country', 'alt_phone', 'alt_phone_ext', 'email', 'alt_email', 'bvn', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'bank', 'bank_acc_no', 'biz_name', 'biz_state', 'biz_lga', 'biz_city', 'biz_city_area', 'biz_street', 'biz_building', 'biz_address', 'biz_poa_img', 'biz_poa_desc', 'biz_poa_valid', 'biz_lat', 'biz_lon', 'biz_loc', 'biz_ggl_code', 'company_name', 'cac_number', 'cac_reg_date', 'cac_cert_img', 'cac_cert_no', 'ref_code', 'access_pin', 'registered_by', 'registration_date', 'reviewed_by', 'review_date', 'approved_by', 'approval_date', 'approval_narrative', 'kyc_submit_date', 'kyc_verification_status', 'kyc_approval_date', 'kyc_ref_code', 'kyc_rejection_narrative', 'kyc_rejection_by', 'rejection_date', 'rejection_narrative', 'rejected_by', 'face_matrix', 'finger_print_img', 'agent_public_key', 'agent_pj_expiry', 'agent_history']
@@ -1053,13 +1035,11 @@ class AgentModelView(ModelView):
     # add_columns = ['aggregator', 'is_aggregator', 'became_aggregator_date', 'assigned_pos_count', 'aggregator_pos_threshold', 'verification_status', 'verification_status_notes', 'agent_type', 'agent_role', 'agent_tier', 'account_manager', 'agent_name', 'alias', 'phone_country', 'phone', 'phone_ext', 'alt_phone_country', 'alt_phone', 'alt_phone_ext', 'email', 'alt_email', 'bvn', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'bank', 'bank_acc_no', 'biz_name', 'biz_state', 'biz_lga', 'biz_city', 'biz_city_area', 'biz_street', 'biz_building', 'biz_address', 'biz_poa_img', 'biz_poa_desc', 'biz_poa_valid', 'biz_lat', 'biz_lon', 'biz_loc', 'biz_ggl_code', 'company_name', 'cac_number', 'cac_reg_date', 'cac_cert_img', 'cac_cert_no', 'ref_code', 'access_pin', 'registered_by', 'registration_date', 'reviewed_by', 'review_date', 'approved_by', 'approval_date', 'approval_narrative', 'kyc_submit_date', 'kyc_verification_status', 'kyc_approval_date', 'kyc_ref_code', 'kyc_rejection_narrative', 'kyc_rejection_by', 'rejection_date', 'rejection_narrative', 'rejected_by', 'face_matrix', 'finger_print_img', 'agent_public_key', 'agent_pj_expiry', 'agent_history']
     # add_columns = ['aggregator', 'is_aggregator', 'became_aggregator_date', 'assigned_pos_count', 'aggregator_pos_threshold', 'verification_status', 'verification_status_notes', 'agent_type', 'agent_role', 'agent_tier', 'account_manager', 'agent_name', 'alias', 'phone_country', 'phone', 'phone_ext', 'alt_phone_country', 'alt_phone', 'alt_phone_ext', 'email', 'alt_email', 'bvn', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'bank', 'bank_acc_no', 'biz_name', 'biz_state', 'biz_lga', 'biz_city', 'biz_city_area', 'biz_street', 'biz_building', 'biz_address', 'biz_poa_img', 'biz_poa_desc', 'biz_poa_valid', 'biz_lat', 'biz_lon', 'biz_loc', 'biz_ggl_code', 'company_name', 'cac_number', 'cac_reg_date', 'cac_cert_img', 'cac_cert_no', 'ref_code', 'access_pin', 'registered_by', 'registration_date', 'reviewed_by', 'review_date', 'approved_by', 'approval_date', 'approval_narrative', 'kyc_submit_date', 'kyc_verification_status', 'kyc_approval_date', 'kyc_ref_code', 'kyc_rejection_narrative', 'kyc_rejection_by', 'rejection_date', 'rejection_narrative', 'rejected_by', 'face_matrix', 'finger_print_img', 'agent_public_key', 'agent_pj_expiry', 'agent_history']
     
-    # label_columns = {'aggregator', 'is_aggregator':'Is Aggregator', 'became_aggregator_date':'Became Aggregator Date', 'assigned_pos_count':'Assigned Pos Count', 'aggregator_pos_threshold':'Aggregator Pos Threshold', 'verification_status':'Verification Status', 'verification_status_notes':'Verification Status Notes', 'agent_type':'Agent Type', 'agent_role':'Agent Role', 'agent_tier', 'account_manager', 'agent_name':'Agent Name', 'alias':'Alias', 'phone_country', 'phone':'Phone', 'phone_ext':'Phone Ext', 'alt_phone_country', 'alt_phone':'Alt Phone', 'alt_phone_ext':'Alt Phone Ext', 'email':'Email', 'alt_email':'Alt Email', 'bvn':'Bvn', 'bvn_verified':'Bvn Verified', 'bvn_verification_date':'Bvn Verification Date', 'bvn_verification_code':'Bvn Verification Code', 'tax_id':'Tax Id', 'bank', 'bank_acc_no':'Bank Acc No', 'biz_name':'Biz Name', 'biz_state', 'biz_lga', 'biz_city':'Biz City', 'biz_city_area':'Biz City Area', 'biz_street':'Biz Street', 'biz_building':'Biz Building', 'biz_address':'Biz Address', 'biz_poa_img':'Biz Poa Img', 'biz_poa_desc':'Biz Poa Desc', 'biz_poa_valid':'Biz Poa Valid', 'biz_lat':'Biz Lat', 'biz_lon':'Biz Lon', 'biz_loc':'Biz Loc', 'biz_ggl_code':'Biz Ggl Code', 'company_name':'Company Name', 'cac_number':'Cac Number', 'cac_reg_date':'Cac Reg Date', 'cac_cert_img':'Cac Cert Img', 'cac_cert_no':'Cac Cert No', 'ref_code':'Ref Code', 'access_pin':'Access Pin', 'registered_by', 'registration_date':'Registration Date', 'reviewed_by', 'review_date':'Review Date', 'approved_by', 'approval_date':'Approval Date', 'approval_narrative':'Approval Narrative', 'kyc_submit_date':'Kyc Submit Date', 'kyc_verification_status':'Kyc Verification Status', 'kyc_approval_date':'Kyc Approval Date', 'kyc_ref_code':'Kyc Ref Code', 'kyc_rejection_narrative':'Kyc Rejection Narrative', 'kyc_rejection_by', 'rejection_date':'Rejection Date', 'rejection_narrative':'Rejection Narrative', 'rejected_by', 'face_matrix':'Face Matrix', 'finger_print_img':'Finger Print Img', 'agent_public_key':'Agent Public Key', 'agent_pj_expiry':'Agent Pj Expiry', 'agent_history':'Agent History'}
+    label_columns = {'aggregator':'Aggregator', 'is_aggregator':'Is Aggregator', 'became_aggregator_date':'Became Aggregator Date', 'assigned_pos_count':'Assigned Pos Count', 'aggregator_pos_threshold':'Aggregator Pos Threshold', 'verification_status':'Verification Status', 'verification_status_notes':'Verification Status Notes', 'agent_type':'Agent Type', 'agent_role':'Agent Role', 'agent_tier':'Agent Tier', 'account_manager':'Account Manager', 'agent_name':'Agent Name', 'alias':'Alias', 'phone_country':'Phone Country', 'phone':'Phone', 'phone_ext':'Phone Ext', 'alt_phone_country':'Alt Phone Country', 'alt_phone':'Alt Phone', 'alt_phone_ext':'Alt Phone Ext', 'email':'Email', 'alt_email':'Alt Email', 'bvn':'Bvn', 'bvn_verified':'Bvn Verified', 'bvn_verification_date':'Bvn Verification Date', 'bvn_verification_code':'Bvn Verification Code', 'tax_id':'Tax Id', 'bank':'Bank', 'bank_acc_no':'Bank Acc No', 'biz_name':'Biz Name', 'biz_state':'Biz State', 'biz_lga':'Biz Lga', 'biz_city':'Biz City', 'biz_city_area':'Biz City Area', 'biz_street':'Biz Street', 'biz_building':'Biz Building', 'biz_address':'Biz Address', 'biz_poa_img':'Biz Poa Img', 'biz_poa_desc':'Biz Poa Desc', 'biz_poa_valid':'Biz Poa Valid', 'biz_lat':'Biz Lat', 'biz_lon':'Biz Lon', 'biz_loc':'Biz Loc', 'biz_ggl_code':'Biz Ggl Code', 'company_name':'Company Name', 'cac_number':'Cac Number', 'cac_reg_date':'Cac Reg Date', 'cac_cert_img':'Cac Cert Img', 'cac_cert_no':'Cac Cert No', 'ref_code':'Ref Code', 'access_pin':'Access Pin', 'registered_by':'Registered By', 'registration_date':'Registration Date', 'reviewed_by':'Reviewed By', 'review_date':'Review Date', 'approved_by':'Approved By', 'approval_date':'Approval Date', 'approval_narrative':'Approval Narrative', 'kyc_submit_date':'Kyc Submit Date', 'kyc_verification_status':'Kyc Verification Status', 'kyc_approval_date':'Kyc Approval Date', 'kyc_ref_code':'Kyc Ref Code', 'kyc_rejection_narrative':'Kyc Rejection Narrative', 'kyc_rejection_by':'Kyc Rejection By', 'rejection_date':'Rejection Date', 'rejection_narrative':'Rejection Narrative', 'rejected_by':'Rejected By', 'face_matrix':'Face Matrix', 'finger_print_img':'Finger Print Img', 'agent_public_key':'Agent Public Key', 'agent_pj_expiry':'Agent Pj Expiry', 'agent_history':'Agent History'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['aggregator', 'is_aggregator', 'became_aggregator_date', 'assigned_pos_count', 'aggregator_pos_threshold', 'verification_status', 'verification_status_notes', 'agent_type', 'agent_role', 'agent_tier', 'account_manager', 'agent_name', 'alias', 'phone_country', 'phone', 'phone_ext', 'alt_phone_country', 'alt_phone', 'alt_phone_ext', 'email', 'alt_email', 'bvn', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'bank', 'bank_acc_no', 'biz_name', 'biz_state', 'biz_lga', 'biz_city', 'biz_city_area', 'biz_street', 'biz_building', 'biz_address', 'biz_poa_img', 'biz_poa_desc', 'biz_poa_valid', 'biz_lat', 'biz_lon', 'biz_loc', 'biz_ggl_code', 'company_name', 'cac_number', 'cac_reg_date', 'cac_cert_img', 'cac_cert_no', 'ref_code', 'access_pin', 'registered_by', 'registration_date', 'reviewed_by', 'review_date', 'approved_by', 'approval_date', 'approval_narrative', 'kyc_submit_date', 'kyc_verification_status', 'kyc_approval_date', 'kyc_ref_code', 'kyc_rejection_narrative', 'kyc_rejection_by', 'rejection_date', 'rejection_narrative', 'rejected_by', 'face_matrix', 'finger_print_img', 'agent_public_key', 'agent_pj_expiry', 'agent_history']
-appbuilder.add_view(AgentModelView, "Agents", icon="fa-folder-open-o", category="Setup")
-
 class PosModelView(ModelView):
     datamodel = SQLAInterface(Pos)
     list_title = 'List Pos'
@@ -1071,45 +1051,45 @@ class PosModelView(ModelView):
     # show_columns = ['serial_no', 'imei', 'mac_addr', 'device_model', 'device_make', 'device_mfg', 'os_version', 'device_color', 'device_condition', 'status', 'owner_type', 'registration_date', 'assigned', 'assigned_date', 'assigned_narrative', 'active', 'activation_date', 'last_active', 'deployed', 'deploy_date', 'deploy_narrative', 'returned', 'return_date', 'return_narrative', 'return_received_date', 'return_received_by', 'state', 'lga', 'street_address', 'building_name', 'contact_phone_num', 'pos_user', 'crypt_priv_key', 'crypt_pub_key', 'crypt_password', 'override_key']
     # edit_columns = ['serial_no', 'imei', 'mac_addr', 'device_model', 'device_make', 'device_mfg', 'os_version', 'device_color', 'device_condition', 'status', 'owner_type', 'registration_date', 'assigned', 'assigned_date', 'assigned_narrative', 'active', 'activation_date', 'last_active', 'deployed', 'deploy_date', 'deploy_narrative', 'returned', 'return_date', 'return_narrative', 'return_received_date', 'return_received_by', 'state', 'lga', 'street_address', 'building_name', 'contact_phone_num', 'pos_user', 'crypt_priv_key', 'crypt_pub_key', 'crypt_password', 'override_key']
     add_columns = ['serial_no', 'imei', 'mac_addr', 'device_model', 'device_make', 'device_mfg', 'os_version', 'device_color', 'device_condition', 'status', 'owner_type', 'registration_date', 'assigned', 'assigned_date', 'assigned_narrative', 'active', 'activation_date', 'last_active', 'deployed', 'deploy_date', 'deploy_narrative', 'returned', 'return_date', 'return_narrative', 'return_received_date', 'return_received_by', 'state', 'lga', 'street_address', 'building_name', 'contact_phone_num', 'pos_user', 'crypt_priv_key', 'crypt_pub_key', 'crypt_password', 'override_key']
-    search_columns = ['serial_no', 'imei', 'mac_addr', 'device_model', 'device_make', 'device_mfg', 'os_version', 'device_color', 'device_condition', 'status', 'owner_type', 'registration_date', 'assigned', 'assigned_date', 'assigned_narrative', 'active', 'activation_date', 'last_active', 'deployed', 'deploy_date', 'deploy_narrative', 'returned', 'return_date', 'return_narrative', 'return_received_date', 'return_received_by', 'state', 'lga', 'street_address', 'building_name', 'contact_phone_num', 'pos_user', 'crypt_priv_key', 'crypt_pub_key', 'crypt_password', 'override_key']
+    # search_columns = ['serial_no', 'imei', 'mac_addr', 'device_model', 'device_make', 'device_mfg', 'os_version', 'device_color', 'device_condition', 'status', 'owner_type', 'registration_date', 'assigned', 'assigned_date', 'assigned_narrative', 'active', 'activation_date', 'last_active', 'deployed', 'deploy_date', 'deploy_narrative', 'returned', 'return_date', 'return_narrative', 'return_received_date', 'return_received_by', 'state', 'lga', 'street_address', 'building_name', 'contact_phone_num', 'pos_user', 'crypt_priv_key', 'crypt_pub_key', 'crypt_password', 'override_key']
     description_columns = {
-        'id' : 'None',
-        'serial_no' : 'None',
-        'imei' : 'None',
-        'mac_addr' : 'None',
-        'device_model' : 'None',
-        'device_make' : 'None',
-        'device_mfg' : 'None',
-        'os_version' : 'None',
-        'device_color' : 'None',
-        'device_condition' : 'working, irreparrable, repaired',
-        'status' : 'None',
-        'owner_type' : 'None',
-        'registration_date' : 'None',
-        'assigned' : 'None',
-        'assigned_date' : 'None',
-        'assigned_narrative' : 'None',
-        'active' : 'None',
-        'activation_date' : 'None',
-        'last_active' : 'None',
-        'deployed' : 'None',
-        'deploy_date' : 'None',
-        'deploy_narrative' : 'None',
-        'returned' : 'None',
-        'return_date' : 'None',
-        'return_narrative' : 'None',
-        'return_received_date' : 'None',
-        'return_received_by_id_fk' : 'None',
-        'state_id_fk' : 'None',
-        'lga_id_fk' : 'None',
-        'street_address' : 'None',
-        'building_name' : 'None',
-        'contact_phone_num' : 'None',
-        'pos_user' : 'None',
-        'crypt_priv_key' : 'None',
-        'crypt_pub_key' : 'None',
-        'crypt_password' : 'None',
-        'override_key' : 'None',
+        'id' : 'Unique identifier for the Point of Sale (PoS).',
+        'serial_no' : 'Unique serial number for the PoS.',
+        'imei' : 'IMEI number of the PoS, if applicable.',
+        'mac_addr' : 'MAC address of the PoS.',
+        'device_model' : 'Model of the PoS device.',
+        'device_make' : 'Make or manufacturer of the PoS device.',
+        'device_mfg' : 'Manufacturer of the PoS device.',
+        'os_version' : 'Operating system version of the PoS.',
+        'device_color' : 'Color of the PoS device.',
+        'device_condition' : 'Condition of the PoS device (e.g., working, irreparable, repaired).',
+        'status' : 'Current status of the PoS.',
+        'owner_type' : 'Type of owner of the PoS.',
+        'registration_date' : 'Timestamp when the PoS was registered.',
+        'assigned' : 'Indicates if the PoS is assigned.',
+        'assigned_date' : 'Timestamp when the PoS was assigned.',
+        'assigned_narrative' : 'Narrative or description of the assignment.',
+        'active' : 'Indicates if the PoS is active.',
+        'activation_date' : 'Timestamp when the PoS was activated.',
+        'last_active' : 'Timestamp of the last activity.',
+        'deployed' : 'Indicates if the PoS is deployed.',
+        'deploy_date' : 'Timestamp when the PoS was deployed.',
+        'deploy_narrative' : 'Narrative or description of the deployment.',
+        'returned' : 'Indicates if the PoS was returned.',
+        'return_date' : 'Timestamp when the PoS was returned.',
+        'return_narrative' : 'Narrative or description of the return.',
+        'return_received_date' : 'Timestamp when the return was received.',
+        'return_received_by_id_fk' : 'Reference to the user who received the return.',
+        'state_id_fk' : 'Reference to the state where the PoS is deployed.',
+        'lga_id_fk' : 'Reference to the local government area where the PoS is deployed.',
+        'street_address' : 'Street address of the PoS deployment location.',
+        'building_name' : 'Name of the building where the PoS is deployed.',
+        'contact_phone_num' : 'Contact phone number for the PoS deployment location.',
+        'pos_user' : 'User associated with the PoS.',
+        'crypt_priv_key' : 'Private key for cryptographic operations.',
+        'crypt_pub_key' : 'Public key for cryptographic operations.',
+        'crypt_password' : 'Password for cryptographic operations.',
+        'override_key' : 'Override key for cryptographic operations.',
     }
     # list_exclude_columns = ['serial_no', 'imei', 'mac_addr', 'device_model', 'device_make', 'device_mfg', 'os_version', 'device_color', 'device_condition', 'status', 'owner_type', 'registration_date', 'assigned', 'assigned_date', 'assigned_narrative', 'active', 'activation_date', 'last_active', 'deployed', 'deploy_date', 'deploy_narrative', 'returned', 'return_date', 'return_narrative', 'return_received_date', 'return_received_by', 'state', 'lga', 'street_address', 'building_name', 'contact_phone_num', 'pos_user', 'crypt_priv_key', 'crypt_pub_key', 'crypt_password', 'override_key']
     # show_exclude_columns = ['serial_no', 'imei', 'mac_addr', 'device_model', 'device_make', 'device_mfg', 'os_version', 'device_color', 'device_condition', 'status', 'owner_type', 'registration_date', 'assigned', 'assigned_date', 'assigned_narrative', 'active', 'activation_date', 'last_active', 'deployed', 'deploy_date', 'deploy_narrative', 'returned', 'return_date', 'return_narrative', 'return_received_date', 'return_received_by', 'state', 'lga', 'street_address', 'building_name', 'contact_phone_num', 'pos_user', 'crypt_priv_key', 'crypt_pub_key', 'crypt_password', 'override_key']
@@ -1121,13 +1101,11 @@ class PosModelView(ModelView):
     # add_columns = ['serial_no', 'imei', 'mac_addr', 'device_model', 'device_make', 'device_mfg', 'os_version', 'device_color', 'device_condition', 'status', 'owner_type', 'registration_date', 'assigned', 'assigned_date', 'assigned_narrative', 'active', 'activation_date', 'last_active', 'deployed', 'deploy_date', 'deploy_narrative', 'returned', 'return_date', 'return_narrative', 'return_received_date', 'return_received_by', 'state', 'lga', 'street_address', 'building_name', 'contact_phone_num', 'pos_user', 'crypt_priv_key', 'crypt_pub_key', 'crypt_password', 'override_key']
     # add_columns = ['serial_no', 'imei', 'mac_addr', 'device_model', 'device_make', 'device_mfg', 'os_version', 'device_color', 'device_condition', 'status', 'owner_type', 'registration_date', 'assigned', 'assigned_date', 'assigned_narrative', 'active', 'activation_date', 'last_active', 'deployed', 'deploy_date', 'deploy_narrative', 'returned', 'return_date', 'return_narrative', 'return_received_date', 'return_received_by', 'state', 'lga', 'street_address', 'building_name', 'contact_phone_num', 'pos_user', 'crypt_priv_key', 'crypt_pub_key', 'crypt_password', 'override_key']
     
-    # label_columns = {'serial_no':'Serial No', 'imei':'Imei', 'mac_addr':'Mac Addr', 'device_model':'Device Model', 'device_make':'Device Make', 'device_mfg':'Device Mfg', 'os_version':'Os Version', 'device_color':'Device Color', 'device_condition':'Device Condition', 'status':'Status', 'owner_type':'Owner Type', 'registration_date':'Registration Date', 'assigned':'Assigned', 'assigned_date':'Assigned Date', 'assigned_narrative':'Assigned Narrative', 'active':'Active', 'activation_date':'Activation Date', 'last_active':'Last Active', 'deployed':'Deployed', 'deploy_date':'Deploy Date', 'deploy_narrative':'Deploy Narrative', 'returned':'Returned', 'return_date':'Return Date', 'return_narrative':'Return Narrative', 'return_received_date':'Return Received Date', 'return_received_by', 'state', 'lga', 'street_address':'Street Address', 'building_name':'Building Name', 'contact_phone_num':'Contact Phone Num', 'pos_user':'Pos User', 'crypt_priv_key':'Crypt Priv Key', 'crypt_pub_key':'Crypt Pub Key', 'crypt_password':'Crypt Password', 'override_key':'Override Key'}
+    label_columns = {'serial_no':'Serial No', 'imei':'Imei', 'mac_addr':'Mac Addr', 'device_model':'Device Model', 'device_make':'Device Make', 'device_mfg':'Device Mfg', 'os_version':'Os Version', 'device_color':'Device Color', 'device_condition':'Device Condition', 'status':'Status', 'owner_type':'Owner Type', 'registration_date':'Registration Date', 'assigned':'Assigned', 'assigned_date':'Assigned Date', 'assigned_narrative':'Assigned Narrative', 'active':'Active', 'activation_date':'Activation Date', 'last_active':'Last Active', 'deployed':'Deployed', 'deploy_date':'Deploy Date', 'deploy_narrative':'Deploy Narrative', 'returned':'Returned', 'return_date':'Return Date', 'return_narrative':'Return Narrative', 'return_received_date':'Return Received Date', 'return_received_by':'Return Received By', 'state':'State', 'lga':'Lga', 'street_address':'Street Address', 'building_name':'Building Name', 'contact_phone_num':'Contact Phone Num', 'pos_user':'Pos User', 'crypt_priv_key':'Crypt Priv Key', 'crypt_pub_key':'Crypt Pub Key', 'crypt_password':'Crypt Password', 'override_key':'Override Key'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['serial_no', 'imei', 'mac_addr', 'device_model', 'device_make', 'device_mfg', 'os_version', 'device_color', 'device_condition', 'status', 'owner_type', 'registration_date', 'assigned', 'assigned_date', 'assigned_narrative', 'active', 'activation_date', 'last_active', 'deployed', 'deploy_date', 'deploy_narrative', 'returned', 'return_date', 'return_narrative', 'return_received_date', 'return_received_by', 'state', 'lga', 'street_address', 'building_name', 'contact_phone_num', 'pos_user', 'crypt_priv_key', 'crypt_pub_key', 'crypt_password', 'override_key']
-appbuilder.add_view(PosModelView, "Poss", icon="fa-folder-open-o", category="Setup")
-
 class AgentPosLinkModelView(ModelView):
     datamodel = SQLAInterface(AgentPosLink)
     list_title = 'List Agent Pos Link'
@@ -1139,24 +1117,24 @@ class AgentPosLinkModelView(ModelView):
     # show_columns = ['agent', 'pos', 'assigned_date', 'assigned_by', 'received_by', 'received_date', 'received_location', 'delivery_note', 'delivery_note_printed', 'activated', 'activation_date', 'activation_otp', 'otp_sent', 'otp_sent_time', 'otp_used', 'history']
     # edit_columns = ['agent', 'pos', 'assigned_date', 'assigned_by', 'received_by', 'received_date', 'received_location', 'delivery_note', 'delivery_note_printed', 'activated', 'activation_date', 'activation_otp', 'otp_sent', 'otp_sent_time', 'otp_used', 'history']
     add_columns = ['agent', 'pos', 'assigned_date', 'assigned_by', 'received_by', 'received_date', 'received_location', 'delivery_note', 'delivery_note_printed', 'activated', 'activation_date', 'activation_otp', 'otp_sent', 'otp_sent_time', 'otp_used', 'history']
-    search_columns = ['agent', 'pos', 'assigned_date', 'assigned_by', 'received_by', 'received_date', 'received_location', 'delivery_note', 'delivery_note_printed', 'activated', 'activation_date', 'activation_otp', 'otp_sent', 'otp_sent_time', 'otp_used', 'history']
+    # search_columns = ['agent', 'pos', 'assigned_date', 'assigned_by', 'received_by', 'received_date', 'received_location', 'delivery_note', 'delivery_note_printed', 'activated', 'activation_date', 'activation_otp', 'otp_sent', 'otp_sent_time', 'otp_used', 'history']
     description_columns = {
-        'agent_id_fk' : 'None',
-        'pos_id_fk' : 'None',
-        'assigned_date' : 'None',
-        'assigned_by' : 'user',
-        'received_by' : 'None',
-        'received_date' : 'None',
-        'received_location' : 'None',
-        'delivery_note' : 'None',
-        'delivery_note_printed' : 'None',
-        'activated' : 'None',
-        'activation_date' : 'None',
-        'activation_otp' : 'None',
-        'otp_sent' : 'None',
-        'otp_sent_time' : 'None',
-        'otp_used' : 'None',
-        'history' : 'None',
+        'agent_id_fk' : 'Foreign key reference to the agent to whom the PoS is assigned.',
+        'pos_id_fk' : 'Foreign key reference to the Point of Sale (PoS) being assigned.',
+        'assigned_date' : 'Timestamp when the PoS is assigned.',
+        'assigned_by' : 'User who assigned the PoS to the agent.',
+        'received_by' : 'User who received the PoS.',
+        'received_date' : 'Timestamp when the PoS is received by the agent.',
+        'received_location' : 'Location where the PoS is received.',
+        'delivery_note' : 'Delivery note associated with the PoS assignment.',
+        'delivery_note_printed' : 'Indicates whether the delivery note has been printed.',
+        'activated' : 'Indicates whether the PoS has been activated.',
+        'activation_date' : 'Timestamp when the PoS is activated.',
+        'activation_otp' : 'One-Time Password (OTP) used for activation.',
+        'otp_sent' : 'Indicates whether the OTP has been sent.',
+        'otp_sent_time' : 'Timestamp when the OTP is sent.',
+        'otp_used' : 'Indicates whether the OTP has been used for activation.',
+        'history' : 'Text field to store the history or additional information about the PoS assignment.',
     }
     # list_exclude_columns = ['agent', 'pos', 'assigned_date', 'assigned_by', 'received_by', 'received_date', 'received_location', 'delivery_note', 'delivery_note_printed', 'activated', 'activation_date', 'activation_otp', 'otp_sent', 'otp_sent_time', 'otp_used', 'history']
     # show_exclude_columns = ['agent', 'pos', 'assigned_date', 'assigned_by', 'received_by', 'received_date', 'received_location', 'delivery_note', 'delivery_note_printed', 'activated', 'activation_date', 'activation_otp', 'otp_sent', 'otp_sent_time', 'otp_used', 'history']
@@ -1168,65 +1146,63 @@ class AgentPosLinkModelView(ModelView):
     # add_columns = ['agent', 'pos', 'assigned_date', 'assigned_by', 'received_by', 'received_date', 'received_location', 'delivery_note', 'delivery_note_printed', 'activated', 'activation_date', 'activation_otp', 'otp_sent', 'otp_sent_time', 'otp_used', 'history']
     # add_columns = ['agent', 'pos', 'assigned_date', 'assigned_by', 'received_by', 'received_date', 'received_location', 'delivery_note', 'delivery_note_printed', 'activated', 'activation_date', 'activation_otp', 'otp_sent', 'otp_sent_time', 'otp_used', 'history']
     
-    # label_columns = {'agent', 'pos', 'assigned_date':'Assigned Date', 'assigned_by':'Assigned By', 'received_by':'Received By', 'received_date':'Received Date', 'received_location':'Received Location', 'delivery_note':'Delivery Note', 'delivery_note_printed':'Delivery Note Printed', 'activated':'Activated', 'activation_date':'Activation Date', 'activation_otp':'Activation Otp', 'otp_sent':'Otp Sent', 'otp_sent_time':'Otp Sent Time', 'otp_used':'Otp Used', 'history':'History'}
+    label_columns = {'agent':'Agent', 'pos':'Pos', 'assigned_date':'Assigned Date', 'assigned_by':'Assigned By', 'received_by':'Received By', 'received_date':'Received Date', 'received_location':'Received Location', 'delivery_note':'Delivery Note', 'delivery_note_printed':'Delivery Note Printed', 'activated':'Activated', 'activation_date':'Activation Date', 'activation_otp':'Activation Otp', 'otp_sent':'Otp Sent', 'otp_sent_time':'Otp Sent Time', 'otp_used':'Otp Used', 'history':'History'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['agent', 'pos', 'assigned_date', 'assigned_by', 'received_by', 'received_date', 'received_location', 'delivery_note', 'delivery_note_printed', 'activated', 'activation_date', 'activation_otp', 'otp_sent', 'otp_sent_time', 'otp_used', 'history']
-appbuilder.add_view(AgentPosLinkModelView, "AgentPosLinks", icon="fa-folder-open-o", category="Setup")
-
-class CommRefModelView(ModelView):
-    datamodel = SQLAInterface(CommRef)
-    list_title = 'List Comm Ref'
-    show_title = 'Show Comm Ref'
-    edit_title = 'Edit Comm Ref'
-    add_title  = 'Add Comm Ref'
+class CommissionModelView(ModelView):
+    datamodel = SQLAInterface(Commission)
+    list_title = 'List Commission'
+    show_title = 'Show Commission'
+    edit_title = 'Edit Commission'
+    add_title  = 'Add Commission'
  
-    list_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    # show_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    # edit_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    add_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    search_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    list_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # show_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # edit_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    add_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # search_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
     description_columns = {
-        'cr_id' : 'None',
-        'agent_type' : 'None',
-        'agent_tier_level_id_fk' : 'None',
-        'agent_id_fk' : 'None',
-        'state_id_fk' : 'None',
-        'lga_id_fk' : 'None',
-        'biller_id_fk' : 'None',
-        'biller_offering_id_fk' : 'None',
-        'transaction_type_id_fk' : 'None',
-        'customer_segment_id_fk' : 'Customer Segment',
-        'special_promotion_id_fk' : 'None',
-        'min_trans_amount' : 'None',
-        'max_trans_amount' : 'None',
-        'min_max_step' : 'None',
-        'min_comm_amount' : 'None',
-        'max_comm_amount' : 'None',
-        'commission_rate' : 'None',
-        'start_time' : 'Start Time of Commission Rate Validity',
-        'end_time' : 'End Time of Commission Rate Validity',
-        'start_date' : 'In case this commission rate is only valid for a period',
-        'end_date' : 'None',
+        'id' : 'Unique identifier for the commission reference.',
+        'agent_type' : 'Type of agent, e.g., Individual, Business, etc.',
+        'agent_tier_level_id_fk' : 'Foreign key to the agent tier level if applicable.',
+        'agent_id_fk' : 'Foreign key to the agent associated with this commission reference.',
+        'state_id_fk' : 'Foreign key to the state if applicable.',
+        'lga_id_fk' : 'Foreign key to the local government area if applicable.',
+        'currency_id_fk' : 'Commission of specfic currencies, defaults to NGN',
+        'risk_profile_id_fk' : 'Risk associated with financial transactions',
+        'biller_id_fk' : 'Foreign key to the biller associated with this commission reference.',
+        'biller_offering_id_fk' : 'Foreign key to the biller offering associated with this commission reference.',
+        'transaction_type_id_fk' : 'Foreign key to the transaction type if applicable.',
+        'customer_segment_id_fk' : 'Foreign key to the customer segment.',
+        'special_promotion_id_fk' : 'Foreign key to the special promotion if applicable.',
+        'min_trans_amount' : 'Minimum transaction amount for commission calculation.',
+        'max_trans_amount' : 'Maximum transaction amount for commission calculation.',
+        'min_max_step' : 'Step value for minimum and maximum transaction amounts.',
+        'min_comm_amount' : 'Minimum commission amount.',
+        'max_comm_amount' : 'Maximum commission amount.',
+        'commission_rate' : 'Commission rate in percentage.',
+        'start_time' : 'Start time of commission rate validity.',
+        'end_time' : 'End time of commission rate validity.',
+        'start_date' : 'Start date of commission rate validity (if applicable).',
+        'end_date' : 'End date of commission rate validity (if applicable).',
     }
-    # list_exclude_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    # show_exclude_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    # edit_exclude_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    # add_exclude_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    # search_exclude_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    # order_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    # add_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    # add_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-    # add_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # list_exclude_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # show_exclude_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # edit_exclude_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # add_exclude_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # search_exclude_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # order_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # add_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # add_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
+    # add_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
     
-    # label_columns = {'cr_id':'Cr Id', 'agent_type':'Agent Type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount':'Min Trans Amount', 'max_trans_amount':'Max Trans Amount', 'min_max_step':'Min Max Step', 'min_comm_amount':'Min Comm Amount', 'max_comm_amount':'Max Comm Amount', 'commission_rate':'Commission Rate', 'start_time':'Start Time', 'end_time':'End Time', 'start_date':'Start Date', 'end_date':'End Date'}
+    label_columns = {'agent_type':'Agent Type', 'agent_tier_level':'Agent Tier Level', 'agent':'Agent', 'state':'State', 'lga':'Lga', 'currency':'Currency', 'risk_profile':'Risk Profile', 'biller':'Biller', 'biller_offering':'Biller Offering', 'transaction_type':'Transaction Type', 'customer_segment':'Customer Segment', 'special_promotion':'Special Promotion', 'min_trans_amount':'Min Trans Amount', 'max_trans_amount':'Max Trans Amount', 'min_max_step':'Min Max Step', 'min_comm_amount':'Min Comm Amount', 'max_comm_amount':'Max Comm Amount', 'commission_rate':'Commission Rate', 'start_time':'Start Time', 'end_time':'End Time', 'start_date':'Start Date', 'end_date':'End Date'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['cr_id', 'agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
-appbuilder.add_view(CommRefModelView, "CommRefs", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['agent_type', 'agent_tier_level', 'agent', 'state', 'lga', 'currency', 'risk_profile', 'biller', 'biller_offering', 'transaction_type', 'customer_segment', 'special_promotion', 'min_trans_amount', 'max_trans_amount', 'min_max_step', 'min_comm_amount', 'max_comm_amount', 'commission_rate', 'start_time', 'end_time', 'start_date', 'end_date']
 class PersonModelView(ModelView):
     datamodel = SQLAInterface(Person)
     list_title = 'List Person'
@@ -1238,31 +1214,31 @@ class PersonModelView(ModelView):
     # show_columns = ['agent', 'next_of_kin', 'person_role', 'first_name', 'middle_name', 'surname', 'nick_name', 'gender', 'photo_img', 'signature_img', 'bvn_no', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'home_poa_img', 'home_poa_desc', 'home_poa_valid', 'home_lat', 'home_lon', 'home_loc', 'home_ggl_code']
     # edit_columns = ['agent', 'next_of_kin', 'person_role', 'first_name', 'middle_name', 'surname', 'nick_name', 'gender', 'photo_img', 'signature_img', 'bvn_no', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'home_poa_img', 'home_poa_desc', 'home_poa_valid', 'home_lat', 'home_lon', 'home_loc', 'home_ggl_code']
     add_columns = ['agent', 'next_of_kin', 'person_role', 'first_name', 'middle_name', 'surname', 'nick_name', 'gender', 'photo_img', 'signature_img', 'bvn_no', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'home_poa_img', 'home_poa_desc', 'home_poa_valid', 'home_lat', 'home_lon', 'home_loc', 'home_ggl_code']
-    search_columns = ['agent', 'next_of_kin', 'person_role', 'first_name', 'middle_name', 'surname', 'nick_name', 'gender', 'photo_img', 'signature_img', 'bvn_no', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'home_poa_img', 'home_poa_desc', 'home_poa_valid', 'home_lat', 'home_lon', 'home_loc', 'home_ggl_code']
+    # search_columns = ['agent', 'next_of_kin', 'person_role', 'first_name', 'middle_name', 'surname', 'nick_name', 'gender', 'photo_img', 'signature_img', 'bvn_no', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'home_poa_img', 'home_poa_desc', 'home_poa_valid', 'home_lat', 'home_lon', 'home_loc', 'home_ggl_code']
     description_columns = {
-        'id' : 'None',
-        'agent_id_fk' : 'None',
-        'next_of_kin_id_fk' : 'None',
-        'person_role' : 'None',
-        'first_name' : 'None',
-        'middle_name' : 'None',
-        'surname' : 'None',
-        'nick_name' : 'None',
-        'gender' : 'None',
-        'photo_img' : 'None',
-        'signature_img' : 'None',
-        'bvn_no' : 'None',
-        'bvn_verified' : 'None',
-        'bvn_verification_date' : 'None',
-        'bvn_verification_code' : 'None',
-        'tax_id' : 'None',
-        'home_poa_img' : 'None',
-        'home_poa_desc' : 'None',
-        'home_poa_valid' : 'None',
-        'home_lat' : 'None',
-        'home_lon' : 'None',
-        'home_loc' : 'None',
-        'home_ggl_code' : 'None',
+        'id' : 'Unique identifier for the person.',
+        'agent_id_fk' : 'References the associated agent if applicable.',
+        'next_of_kin_id_fk' : 'References the next of kin for this person, if applicable.',
+        'person_role' : 'Role or type of person, e.g., customer, contact.',
+        'first_name' : 'First name of the person.',
+        'middle_name' : 'Middle name of the person.',
+        'surname' : 'Last name or surname of the person.',
+        'nick_name' : 'Nickname or alias of the person.',
+        'gender' : 'Gender of the person, e.g., Male, Female.',
+        'photo_img' : 'Image of the person.',
+        'signature_img' : 'Image of the persons signature.',
+        'bvn_no' : 'Bank Verification Number (BVN) of the person.',
+        'bvn_verified' : 'Indicates whether the BVN is verified.',
+        'bvn_verification_date' : 'Timestamp of BVN verification.',
+        'bvn_verification_code' : 'Verification code for BVN.',
+        'tax_id' : 'Tax identification number of the person.',
+        'home_poa_img' : 'Image of Proof of Address (POA) for the home address.',
+        'home_poa_desc' : 'Description of the Proof of Address document for the home address.',
+        'home_poa_valid' : 'Indicates if the Proof of Address for the home is valid.',
+        'home_lat' : 'Latitude coordinates of the home address.',
+        'home_lon' : 'Longitude coordinates of the home address.',
+        'home_loc' : 'Location description of the home address.',
+        'home_ggl_code' : 'Google Maps code for the home address.',
     }
     # list_exclude_columns = ['agent', 'next_of_kin', 'person_role', 'first_name', 'middle_name', 'surname', 'nick_name', 'gender', 'photo_img', 'signature_img', 'bvn_no', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'home_poa_img', 'home_poa_desc', 'home_poa_valid', 'home_lat', 'home_lon', 'home_loc', 'home_ggl_code']
     # show_exclude_columns = ['agent', 'next_of_kin', 'person_role', 'first_name', 'middle_name', 'surname', 'nick_name', 'gender', 'photo_img', 'signature_img', 'bvn_no', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'home_poa_img', 'home_poa_desc', 'home_poa_valid', 'home_lat', 'home_lon', 'home_loc', 'home_ggl_code']
@@ -1274,13 +1250,11 @@ class PersonModelView(ModelView):
     # add_columns = ['agent', 'next_of_kin', 'person_role', 'first_name', 'middle_name', 'surname', 'nick_name', 'gender', 'photo_img', 'signature_img', 'bvn_no', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'home_poa_img', 'home_poa_desc', 'home_poa_valid', 'home_lat', 'home_lon', 'home_loc', 'home_ggl_code']
     # add_columns = ['agent', 'next_of_kin', 'person_role', 'first_name', 'middle_name', 'surname', 'nick_name', 'gender', 'photo_img', 'signature_img', 'bvn_no', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'home_poa_img', 'home_poa_desc', 'home_poa_valid', 'home_lat', 'home_lon', 'home_loc', 'home_ggl_code']
     
-    # label_columns = {'agent', 'next_of_kin', 'person_role':'Person Role', 'first_name':'First Name', 'middle_name':'Middle Name', 'surname':'Surname', 'nick_name':'Nick Name', 'gender':'Gender', 'photo_img':'Photo Img', 'signature_img':'Signature Img', 'bvn_no':'Bvn No', 'bvn_verified':'Bvn Verified', 'bvn_verification_date':'Bvn Verification Date', 'bvn_verification_code':'Bvn Verification Code', 'tax_id':'Tax Id', 'home_poa_img':'Home Poa Img', 'home_poa_desc':'Home Poa Desc', 'home_poa_valid':'Home Poa Valid', 'home_lat':'Home Lat', 'home_lon':'Home Lon', 'home_loc':'Home Loc', 'home_ggl_code':'Home Ggl Code'}
+    label_columns = {'agent':'Agent', 'next_of_kin':'Next Of Kin', 'person_role':'Person Role', 'first_name':'First Name', 'middle_name':'Middle Name', 'surname':'Surname', 'nick_name':'Nick Name', 'gender':'Gender', 'photo_img':'Photo Img', 'signature_img':'Signature Img', 'bvn_no':'Bvn No', 'bvn_verified':'Bvn Verified', 'bvn_verification_date':'Bvn Verification Date', 'bvn_verification_code':'Bvn Verification Code', 'tax_id':'Tax Id', 'home_poa_img':'Home Poa Img', 'home_poa_desc':'Home Poa Desc', 'home_poa_valid':'Home Poa Valid', 'home_lat':'Home Lat', 'home_lon':'Home Lon', 'home_loc':'Home Loc', 'home_ggl_code':'Home Ggl Code'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['agent', 'next_of_kin', 'person_role', 'first_name', 'middle_name', 'surname', 'nick_name', 'gender', 'photo_img', 'signature_img', 'bvn_no', 'bvn_verified', 'bvn_verification_date', 'bvn_verification_code', 'tax_id', 'home_poa_img', 'home_poa_desc', 'home_poa_valid', 'home_lat', 'home_lon', 'home_loc', 'home_ggl_code']
-appbuilder.add_view(PersonModelView, "People", icon="fa-folder-open-o", category="Setup")
-
 class WalletModelView(ModelView):
     datamodel = SQLAInterface(Wallet)
     list_title = 'List Wallet'
@@ -1292,18 +1266,18 @@ class WalletModelView(ModelView):
     # show_columns = ['agent', 'pos', 'wallet_name', 'wallet_balance', 'wallet_locked', 'wallet_active', 'wallet_code', 'wallet_crypt', 'wallet_narrative']
     # edit_columns = ['agent', 'pos', 'wallet_name', 'wallet_balance', 'wallet_locked', 'wallet_active', 'wallet_code', 'wallet_crypt', 'wallet_narrative']
     add_columns = ['agent', 'pos', 'wallet_name', 'wallet_balance', 'wallet_locked', 'wallet_active', 'wallet_code', 'wallet_crypt', 'wallet_narrative']
-    search_columns = ['agent', 'pos', 'wallet_name', 'wallet_balance', 'wallet_locked', 'wallet_active', 'wallet_code', 'wallet_crypt', 'wallet_narrative']
+    # search_columns = ['agent', 'pos', 'wallet_name', 'wallet_balance', 'wallet_locked', 'wallet_active', 'wallet_code', 'wallet_crypt', 'wallet_narrative']
     description_columns = {
-        'id' : 'None',
-        'agent_id_fk' : 'None',
-        'pos_id_fk' : 'None',
-        'wallet_name' : 'None',
-        'wallet_balance' : 'None',
-        'wallet_locked' : 'None',
-        'wallet_active' : 'None',
-        'wallet_code' : 'None',
-        'wallet_crypt' : 'None',
-        'wallet_narrative' : 'None',
+        'id' : 'Unique identifier for the wallet.',
+        'agent_id_fk' : 'Foreign key reference to the agent associated with the wallet.',
+        'pos_id_fk' : 'Foreign key reference to the Point of Sale (PoS) associated with the wallet.',
+        'wallet_name' : 'Name of the wallet.',
+        'wallet_balance' : 'The balance or amount of funds in the wallet.',
+        'wallet_locked' : 'Indicates whether the wallet is locked.',
+        'wallet_active' : 'Indicates whether the wallet is active.',
+        'wallet_code' : 'Code or identifier associated with the wallet for security purposes.',
+        'wallet_crypt' : 'Cryptographic information related to the wallet.',
+        'wallet_narrative' : 'Narrative or additional information about the wallet.',
     }
     # list_exclude_columns = ['agent', 'pos', 'wallet_name', 'wallet_balance', 'wallet_locked', 'wallet_active', 'wallet_code', 'wallet_crypt', 'wallet_narrative']
     # show_exclude_columns = ['agent', 'pos', 'wallet_name', 'wallet_balance', 'wallet_locked', 'wallet_active', 'wallet_code', 'wallet_crypt', 'wallet_narrative']
@@ -1315,13 +1289,11 @@ class WalletModelView(ModelView):
     # add_columns = ['agent', 'pos', 'wallet_name', 'wallet_balance', 'wallet_locked', 'wallet_active', 'wallet_code', 'wallet_crypt', 'wallet_narrative']
     # add_columns = ['agent', 'pos', 'wallet_name', 'wallet_balance', 'wallet_locked', 'wallet_active', 'wallet_code', 'wallet_crypt', 'wallet_narrative']
     
-    # label_columns = {'agent', 'pos', 'wallet_name':'Wallet Name', 'wallet_balance':'Wallet Balance', 'wallet_locked':'Wallet Locked', 'wallet_active':'Wallet Active', 'wallet_code':'Wallet Code', 'wallet_crypt':'Wallet Crypt', 'wallet_narrative':'Wallet Narrative'}
+    label_columns = {'agent':'Agent', 'pos':'Pos', 'wallet_name':'Wallet Name', 'wallet_balance':'Wallet Balance', 'wallet_locked':'Wallet Locked', 'wallet_active':'Wallet Active', 'wallet_code':'Wallet Code', 'wallet_crypt':'Wallet Crypt', 'wallet_narrative':'Wallet Narrative'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['agent', 'pos', 'wallet_name', 'wallet_balance', 'wallet_locked', 'wallet_active', 'wallet_code', 'wallet_crypt', 'wallet_narrative']
-appbuilder.add_view(WalletModelView, "Wallets", icon="fa-folder-open-o", category="Setup")
-
 class AgentPersonLinkModelView(ModelView):
     datamodel = SQLAInterface(AgentPersonLink)
     list_title = 'List Agent Person Link'
@@ -1333,10 +1305,10 @@ class AgentPersonLinkModelView(ModelView):
     # show_columns = ['person', 'agent']
     # edit_columns = ['person', 'agent']
     add_columns = ['person', 'agent']
-    search_columns = ['person', 'agent']
+    # search_columns = ['person', 'agent']
     description_columns = {
-        'person_id_fk' : 'None',
-        'agent_id_fk' : 'None',
+        'person_id_fk' : 'Foreign key reference to the person linked to the agent.',
+        'agent_id_fk' : 'Foreign key reference to the agent linked to the person.',
     }
     # list_exclude_columns = ['person', 'agent']
     # show_exclude_columns = ['person', 'agent']
@@ -1348,13 +1320,11 @@ class AgentPersonLinkModelView(ModelView):
     # add_columns = ['person', 'agent']
     # add_columns = ['person', 'agent']
     
-    # label_columns = {'person', 'agent'}
+    label_columns = {'person':'Person', 'agent':'Agent'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['person', 'agent']
-appbuilder.add_view(AgentPersonLinkModelView, "AgentPersonLinks", icon="fa-folder-open-o", category="Setup")
-
 class ContactModelView(ModelView):
     datamodel = SQLAInterface(Contact)
     list_title = 'List Contact'
@@ -1366,7 +1336,7 @@ class ContactModelView(ModelView):
     # show_columns = ['person', 'agent', 'contact_type', 'contact', 'priority', 'best_time_to_contact_start', 'best_time_to_contact_end', 'active_from_date', 'active_to_date', 'for_business_use', 'for_personal_use', 'do_not_use', 'is_active', 'is_blocked', 'is_verified', 'notes']
     # edit_columns = ['person', 'agent', 'contact_type', 'contact', 'priority', 'best_time_to_contact_start', 'best_time_to_contact_end', 'active_from_date', 'active_to_date', 'for_business_use', 'for_personal_use', 'do_not_use', 'is_active', 'is_blocked', 'is_verified', 'notes']
     add_columns = ['person', 'agent', 'contact_type', 'contact', 'priority', 'best_time_to_contact_start', 'best_time_to_contact_end', 'active_from_date', 'active_to_date', 'for_business_use', 'for_personal_use', 'do_not_use', 'is_active', 'is_blocked', 'is_verified', 'notes']
-    search_columns = ['person', 'agent', 'contact_type', 'contact', 'priority', 'best_time_to_contact_start', 'best_time_to_contact_end', 'active_from_date', 'active_to_date', 'for_business_use', 'for_personal_use', 'do_not_use', 'is_active', 'is_blocked', 'is_verified', 'notes']
+    # search_columns = ['person', 'agent', 'contact_type', 'contact', 'priority', 'best_time_to_contact_start', 'best_time_to_contact_end', 'active_from_date', 'active_to_date', 'for_business_use', 'for_personal_use', 'do_not_use', 'is_active', 'is_blocked', 'is_verified', 'notes']
     description_columns = {
         'id' : 'Unique identifier for the contact.',
         'person_id_fk' : 'Reference to the individual associated with this contact.',
@@ -1396,13 +1366,11 @@ class ContactModelView(ModelView):
     # add_columns = ['person', 'agent', 'contact_type', 'contact', 'priority', 'best_time_to_contact_start', 'best_time_to_contact_end', 'active_from_date', 'active_to_date', 'for_business_use', 'for_personal_use', 'do_not_use', 'is_active', 'is_blocked', 'is_verified', 'notes']
     # add_columns = ['person', 'agent', 'contact_type', 'contact', 'priority', 'best_time_to_contact_start', 'best_time_to_contact_end', 'active_from_date', 'active_to_date', 'for_business_use', 'for_personal_use', 'do_not_use', 'is_active', 'is_blocked', 'is_verified', 'notes']
     
-    # label_columns = {'person', 'agent', 'contact_type', 'contact':'Contact', 'priority':'Priority', 'best_time_to_contact_start':'Best Time To Contact Start', 'best_time_to_contact_end':'Best Time To Contact End', 'active_from_date':'Active From Date', 'active_to_date':'Active To Date', 'for_business_use':'For Business Use', 'for_personal_use':'For Personal Use', 'do_not_use':'Do Not Use', 'is_active':'Is Active', 'is_blocked':'Is Blocked', 'is_verified':'Is Verified', 'notes':'Notes'}
+    label_columns = {'person':'Person', 'agent':'Agent', 'contact_type':'Contact Type', 'contact':'Contact', 'priority':'Priority', 'best_time_to_contact_start':'Best Time To Contact Start', 'best_time_to_contact_end':'Best Time To Contact End', 'active_from_date':'Active From Date', 'active_to_date':'Active To Date', 'for_business_use':'For Business Use', 'for_personal_use':'For Personal Use', 'do_not_use':'Do Not Use', 'is_active':'Is Active', 'is_blocked':'Is Blocked', 'is_verified':'Is Verified', 'notes':'Notes'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['person', 'agent', 'contact_type', 'contact', 'priority', 'best_time_to_contact_start', 'best_time_to_contact_end', 'active_from_date', 'active_to_date', 'for_business_use', 'for_personal_use', 'do_not_use', 'is_active', 'is_blocked', 'is_verified', 'notes']
-appbuilder.add_view(ContactModelView, "Contacts", icon="fa-folder-open-o", category="Setup")
-
 class DocModelView(ModelView):
     datamodel = SQLAInterface(Doc)
     list_title = 'List Doc'
@@ -1410,19 +1378,20 @@ class DocModelView(ModelView):
     edit_title = 'Edit Doc'
     add_title  = 'Add Doc'
  
-    list_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    # show_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    # edit_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    add_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    search_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    list_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # show_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # edit_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    add_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # search_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
     description_columns = {
         'id' : 'Unique identifier for the document.',
         'doc_type_id_fk' : 'References the type of document e.g. passport, license.',
         'person_id_fk' : 'The person to whom the document belongs.',
         'agent_id_fk' : 'The organization associated with the document.',
+        'doc_front_img' : 'Image of the front of the document',
+        'doc_back_img' : 'Image of the back of the document',
         'doc_name' : 'Name or title of the document.',
         'doc_content_type_id_fk' : 'MIME type of the document content e.g. application/pdf, image/jpeg.',
-        'doc_binary' : 'None',
         'doc_url' : 'Actual doc in pdf or other format',
         'doc_length' : 'Size of the document in bytes or another measure.',
         'doc_text' : 'Text content extracted from the document. Useful for search and analytics. May be stored in another database for scalability.',
@@ -1435,87 +1404,28 @@ class DocModelView(ModelView):
         'issued_by_authority' : 'Authority or organization that issued the document.',
         'issued_at' : 'Place or location where the document was issued.',
         'expires_on' : 'Expiration date of the document.',
-        'expired' : 'Flag to indicate if the document has expired.',
+        'is_expired' : 'Flag to indicate if the document has expired.',
         'verified' : 'None',
         'verification_date' : 'The date when the document was verified.',
         'verification_code' : 'None',
         'uploaded_on' : 'Timestamp when the document was uploaded into the system.',
         'updated_on' : 'Timestamp when the document record was last updated.',
     }
-    # list_exclude_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    # show_exclude_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    # edit_exclude_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    # add_exclude_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    # search_exclude_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    # order_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    # add_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    # add_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-    # add_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # list_exclude_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # show_exclude_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # edit_exclude_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # add_exclude_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # search_exclude_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # order_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # add_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # add_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
+    # add_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
     
-    # label_columns = {'doc_type', 'person', 'agent', 'doc_name':'Doc Name', 'doc_content_type', 'doc_binary':'Doc Binary', 'doc_url':'Doc Url', 'doc_length':'Doc Length', 'doc_text':'Doc Text', 'identification_number':'Identification Number', 'serial_number':'Serial Number', 'description':'Description', 'file_name':'File Name', 'page_count':'Page Count', 'issued_on':'Issued On', 'issued_by_authority':'Issued By Authority', 'issued_at':'Issued At', 'expires_on':'Expires On', 'expired':'Expired', 'verified':'Verified', 'verification_date':'Verification Date', 'verification_code':'Verification Code', 'uploaded_on':'Uploaded On', 'updated_on':'Updated On'}
+    label_columns = {'doc_type':'Doc Type', 'person':'Person', 'agent':'Agent', 'doc_front_img':'Doc Front Img', 'doc_back_img':'Doc Back Img', 'doc_name':'Doc Name', 'doc_content_type':'Doc Content Type', 'doc_url':'Doc Url', 'doc_length':'Doc Length', 'doc_text':'Doc Text', 'identification_number':'Identification Number', 'serial_number':'Serial Number', 'description':'Description', 'file_name':'File Name', 'page_count':'Page Count', 'issued_on':'Issued On', 'issued_by_authority':'Issued By Authority', 'issued_at':'Issued At', 'expires_on':'Expires On', 'is_expired':'Is Expired', 'verified':'Verified', 'verification_date':'Verification Date', 'verification_code':'Verification Code', 'uploaded_on':'Uploaded On', 'updated_on':'Updated On'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['doc_type', 'person', 'agent', 'doc_name', 'doc_content_type', 'doc_binary', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
-appbuilder.add_view(DocModelView, "Docs", icon="fa-folder-open-o", category="Setup")
-
-class PersonAdditionalDataModelView(ModelView):
-    datamodel = SQLAInterface(PersonAdditionalData)
-    list_title = 'List Person Additional Data'
-    show_title = 'Show Person Additional Data'
-    edit_title = 'Edit Person Additional Data'
-    add_title  = 'Add Person Additional Data'
- 
-    list_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    # show_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    # edit_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    add_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    search_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    description_columns = {
-        'person_id_fk' : 'None',
-        'gender' : 'None',
-        'religion' : 'None',
-        'ethnicity' : 'None',
-        'consumer_credit_score' : 'None',
-        'is_home_owner' : 'None',
-        'person_height' : 'None',
-        'person_weight' : 'None',
-        'person_height_unit_of_measure' : 'None',
-        'person_weight_unit_of_measure' : 'None',
-        'highest_education_level' : 'None',
-        'person_life_stage' : 'None',
-        'mothers_maiden_name' : 'None',
-        'Marital_Status_cd' : 'None',
-        'citizenship_id_fk' : 'None',
-        'From_whom' : 'None',
-        'Amount' : 'None',
-        'Interest_rate_pa' : 'None',
-        'Number_of_people_depending_on_overal_income' : 'None',
-        'YesNo_cd_Bank_account' : 'None',
-        'YesNo_cd_Business_plan_provided' : 'None',
-        'YesNo_cd_Access_to_internet' : 'None',
-        'Introduced_by' : 'None',
-        'Known_to_introducer_since' : 'None',
-        'Last_visited_by' : 'None',
-        'Last_visited_on' : 'None',
-    }
-    # list_exclude_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    # show_exclude_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    # edit_exclude_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    # add_exclude_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    # search_exclude_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    # order_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    # add_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    # add_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    # add_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-    
-    # label_columns = {'person', 'gender':'Gender', 'religion':'Religion', 'ethnicity':'Ethnicity', 'consumer_credit_score':'Consumer Credit Score', 'is_home_owner':'Is Home Owner', 'person_height':'Person Height', 'person_weight':'Person Weight', 'person_height_unit_of_measure':'Person Height Unit Of Measure', 'person_weight_unit_of_measure':'Person Weight Unit Of Measure', 'highest_education_level':'Highest Education Level', 'person_life_stage':'Person Life Stage', 'mothers_maiden_name':'Mothers Maiden Name', 'Marital_Status_cd':'Marital Status Cd', 'citizenship', 'From_whom':'From Whom', 'Amount':'Amount', 'Interest_rate_pa':'Interest Rate Pa', 'Number_of_people_depending_on_overal_income':'Number Of People Depending On Overal Income', 'YesNo_cd_Bank_account':'Yesno Cd Bank Account', 'YesNo_cd_Business_plan_provided':'Yesno Cd Business Plan Provided', 'YesNo_cd_Access_to_internet':'Yesno Cd Access To Internet', 'Introduced_by':'Introduced By', 'Known_to_introducer_since':'Known To Introducer Since', 'Last_visited_by':'Last Visited By', 'Last_visited_on':'Last Visited On'}
-    # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
-    # base_order = ("name", "asc")
-    # page_size = 100 
-#    list_columns = ['person', 'gender', 'religion', 'ethnicity', 'consumer_credit_score', 'is_home_owner', 'person_height', 'person_weight', 'person_height_unit_of_measure', 'person_weight_unit_of_measure', 'highest_education_level', 'person_life_stage', 'mothers_maiden_name', 'Marital_Status_cd', 'citizenship', 'From_whom', 'Amount', 'Interest_rate_pa', 'Number_of_people_depending_on_overal_income', 'YesNo_cd_Bank_account', 'YesNo_cd_Business_plan_provided', 'YesNo_cd_Access_to_internet', 'Introduced_by', 'Known_to_introducer_since', 'Last_visited_by', 'Last_visited_on']
-appbuilder.add_view(PersonAdditionalDataModelView, "PersonAdditionalDatas", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['doc_type', 'person', 'agent', 'doc_front_img', 'doc_back_img', 'doc_name', 'doc_content_type', 'doc_url', 'doc_length', 'doc_text', 'identification_number', 'serial_number', 'description', 'file_name', 'page_count', 'issued_on', 'issued_by_authority', 'issued_at', 'expires_on', 'is_expired', 'verified', 'verification_date', 'verification_code', 'uploaded_on', 'updated_on']
 class PersonAdminDataModelView(ModelView):
     datamodel = SQLAInterface(PersonAdminData)
     list_title = 'List Person Admin Data'
@@ -1527,45 +1437,45 @@ class PersonAdminDataModelView(ModelView):
     # show_columns = ['person', 'creation_time', 'failed_login_count', 'failed_login_timestamp', 'password_last_set_time', 'profile_picture', 'awatar', 'screen_name', 'user_priv_cert', 'user_pub_cert', 'alt_security_identities', 'generated_UID', 'do_not_email', 'do_not_phone', 'do_not_mail', 'do_not_sms', 'do_not_trade', 'opted_out', 'do_not_track_update_date', 'do_not_process_from_update_date', 'do_not_market_from_update_date', 'do_not_track_location_update_date', 'do_not_profile_from_update_date', 'do_forget_me_from_update_date', 'do_not_process_reason', 'no_merge_reason', 'do_extract_my_data_update_date', 'should_forget', 'consumer_credit_score_provider_name', 'web_site_url', 'ordering_name', 'hospitalizations_last5_years_count', 'surgeries_last5_years_count', 'dependent_count', 'account_locked', 'send_individual_data', 'influencer_rating']
     # edit_columns = ['person', 'creation_time', 'failed_login_count', 'failed_login_timestamp', 'password_last_set_time', 'profile_picture', 'awatar', 'screen_name', 'user_priv_cert', 'user_pub_cert', 'alt_security_identities', 'generated_UID', 'do_not_email', 'do_not_phone', 'do_not_mail', 'do_not_sms', 'do_not_trade', 'opted_out', 'do_not_track_update_date', 'do_not_process_from_update_date', 'do_not_market_from_update_date', 'do_not_track_location_update_date', 'do_not_profile_from_update_date', 'do_forget_me_from_update_date', 'do_not_process_reason', 'no_merge_reason', 'do_extract_my_data_update_date', 'should_forget', 'consumer_credit_score_provider_name', 'web_site_url', 'ordering_name', 'hospitalizations_last5_years_count', 'surgeries_last5_years_count', 'dependent_count', 'account_locked', 'send_individual_data', 'influencer_rating']
     add_columns = ['person', 'creation_time', 'failed_login_count', 'failed_login_timestamp', 'password_last_set_time', 'profile_picture', 'awatar', 'screen_name', 'user_priv_cert', 'user_pub_cert', 'alt_security_identities', 'generated_UID', 'do_not_email', 'do_not_phone', 'do_not_mail', 'do_not_sms', 'do_not_trade', 'opted_out', 'do_not_track_update_date', 'do_not_process_from_update_date', 'do_not_market_from_update_date', 'do_not_track_location_update_date', 'do_not_profile_from_update_date', 'do_forget_me_from_update_date', 'do_not_process_reason', 'no_merge_reason', 'do_extract_my_data_update_date', 'should_forget', 'consumer_credit_score_provider_name', 'web_site_url', 'ordering_name', 'hospitalizations_last5_years_count', 'surgeries_last5_years_count', 'dependent_count', 'account_locked', 'send_individual_data', 'influencer_rating']
-    search_columns = ['person', 'creation_time', 'failed_login_count', 'failed_login_timestamp', 'password_last_set_time', 'profile_picture', 'awatar', 'screen_name', 'user_priv_cert', 'user_pub_cert', 'alt_security_identities', 'generated_UID', 'do_not_email', 'do_not_phone', 'do_not_mail', 'do_not_sms', 'do_not_trade', 'opted_out', 'do_not_track_update_date', 'do_not_process_from_update_date', 'do_not_market_from_update_date', 'do_not_track_location_update_date', 'do_not_profile_from_update_date', 'do_forget_me_from_update_date', 'do_not_process_reason', 'no_merge_reason', 'do_extract_my_data_update_date', 'should_forget', 'consumer_credit_score_provider_name', 'web_site_url', 'ordering_name', 'hospitalizations_last5_years_count', 'surgeries_last5_years_count', 'dependent_count', 'account_locked', 'send_individual_data', 'influencer_rating']
+    # search_columns = ['person', 'creation_time', 'failed_login_count', 'failed_login_timestamp', 'password_last_set_time', 'profile_picture', 'awatar', 'screen_name', 'user_priv_cert', 'user_pub_cert', 'alt_security_identities', 'generated_UID', 'do_not_email', 'do_not_phone', 'do_not_mail', 'do_not_sms', 'do_not_trade', 'opted_out', 'do_not_track_update_date', 'do_not_process_from_update_date', 'do_not_market_from_update_date', 'do_not_track_location_update_date', 'do_not_profile_from_update_date', 'do_forget_me_from_update_date', 'do_not_process_reason', 'no_merge_reason', 'do_extract_my_data_update_date', 'should_forget', 'consumer_credit_score_provider_name', 'web_site_url', 'ordering_name', 'hospitalizations_last5_years_count', 'surgeries_last5_years_count', 'dependent_count', 'account_locked', 'send_individual_data', 'influencer_rating']
     description_columns = {
-        'person_id_fk' : 'None',
-        'creation_time' : 'None',
-        'failed_login_count' : 'None',
-        'failed_login_timestamp' : 'None',
-        'password_last_set_time' : 'None',
-        'profile_picture' : 'None',
-        'awatar' : 'None',
-        'screen_name' : 'None',
-        'user_priv_cert' : 'None',
-        'user_pub_cert' : 'None',
-        'alt_security_identities' : 'None',
-        'generated_UID' : 'None',
-        'do_not_email' : 'None',
-        'do_not_phone' : 'None',
-        'do_not_mail' : 'None',
-        'do_not_sms' : 'None',
-        'do_not_trade' : 'None',
-        'opted_out' : 'None',
-        'do_not_track_update_date' : 'None',
-        'do_not_process_from_update_date' : 'None',
-        'do_not_market_from_update_date' : 'None',
-        'do_not_track_location_update_date' : 'None',
-        'do_not_profile_from_update_date' : 'None',
-        'do_forget_me_from_update_date' : 'None',
-        'do_not_process_reason' : 'None',
-        'no_merge_reason' : 'None',
-        'do_extract_my_data_update_date' : 'None',
-        'should_forget' : 'None',
-        'consumer_credit_score_provider_name' : 'None',
-        'web_site_url' : 'None',
-        'ordering_name' : 'None',
-        'hospitalizations_last5_years_count' : 'None',
-        'surgeries_last5_years_count' : 'None',
-        'dependent_count' : 'None',
-        'account_locked' : 'None',
-        'send_individual_data' : 'None',
-        'influencer_rating' : 'None',
+        'person_id_fk' : 'References the associated person.',
+        'creation_time' : 'Timestamp when the data was created.',
+        'failed_login_count' : 'Count of failed login attempts.',
+        'failed_login_timestamp' : 'Timestamp of the last failed login attempt.',
+        'password_last_set_time' : 'Timestamp when the password was last set.',
+        'profile_picture' : 'URL or path to the profile picture.',
+        'awatar' : 'URL or path to the avatar.',
+        'screen_name' : 'Screen name or username.',
+        'user_priv_cert' : 'Users private certificate.',
+        'user_pub_cert' : 'Users public certificate.',
+        'alt_security_identities' : 'Alternate security identities.',
+        'generated_UID' : 'Generated unique identifier.',
+        'do_not_email' : 'Indicates if email communication is prohibited.',
+        'do_not_phone' : 'Indicates if phone communication is prohibited.',
+        'do_not_mail' : 'Indicates if physical mail communication is prohibited.',
+        'do_not_sms' : 'Indicates if SMS communication is prohibited.',
+        'do_not_trade' : 'Indicates if trading is prohibited.',
+        'opted_out' : 'Indicates if the user has opted out of certain activities.',
+        'do_not_track_update_date' : 'Date when tracking was disabled.',
+        'do_not_process_from_update_date' : 'Date when processing was disabled.',
+        'do_not_market_from_update_date' : 'Date when marketing was disabled.',
+        'do_not_track_location_update_date' : 'Date when location tracking was disabled.',
+        'do_not_profile_from_update_date' : 'Date when profiling was disabled.',
+        'do_forget_me_from_update_date' : 'Date when -forget me- request was processed.',
+        'do_not_process_reason' : 'Reason for not processing data.',
+        'no_merge_reason' : 'Reason for not merging data.',
+        'do_extract_my_data_update_date' : 'Date when data extraction request was processed.',
+        'should_forget' : 'Indicates if data should be forgotten.',
+        'consumer_credit_score_provider_name' : 'Name of the consumer credit score provider.',
+        'web_site_url' : 'URL of the website.',
+        'ordering_name' : 'Name used for ordering.',
+        'hospitalizations_last5_years_count' : 'Count of hospitalizations in the last 5 years.',
+        'surgeries_last5_years_count' : 'Count of surgeries in the last 5 years.',
+        'dependent_count' : 'Count of dependents.',
+        'account_locked' : 'Indicates if the account is locked.',
+        'send_individual_data' : 'Indicates if individual data should be sent.',
+        'influencer_rating' : 'Influencer rating.',
     }
     # list_exclude_columns = ['person', 'creation_time', 'failed_login_count', 'failed_login_timestamp', 'password_last_set_time', 'profile_picture', 'awatar', 'screen_name', 'user_priv_cert', 'user_pub_cert', 'alt_security_identities', 'generated_UID', 'do_not_email', 'do_not_phone', 'do_not_mail', 'do_not_sms', 'do_not_trade', 'opted_out', 'do_not_track_update_date', 'do_not_process_from_update_date', 'do_not_market_from_update_date', 'do_not_track_location_update_date', 'do_not_profile_from_update_date', 'do_forget_me_from_update_date', 'do_not_process_reason', 'no_merge_reason', 'do_extract_my_data_update_date', 'should_forget', 'consumer_credit_score_provider_name', 'web_site_url', 'ordering_name', 'hospitalizations_last5_years_count', 'surgeries_last5_years_count', 'dependent_count', 'account_locked', 'send_individual_data', 'influencer_rating']
     # show_exclude_columns = ['person', 'creation_time', 'failed_login_count', 'failed_login_timestamp', 'password_last_set_time', 'profile_picture', 'awatar', 'screen_name', 'user_priv_cert', 'user_pub_cert', 'alt_security_identities', 'generated_UID', 'do_not_email', 'do_not_phone', 'do_not_mail', 'do_not_sms', 'do_not_trade', 'opted_out', 'do_not_track_update_date', 'do_not_process_from_update_date', 'do_not_market_from_update_date', 'do_not_track_location_update_date', 'do_not_profile_from_update_date', 'do_forget_me_from_update_date', 'do_not_process_reason', 'no_merge_reason', 'do_extract_my_data_update_date', 'should_forget', 'consumer_credit_score_provider_name', 'web_site_url', 'ordering_name', 'hospitalizations_last5_years_count', 'surgeries_last5_years_count', 'dependent_count', 'account_locked', 'send_individual_data', 'influencer_rating']
@@ -1577,13 +1487,11 @@ class PersonAdminDataModelView(ModelView):
     # add_columns = ['person', 'creation_time', 'failed_login_count', 'failed_login_timestamp', 'password_last_set_time', 'profile_picture', 'awatar', 'screen_name', 'user_priv_cert', 'user_pub_cert', 'alt_security_identities', 'generated_UID', 'do_not_email', 'do_not_phone', 'do_not_mail', 'do_not_sms', 'do_not_trade', 'opted_out', 'do_not_track_update_date', 'do_not_process_from_update_date', 'do_not_market_from_update_date', 'do_not_track_location_update_date', 'do_not_profile_from_update_date', 'do_forget_me_from_update_date', 'do_not_process_reason', 'no_merge_reason', 'do_extract_my_data_update_date', 'should_forget', 'consumer_credit_score_provider_name', 'web_site_url', 'ordering_name', 'hospitalizations_last5_years_count', 'surgeries_last5_years_count', 'dependent_count', 'account_locked', 'send_individual_data', 'influencer_rating']
     # add_columns = ['person', 'creation_time', 'failed_login_count', 'failed_login_timestamp', 'password_last_set_time', 'profile_picture', 'awatar', 'screen_name', 'user_priv_cert', 'user_pub_cert', 'alt_security_identities', 'generated_UID', 'do_not_email', 'do_not_phone', 'do_not_mail', 'do_not_sms', 'do_not_trade', 'opted_out', 'do_not_track_update_date', 'do_not_process_from_update_date', 'do_not_market_from_update_date', 'do_not_track_location_update_date', 'do_not_profile_from_update_date', 'do_forget_me_from_update_date', 'do_not_process_reason', 'no_merge_reason', 'do_extract_my_data_update_date', 'should_forget', 'consumer_credit_score_provider_name', 'web_site_url', 'ordering_name', 'hospitalizations_last5_years_count', 'surgeries_last5_years_count', 'dependent_count', 'account_locked', 'send_individual_data', 'influencer_rating']
     
-    # label_columns = {'person', 'creation_time':'Creation Time', 'failed_login_count':'Failed Login Count', 'failed_login_timestamp':'Failed Login Timestamp', 'password_last_set_time':'Password Last Set Time', 'profile_picture':'Profile Picture', 'awatar':'Awatar', 'screen_name':'Screen Name', 'user_priv_cert':'User Priv Cert', 'user_pub_cert':'User Pub Cert', 'alt_security_identities':'Alt Security Identities', 'generated_UID':'Generated Uid', 'do_not_email':'Do Not Email', 'do_not_phone':'Do Not Phone', 'do_not_mail':'Do Not Mail', 'do_not_sms':'Do Not Sms', 'do_not_trade':'Do Not Trade', 'opted_out':'Opted Out', 'do_not_track_update_date':'Do Not Track Update Date', 'do_not_process_from_update_date':'Do Not Process From Update Date', 'do_not_market_from_update_date':'Do Not Market From Update Date', 'do_not_track_location_update_date':'Do Not Track Location Update Date', 'do_not_profile_from_update_date':'Do Not Profile From Update Date', 'do_forget_me_from_update_date':'Do Forget Me From Update Date', 'do_not_process_reason':'Do Not Process Reason', 'no_merge_reason':'No Merge Reason', 'do_extract_my_data_update_date':'Do Extract My Data Update Date', 'should_forget':'Should Forget', 'consumer_credit_score_provider_name':'Consumer Credit Score Provider Name', 'web_site_url':'Web Site Url', 'ordering_name':'Ordering Name', 'hospitalizations_last5_years_count':'Hospitalizations Last5 Years Count', 'surgeries_last5_years_count':'Surgeries Last5 Years Count', 'dependent_count':'Dependent Count', 'account_locked':'Account Locked', 'send_individual_data':'Send Individual Data', 'influencer_rating':'Influencer Rating'}
+    label_columns = {'person':'Person', 'creation_time':'Creation Time', 'failed_login_count':'Failed Login Count', 'failed_login_timestamp':'Failed Login Timestamp', 'password_last_set_time':'Password Last Set Time', 'profile_picture':'Profile Picture', 'awatar':'Awatar', 'screen_name':'Screen Name', 'user_priv_cert':'User Priv Cert', 'user_pub_cert':'User Pub Cert', 'alt_security_identities':'Alt Security Identities', 'generated_UID':'Generated Uid', 'do_not_email':'Do Not Email', 'do_not_phone':'Do Not Phone', 'do_not_mail':'Do Not Mail', 'do_not_sms':'Do Not Sms', 'do_not_trade':'Do Not Trade', 'opted_out':'Opted Out', 'do_not_track_update_date':'Do Not Track Update Date', 'do_not_process_from_update_date':'Do Not Process From Update Date', 'do_not_market_from_update_date':'Do Not Market From Update Date', 'do_not_track_location_update_date':'Do Not Track Location Update Date', 'do_not_profile_from_update_date':'Do Not Profile From Update Date', 'do_forget_me_from_update_date':'Do Forget Me From Update Date', 'do_not_process_reason':'Do Not Process Reason', 'no_merge_reason':'No Merge Reason', 'do_extract_my_data_update_date':'Do Extract My Data Update Date', 'should_forget':'Should Forget', 'consumer_credit_score_provider_name':'Consumer Credit Score Provider Name', 'web_site_url':'Web Site Url', 'ordering_name':'Ordering Name', 'hospitalizations_last5_years_count':'Hospitalizations Last5 Years Count', 'surgeries_last5_years_count':'Surgeries Last5 Years Count', 'dependent_count':'Dependent Count', 'account_locked':'Account Locked', 'send_individual_data':'Send Individual Data', 'influencer_rating':'Influencer Rating'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['person', 'creation_time', 'failed_login_count', 'failed_login_timestamp', 'password_last_set_time', 'profile_picture', 'awatar', 'screen_name', 'user_priv_cert', 'user_pub_cert', 'alt_security_identities', 'generated_UID', 'do_not_email', 'do_not_phone', 'do_not_mail', 'do_not_sms', 'do_not_trade', 'opted_out', 'do_not_track_update_date', 'do_not_process_from_update_date', 'do_not_market_from_update_date', 'do_not_track_location_update_date', 'do_not_profile_from_update_date', 'do_forget_me_from_update_date', 'do_not_process_reason', 'no_merge_reason', 'do_extract_my_data_update_date', 'should_forget', 'consumer_credit_score_provider_name', 'web_site_url', 'ordering_name', 'hospitalizations_last5_years_count', 'surgeries_last5_years_count', 'dependent_count', 'account_locked', 'send_individual_data', 'influencer_rating']
-appbuilder.add_view(PersonAdminDataModelView, "PersonAdminDatas", icon="fa-folder-open-o", category="Setup")
-
 class TransModelView(ModelView):
     datamodel = SQLAInterface(Trans)
     list_title = 'List Trans'
@@ -1591,112 +1499,111 @@ class TransModelView(ModelView):
     edit_title = 'Edit Trans'
     add_title  = 'Add Trans'
  
-    list_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    # show_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    # edit_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    add_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    search_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    list_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # show_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # edit_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    add_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # search_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
     description_columns = {
-        'id' : 'None',
-        'coupon_id_fk' : 'None',
-        'customer_name' : 'None',
-        'trans_purpose' : 'None',
-        'customer_id' : 'None',
-        'transaction_type' : 'None',
-        'card_trans_type' : 'None',
-        'agent_id_fk' : 'None',
-        'payment_card_id_fk' : 'None',
-        'pos_id_fk' : 'None',
-        'wallet_id_fk' : 'None',
-        'biller_id_fk' : 'None',
-        'biller_offering_id_fk' : 'None',
-        'trans_time' : 'None',
-        'currency_id_fk' : 'None',
-        'trans_status' : 'None',
-        'trans_route_id_fk' : 'None',
-        'origin_source' : 'source of funds',
-        'origin_ref_code' : 'None',
-        'origin_trans_notes' : 'None',
-        'origin_bank_id_fk' : 'None',
-        'origin_institution_code' : 'None',
-        'origin_account_num' : 'None',
-        'origin_account_name' : 'None',
-        'origin_KYC_Level' : 'None',
-        'origin_Bank_Verification_Number' : 'None',
-        'origin_bvn' : 'used for check balance',
-        'session_ref' : 'None',
-        'transaction_ref' : 'None',
-        'channelCode' : 'None',
-        'name_enquiry_ref' : 'None',
-        'api_transactionid' : 'None',
-        'receipt_no' : 'None',
-        'pin_based' : 'None',
-        'pin_code' : 'None',
-        'pin_option' : 'None',
-        'authorization_code' : 'None',
-        'acquirer_name' : 'None',
-        'currency' : 'None',
-        'transaction_location' : 'None',
-        'payment_reference' : 'None',
-        'response_code' : 'None',
-        'trans_dest' : 'funds destination',
-        'bene_ref_code' : 'None',
-        'bene_trans_notes' : 'None',
-        'bene_bank_id_fk' : 'None',
-        'bene_account_num' : 'None',
-        'bene_institution_code' : 'None',
-        'bene_bank_verification_number' : 'None',
-        'bene_KYC_Level' : 'None',
-        'bene_account_name' : 'None',
-        'bene_phone_number' : 'None',
-        'bene_phone_denom' : 'None',
-        'bene_phone_product' : 'None',
-        'transaction_amount' : 'topup_amount or bank transfer amount',
-        'available_balance' : 'None',
-        'svc_fees' : 'service fees',
-        'comm_total' : 'None',
-        'comm_agent' : 'None',
-        'comm_aggr' : 'None',
-        'comm_ours' : 'None',
-        'comm_other' : 'payments to others',
-        'comm_net_pct' : 'None',
-        'tax' : 'None',
-        'excise_duty' : 'None',
-        'vat' : 'None',
-        'transmit_amount' : 'None',
-        'comm_narration' : 'how the commision was calculated',
-        'trans_currency' : 'None',
-        'trans_convert_currency' : 'None',
-        'trans_currency_exchange_rate' : 'None',
-        'trans_date' : 'None',
-        'customer_segment_id_fk' : 'None',
-        'agent_tier_level_id_fk' : 'None',
-        'special_promotions_id_fk' : 'None',
-        'fraud_marker' : 'fraudulent transaction',
-        'fraud_eval_outcome' : 'returned by as Fraud, Not Fraud, Unknown',
-        'fraud_risk_score' : 'values 1-1000',
-        'fraud_prediction_explanations' : ' list of explanations for how each event variable impacted the fraud prediction score.',
-        'fraud_rule_evaluations' : 'evaluations of the rules that were included in the detector version',
-        'fraud_event_num' : ' returned by AWS Fraud Detector',
-        'trans_narration' : 'we track and store very event that happens',
+        'id' : 'Unique identifier for the transaction.',
+        'coupon_id_fk' : 'Reference to the associated coupon, if applicable.',
+        'customer_name' : 'Name of the customer involved in the transaction.',
+        'trans_purpose' : 'Description of the transaction purpose.',
+        'customer_id' : 'Identifier for the customer.',
+        'transaction_type' : 'Type of transaction (e.g., withdrawal, deposit).',
+        'card_trans_type' : 'Type of card transaction (e.g., purchase).',
+        'agent_id_fk' : 'Merchant ID.',
+        'payment_card_id_fk' : 'Reference to the payment card used.',
+        'pos_id_fk' : 'Point of Sale (PoS) ID.',
+        'wallet_id_fk' : 'Reference to the wallet used.',
+        'biller_id_fk' : 'Reference to the biller involved.',
+        'biller_offering_id_fk' : 'Reference to the biller offering used.',
+        'trans_time' : 'Timestamp of the transaction.',
+        'currency_id_fk' : 'Reference to the currency used.',
+        'trans_status' : 'Status of the transaction (e.g., pending, completed).',
+        'trans_route_id_fk' : 'Reference to the routing threshold used.',
+        'origin_source' : 'Source of funds for the transaction.',
+        'origin_ref_code' : 'Reference code associated with the origin of the transaction.',
+        'origin_trans_notes' : 'Additional notes about the origin of the transaction.',
+        'origin_bank_id_fk' : 'Reference to the originating bank, if applicable.',
+        'origin_institution_code' : 'Institution code for the origin.',
+        'origin_account_num' : 'Account number associated with the origin.',
+        'origin_account_name' : 'Account name associated with the origin.',
+        'origin_KYC_Level' : 'KYC (Know Your Customer) level of the origin.',
+        'origin_Bank_Verification_Number' : 'Bank Verification Number associated with the origin.',
+        'origin_bvn' : 'Used for checking balance of the origin.',
+        'session_ref' : 'Reference to the session related to the transaction.',
+        'transaction_ref' : 'Reference code for the transaction.',
+        'channelCode' : 'Code identifying the transaction channel.',
+        'name_enquiry_ref' : 'Reference code for name inquiry related to the transaction.',
+        'api_transactionid' : 'API transaction ID.',
+        'receipt_no' : 'Receipt number associated with the transaction.',
+        'pin_based' : 'Whether the transaction is PIN-based.',
+        'pin_code' : 'PIN code associated with the transaction.',
+        'pin_option' : 'PIN option for the transaction.',
+        'authorization_code' : 'Authorization code for the transaction.',
+        'acquirer_name' : 'Name of the acquirer.',
+        'currency' : 'Currency used for the transaction.',
+        'transaction_location' : 'Location where the transaction occurred.',
+        'payment_reference' : 'Reference code for the payment.',
+        'response_code' : 'Response code related to the transaction.',
+        'trans_dest' : 'Destination of funds for the transaction.',
+        'bene_ref_code' : 'Reference code associated with the beneficiary.',
+        'bene_trans_notes' : 'Additional notes about the beneficiary.',
+        'bene_bank_id_fk' : 'Reference to the beneficiary bank, if applicable.',
+        'bene_account_num' : 'Account number associated with the beneficiary.',
+        'bene_institution_code' : 'Institution code for the beneficiary.',
+        'bene_bank_verification_number' : 'Bank Verification Number associated with the beneficiary.',
+        'bene_KYC_Level' : 'KYC (Know Your Customer) level of the beneficiary.',
+        'bene_account_name' : 'Account name associated with the beneficiary.',
+        'bene_phone_number' : 'Phone number associated with the beneficiary.',
+        'bene_phone_denom' : 'Denomination of the beneficiary phone.',
+        'bene_phone_product' : 'Product associated with the beneficiary phone.',
+        'transaction_amount' : 'Amount of the transaction.',
+        'available_balance' : 'Available balance for the transaction.',
+        'svc_fees' : 'Service fees associated with the transaction.',
+        'comm_total' : 'Total commission amount for the transaction.',
+        'comm_agent' : 'Commission amount for the agent.',
+        'comm_aggr' : 'Commission amount for the aggregator.',
+        'comm_ours' : 'Commission amount for us.',
+        'comm_other' : 'Payments to others associated with the transaction.',
+        'comm_net_pct' : 'Net commission percentage.',
+        'tax' : 'Tax amount associated with the transaction.',
+        'excise_duty' : 'Excise duty amount.',
+        'vat' : 'Value-added tax (VAT) amount.',
+        'transmit_amount' : 'Transmit amount for the transaction.',
+        'comm_narration' : 'Narration describing how the commission was calculated.',
+        'trans_currency' : 'Currency code for the transaction.',
+        'trans_convert_currency' : 'Currency for currency conversion, if applicable.',
+        'trans_currency_exchange_rate' : 'Exchange rate for currency conversion.',
+        'trans_date' : 'Timestamp of the transaction date.',
+        'customer_segment_id_fk' : 'Reference to the customer segment.',
+        'agent_tier_level_id_fk' : 'Reference to the agent tier level.',
+        'special_promotions_id_fk' : 'Reference to special promotions associated with the transaction.',
+        'risk_profile_id_fk' : 'Risk associated with financial transactions',
+        'fraud_marker' : 'Indicates whether the transaction is marked as fraudulent.',
+        'fraud_eval_outcome' : 'Outcome of fraud evaluation (e.g., Fraud, Not Fraud, Unknown).',
+        'fraud_risk_score' : 'Fraud risk score (values 1-1000).',
+        'fraud_prediction_explanations' : 'List of explanations for how each event variable impacted the fraud prediction score.',
+        'fraud_rule_evaluations' : 'Evaluations of the rules that were included in the detector version.',
+        'fraud_event_num' : 'Event number returned by AWS Fraud Detector.',
+        'trans_narration' : 'Narration containing details about the transaction.',
     }
-    # list_exclude_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    # show_exclude_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    # edit_exclude_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    # add_exclude_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    # search_exclude_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    # order_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    # add_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    # add_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-    # add_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # list_exclude_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # show_exclude_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # edit_exclude_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # add_exclude_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # search_exclude_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # order_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # add_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # add_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
+    # add_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
     
-    # label_columns = {'coupon', 'customer_name':'Customer Name', 'trans_purpose':'Trans Purpose', 'customer_id':'Customer Id', 'transaction_type':'Transaction Type', 'card_trans_type':'Card Trans Type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time':'Trans Time', 'currency', 'trans_status':'Trans Status', 'trans_route', 'origin_source':'Origin Source', 'origin_ref_code':'Origin Ref Code', 'origin_trans_notes':'Origin Trans Notes', 'origin_bank', 'origin_institution_code':'Origin Institution Code', 'origin_account_num':'Origin Account Num', 'origin_account_name':'Origin Account Name', 'origin_KYC_Level':'Origin Kyc Level', 'origin_Bank_Verification_Number':'Origin Bank Verification Number', 'origin_bvn':'Origin Bvn', 'session_ref':'Session Ref', 'transaction_ref':'Transaction Ref', 'channelCode':'Channelcode', 'name_enquiry_ref':'Name Enquiry Ref', 'api_transactionid':'Api Transactionid', 'receipt_no':'Receipt No', 'pin_based':'Pin Based', 'pin_code':'Pin Code', 'pin_option':'Pin Option', 'authorization_code':'Authorization Code', 'acquirer_name':'Acquirer Name', 'currency':'Currency', 'transaction_location':'Transaction Location', 'payment_reference':'Payment Reference', 'response_code':'Response Code', 'trans_dest':'Trans Dest', 'bene_ref_code':'Bene Ref Code', 'bene_trans_notes':'Bene Trans Notes', 'bene_bank', 'bene_account_num':'Bene Account Num', 'bene_institution_code':'Bene Institution Code', 'bene_bank_verification_number':'Bene Bank Verification Number', 'bene_KYC_Level':'Bene Kyc Level', 'bene_account_name':'Bene Account Name', 'bene_phone_number':'Bene Phone Number', 'bene_phone_denom':'Bene Phone Denom', 'bene_phone_product':'Bene Phone Product', 'transaction_amount':'Transaction Amount', 'available_balance':'Available Balance', 'svc_fees':'Svc Fees', 'comm_total':'Comm Total', 'comm_agent':'Comm Agent', 'comm_aggr':'Comm Aggr', 'comm_ours':'Comm Ours', 'comm_other':'Comm Other', 'comm_net_pct':'Comm Net Pct', 'tax':'Tax', 'excise_duty':'Excise Duty', 'vat':'Vat', 'transmit_amount':'Transmit Amount', 'comm_narration':'Comm Narration', 'trans_currency':'Trans Currency', 'trans_convert_currency':'Trans Convert Currency', 'trans_currency_exchange_rate':'Trans Currency Exchange Rate', 'trans_date':'Trans Date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker':'Fraud Marker', 'fraud_eval_outcome':'Fraud Eval Outcome', 'fraud_risk_score':'Fraud Risk Score', 'fraud_prediction_explanations':'Fraud Prediction Explanations', 'fraud_rule_evaluations':'Fraud Rule Evaluations', 'fraud_event_num':'Fraud Event Num', 'trans_narration':'Trans Narration'}
+    label_columns = {'coupon':'Coupon', 'customer_name':'Customer Name', 'trans_purpose':'Trans Purpose', 'customer_id':'Customer Id', 'transaction_type':'Transaction Type', 'card_trans_type':'Card Trans Type', 'agent':'Agent', 'payment_card':'Payment Card', 'pos':'Pos', 'wallet':'Wallet', 'biller':'Biller', 'biller_offering':'Biller Offering', 'trans_time':'Trans Time', 'currency':'Currency', 'trans_status':'Trans Status', 'trans_route':'Trans Route', 'origin_source':'Origin Source', 'origin_ref_code':'Origin Ref Code', 'origin_trans_notes':'Origin Trans Notes', 'origin_bank':'Origin Bank', 'origin_institution_code':'Origin Institution Code', 'origin_account_num':'Origin Account Num', 'origin_account_name':'Origin Account Name', 'origin_KYC_Level':'Origin Kyc Level', 'origin_Bank_Verification_Number':'Origin Bank Verification Number', 'origin_bvn':'Origin Bvn', 'session_ref':'Session Ref', 'transaction_ref':'Transaction Ref', 'channelCode':'Channelcode', 'name_enquiry_ref':'Name Enquiry Ref', 'api_transactionid':'Api Transactionid', 'receipt_no':'Receipt No', 'pin_based':'Pin Based', 'pin_code':'Pin Code', 'pin_option':'Pin Option', 'authorization_code':'Authorization Code', 'acquirer_name':'Acquirer Name', 'currency':'Currency', 'transaction_location':'Transaction Location', 'payment_reference':'Payment Reference', 'response_code':'Response Code', 'trans_dest':'Trans Dest', 'bene_ref_code':'Bene Ref Code', 'bene_trans_notes':'Bene Trans Notes', 'bene_bank':'Bene Bank', 'bene_account_num':'Bene Account Num', 'bene_institution_code':'Bene Institution Code', 'bene_bank_verification_number':'Bene Bank Verification Number', 'bene_KYC_Level':'Bene Kyc Level', 'bene_account_name':'Bene Account Name', 'bene_phone_number':'Bene Phone Number', 'bene_phone_denom':'Bene Phone Denom', 'bene_phone_product':'Bene Phone Product', 'transaction_amount':'Transaction Amount', 'available_balance':'Available Balance', 'svc_fees':'Svc Fees', 'comm_total':'Comm Total', 'comm_agent':'Comm Agent', 'comm_aggr':'Comm Aggr', 'comm_ours':'Comm Ours', 'comm_other':'Comm Other', 'comm_net_pct':'Comm Net Pct', 'tax':'Tax', 'excise_duty':'Excise Duty', 'vat':'Vat', 'transmit_amount':'Transmit Amount', 'comm_narration':'Comm Narration', 'trans_currency':'Trans Currency', 'trans_convert_currency':'Trans Convert Currency', 'trans_currency_exchange_rate':'Trans Currency Exchange Rate', 'trans_date':'Trans Date', 'customer_segment':'Customer Segment', 'agent_tier_level':'Agent Tier Level', 'special_promotions':'Special Promotions', 'risk_profile':'Risk Profile', 'fraud_marker':'Fraud Marker', 'fraud_eval_outcome':'Fraud Eval Outcome', 'fraud_risk_score':'Fraud Risk Score', 'fraud_prediction_explanations':'Fraud Prediction Explanations', 'fraud_rule_evaluations':'Fraud Rule Evaluations', 'fraud_event_num':'Fraud Event Num', 'trans_narration':'Trans Narration'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
-#    list_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
-appbuilder.add_view(TransModelView, "Transs", icon="fa-folder-open-o", category="Setup")
-
+#    list_columns = ['coupon', 'customer_name', 'trans_purpose', 'customer_id', 'transaction_type', 'card_trans_type', 'agent', 'payment_card', 'pos', 'wallet', 'biller', 'biller_offering', 'trans_time', 'currency', 'trans_status', 'trans_route', 'origin_source', 'origin_ref_code', 'origin_trans_notes', 'origin_bank', 'origin_institution_code', 'origin_account_num', 'origin_account_name', 'origin_KYC_Level', 'origin_Bank_Verification_Number', 'origin_bvn', 'session_ref', 'transaction_ref', 'channelCode', 'name_enquiry_ref', 'api_transactionid', 'receipt_no', 'pin_based', 'pin_code', 'pin_option', 'authorization_code', 'acquirer_name', 'currency', 'transaction_location', 'payment_reference', 'response_code', 'trans_dest', 'bene_ref_code', 'bene_trans_notes', 'bene_bank', 'bene_account_num', 'bene_institution_code', 'bene_bank_verification_number', 'bene_KYC_Level', 'bene_account_name', 'bene_phone_number', 'bene_phone_denom', 'bene_phone_product', 'transaction_amount', 'available_balance', 'svc_fees', 'comm_total', 'comm_agent', 'comm_aggr', 'comm_ours', 'comm_other', 'comm_net_pct', 'tax', 'excise_duty', 'vat', 'transmit_amount', 'comm_narration', 'trans_currency', 'trans_convert_currency', 'trans_currency_exchange_rate', 'trans_date', 'customer_segment', 'agent_tier_level', 'special_promotions', 'risk_profile', 'fraud_marker', 'fraud_eval_outcome', 'fraud_risk_score', 'fraud_prediction_explanations', 'fraud_rule_evaluations', 'fraud_event_num', 'trans_narration']
 class AgentDocLinkModelView(ModelView):
     datamodel = SQLAInterface(AgentDocLink)
     list_title = 'List Agent Doc Link'
@@ -1708,13 +1615,13 @@ class AgentDocLinkModelView(ModelView):
     # show_columns = ['agent', 'doc', 'verification_status', 'submit_date', 'notes']
     # edit_columns = ['agent', 'doc', 'verification_status', 'submit_date', 'notes']
     add_columns = ['agent', 'doc', 'verification_status', 'submit_date', 'notes']
-    search_columns = ['agent', 'doc', 'verification_status', 'submit_date', 'notes']
+    # search_columns = ['agent', 'doc', 'verification_status', 'submit_date', 'notes']
     description_columns = {
-        'agent_id_fk' : 'None',
-        'doc_id_fk' : 'None',
-        'verification_status' : 'None',
-        'submit_date' : 'None',
-        'notes' : 'None',
+        'agent_id_fk' : 'Foreign key reference to the agent whose document is linked.',
+        'doc_id_fk' : 'Foreign key reference to the document being linked.',
+        'verification_status' : 'Status of document verification, with a default value of _pending_.',
+        'submit_date' : 'Timestamp when the document is submitted, with a default value of the current timestamp.',
+        'notes' : 'Additional notes or comments related to the document link.',
     }
     # list_exclude_columns = ['agent', 'doc', 'verification_status', 'submit_date', 'notes']
     # show_exclude_columns = ['agent', 'doc', 'verification_status', 'submit_date', 'notes']
@@ -1726,13 +1633,11 @@ class AgentDocLinkModelView(ModelView):
     # add_columns = ['agent', 'doc', 'verification_status', 'submit_date', 'notes']
     # add_columns = ['agent', 'doc', 'verification_status', 'submit_date', 'notes']
     
-    # label_columns = {'agent', 'doc', 'verification_status':'Verification Status', 'submit_date':'Submit Date', 'notes':'Notes'}
+    label_columns = {'agent':'Agent', 'doc':'Doc', 'verification_status':'Verification Status', 'submit_date':'Submit Date', 'notes':'Notes'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['agent', 'doc', 'verification_status', 'submit_date', 'notes']
-appbuilder.add_view(AgentDocLinkModelView, "AgentDocLinks", icon="fa-folder-open-o", category="Setup")
-
 class PersonDocLinkModelView(ModelView):
     datamodel = SQLAInterface(PersonDocLink)
     list_title = 'List Person Doc Link'
@@ -1744,12 +1649,12 @@ class PersonDocLinkModelView(ModelView):
     # show_columns = ['person', 'doc', 'verification_status', 'submit_date']
     # edit_columns = ['person', 'doc', 'verification_status', 'submit_date']
     add_columns = ['person', 'doc', 'verification_status', 'submit_date']
-    search_columns = ['person', 'doc', 'verification_status', 'submit_date']
+    # search_columns = ['person', 'doc', 'verification_status', 'submit_date']
     description_columns = {
-        'person_id_fk' : 'None',
-        'doc_id_fk' : 'None',
-        'verification_status' : 'None',
-        'submit_date' : 'None',
+        'person_id_fk' : 'Foreign key reference to the person whose document is linked.',
+        'doc_id_fk' : 'Foreign key reference to the document being linked.',
+        'verification_status' : 'Status of document verification, with a default value of _pending_.',
+        'submit_date' : 'Timestamp when the document is submitted, with a default value of the current timestamp.',
     }
     # list_exclude_columns = ['person', 'doc', 'verification_status', 'submit_date']
     # show_exclude_columns = ['person', 'doc', 'verification_status', 'submit_date']
@@ -1761,472 +1666,568 @@ class PersonDocLinkModelView(ModelView):
     # add_columns = ['person', 'doc', 'verification_status', 'submit_date']
     # add_columns = ['person', 'doc', 'verification_status', 'submit_date']
     
-    # label_columns = {'person', 'doc', 'verification_status':'Verification Status', 'submit_date':'Submit Date'}
+    label_columns = {'person':'Person', 'doc':'Doc', 'verification_status':'Verification Status', 'submit_date':'Submit Date'}
     # base_filters = [['created_by', FilterEqualFunction, get_user],['name', FilterStartsWith, 'a']]
     # base_order = ("name", "asc")
     # page_size = 100 
 #    list_columns = ['person', 'doc', 'verification_status', 'submit_date']
-appbuilder.add_view(PersonDocLinkModelView, "PersonDocLinks", icon="fa-folder-open-o", category="Setup")
-
 class UserExt_UserExtMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(UserExt)
     related_views = [UserExtModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(UserExt_UserExtMasterDetailView, "UserExts", icon="fa-folder-open-o", category="Review")
 
 class BillerCategory_BillerMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(BillerCategory)
     related_views = [BillerModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(BillerCategory_BillerMasterDetailView, "BillerCategorys", icon="fa-folder-open-o", category="Review")
-
 class Country_StateMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Country)
     related_views = [StateModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Country_StateMasterDetailView, "Countrys", icon="fa-folder-open-o", category="Review")
 
 class TokenProvider_TokenMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(TokenProvider)
     related_views = [TokenModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(TokenProvider_TokenMasterDetailView, "TokenProviders", icon="fa-folder-open-o", category="Review")
-
 class Biller_BillerOfferingMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Biller)
     related_views = [BillerOfferingModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Biller_BillerOfferingMasterDetailView, "Billers", icon="fa-folder-open-o", category="Review")
 
 class State_LgaMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(State)
     related_views = [LgaModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(State_LgaMasterDetailView, "States", icon="fa-folder-open-o", category="Review")
-
-class AgentTier_AgentMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(AgentTier)
-    related_views = [AgentModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(AgentTier_AgentMasterDetailView, "AgentTiers", icon="fa-folder-open-o", category="Review")
-
-class State_AgentMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(State)
-    related_views = [AgentModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(State_AgentMasterDetailView, "States", icon="fa-folder-open-o", category="Review")
-
-class UserExt_AgentMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(UserExt)
-    related_views = [AgentModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(UserExt_AgentMasterDetailView, "UserExts", icon="fa-folder-open-o", category="Review")
-
-class Agent_AgentMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Agent)
-    related_views = [AgentModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Agent_AgentMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
-
 class Bank_AgentMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Bank)
     related_views = [AgentModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Bank_AgentMasterDetailView, "Banks", icon="fa-folder-open-o", category="Review")
-
-class Lga_AgentMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Lga)
-    related_views = [AgentModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Lga_AgentMasterDetailView, "Lgas", icon="fa-folder-open-o", category="Review")
 
 class Country_AgentMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Country)
     related_views = [AgentModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Country_AgentMasterDetailView, "Countrys", icon="fa-folder-open-o", category="Review")
+class UserExt_AgentMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(UserExt)
+    related_views = [AgentModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
-class Lga_PosMasterDetailView(MasterDetailView):
+class Lga_AgentMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Lga)
-    related_views = [PosModelView]
+    related_views = [AgentModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Lga_PosMasterDetailView, "Lgas", icon="fa-folder-open-o", category="Review")
-
-class State_PosMasterDetailView(MasterDetailView):
+class State_AgentMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(State)
-    related_views = [PosModelView]
+    related_views = [AgentModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(State_PosMasterDetailView, "States", icon="fa-folder-open-o", category="Review")
+class Agent_AgentMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Agent)
+    related_views = [AgentModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+class AgentTier_AgentMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(AgentTier)
+    related_views = [AgentModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
 class UserExt_PosMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(UserExt)
     related_views = [PosModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(UserExt_PosMasterDetailView, "UserExts", icon="fa-folder-open-o", category="Review")
+class State_PosMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(State)
+    related_views = [PosModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+class Lga_PosMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Lga)
+    related_views = [PosModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
 class Pos_AgentPosLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Pos)
     related_views = [AgentPosLinkModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Pos_AgentPosLinkMasterDetailView, "Poss", icon="fa-folder-open-o", category="Review")
-
 class Agent_AgentPosLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Agent)
     related_views = [AgentPosLinkModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Agent_AgentPosLinkMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
-
-class CustomerSegment_CommRefMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(CustomerSegment)
-    related_views = [CommRefModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(CustomerSegment_CommRefMasterDetailView, "CustomerSegments", icon="fa-folder-open-o", category="Review")
-
-class Lga_CommRefMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Lga)
-    related_views = [CommRefModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Lga_CommRefMasterDetailView, "Lgas", icon="fa-folder-open-o", category="Review")
-
-class Promotion_CommRefMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Promotion)
-    related_views = [CommRefModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Promotion_CommRefMasterDetailView, "Promotions", icon="fa-folder-open-o", category="Review")
-
-class TransType_CommRefMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(TransType)
-    related_views = [CommRefModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(TransType_CommRefMasterDetailView, "TransTypes", icon="fa-folder-open-o", category="Review")
-
-class BillerOffering_CommRefMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(BillerOffering)
-    related_views = [CommRefModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(BillerOffering_CommRefMasterDetailView, "BillerOfferings", icon="fa-folder-open-o", category="Review")
-
-class Agent_CommRefMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Agent)
-    related_views = [CommRefModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Agent_CommRefMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
-
-class State_CommRefMasterDetailView(MasterDetailView):
+class State_CommissionMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(State)
-    related_views = [CommRefModelView]
+    related_views = [CommissionModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(State_CommRefMasterDetailView, "States", icon="fa-folder-open-o", category="Review")
-
-class AgentTier_CommRefMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(AgentTier)
-    related_views = [CommRefModelView]
+class TransType_CommissionMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(TransType)
+    related_views = [CommissionModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(AgentTier_CommRefMasterDetailView, "AgentTiers", icon="fa-folder-open-o", category="Review")
+class Agent_CommissionMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Agent)
+    related_views = [CommissionModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
-class Biller_CommRefMasterDetailView(MasterDetailView):
+class Currency_CommissionMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Currency)
+    related_views = [CommissionModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+class BillerOffering_CommissionMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(BillerOffering)
+    related_views = [CommissionModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+class Biller_CommissionMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Biller)
-    related_views = [CommRefModelView]
+    related_views = [CommissionModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Biller_CommRefMasterDetailView, "Billers", icon="fa-folder-open-o", category="Review")
-
-class Person_PersonMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Person)
-    related_views = [PersonModelView]
+class CustomerSegment_CommissionMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(CustomerSegment)
+    related_views = [CommissionModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Person_PersonMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
+class Lga_CommissionMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Lga)
+    related_views = [CommissionModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+class Promotion_CommissionMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Promotion)
+    related_views = [CommissionModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+class AgentTier_CommissionMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(AgentTier)
+    related_views = [CommissionModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+class RiskProfile_CommissionMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(RiskProfile)
+    related_views = [CommissionModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
 class Agent_PersonMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Agent)
     related_views = [PersonModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Agent_PersonMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+class Person_PersonMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Person)
+    related_views = [PersonModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
 class Pos_WalletMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Pos)
     related_views = [WalletModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Pos_WalletMasterDetailView, "Poss", icon="fa-folder-open-o", category="Review")
-
 class Agent_WalletMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Agent)
     related_views = [WalletModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Agent_WalletMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
 
 class Person_AgentPersonLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Person)
     related_views = [AgentPersonLinkModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Person_AgentPersonLinkMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
-
 class Agent_AgentPersonLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Agent)
     related_views = [AgentPersonLinkModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Agent_AgentPersonLinkMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
-
-class ContactType_ContactMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(ContactType)
-    related_views = [ContactModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(ContactType_ContactMasterDetailView, "ContactTypes", icon="fa-folder-open-o", category="Review")
-
-class Person_ContactMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Person)
-    related_views = [ContactModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Person_ContactMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
 
 class Agent_ContactMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Agent)
     related_views = [ContactModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Agent_ContactMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
-
-class Person_DocMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Person)
-    related_views = [DocModelView]
+class ContactType_ContactMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(ContactType)
+    related_views = [ContactModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Person_DocMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
+class Person_ContactMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Person)
+    related_views = [ContactModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
 class MimeType_DocMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(MimeType)
     related_views = [DocModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(MimeType_DocMasterDetailView, "MimeTypes", icon="fa-folder-open-o", category="Review")
+class DocType_DocMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(DocType)
+    related_views = [DocModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+class Person_DocMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Person)
+    related_views = [DocModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
 class Agent_DocMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Agent)
     related_views = [DocModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Agent_DocMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
-
-class DocType_DocMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(DocType)
-    related_views = [DocModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(DocType_DocMasterDetailView, "DocTypes", icon="fa-folder-open-o", category="Review")
-
-class Country_PersonAdditionalDataMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Country)
-    related_views = [PersonAdditionalDataModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Country_PersonAdditionalDataMasterDetailView, "Countrys", icon="fa-folder-open-o", category="Review")
-
-class Person_PersonAdditionalDataMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Person)
-    related_views = [PersonAdditionalDataModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Person_PersonAdditionalDataMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
-
 class Person_PersonAdminDataMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Person)
     related_views = [PersonAdminDataModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Person_PersonAdminDataMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
-
-class Coupon_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Coupon)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Coupon_TransMasterDetailView, "Coupons", icon="fa-folder-open-o", category="Review")
 
 class Bank_TransMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Bank)
     related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Bank_TransMasterDetailView, "Banks", icon="fa-folder-open-o", category="Review")
-
 class Pos_TransMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Pos)
     related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Pos_TransMasterDetailView, "Poss", icon="fa-folder-open-o", category="Review")
-
-class TransRoutingThresholds_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(TransRoutingThresholds)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(TransRoutingThresholds_TransMasterDetailView, "TransRoutingThresholdss", icon="fa-folder-open-o", category="Review")
-
-class BillerOffering_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(BillerOffering)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(BillerOffering_TransMasterDetailView, "BillerOfferings", icon="fa-folder-open-o", category="Review")
-
-class Currency_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Currency)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Currency_TransMasterDetailView, "Currencys", icon="fa-folder-open-o", category="Review")
 
 class Promotion_TransMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Promotion)
     related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Promotion_TransMasterDetailView, "Promotions", icon="fa-folder-open-o", category="Review")
-
-class AgentTier_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(AgentTier)
+class Coupon_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Coupon)
     related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(AgentTier_TransMasterDetailView, "AgentTiers", icon="fa-folder-open-o", category="Review")
-
-class Biller_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Biller)
-    related_views = [TransModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Biller_TransMasterDetailView, "Billers", icon="fa-folder-open-o", category="Review")
 
 class CustomerSegment_TransMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(CustomerSegment)
     related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(CustomerSegment_TransMasterDetailView, "CustomerSegments", icon="fa-folder-open-o", category="Review")
-
-class PaymentCard_TransMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(PaymentCard)
+class RiskProfile_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(RiskProfile)
     related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(PaymentCard_TransMasterDetailView, "PaymentCards", icon="fa-folder-open-o", category="Review")
+class AgentTier_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(AgentTier)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+class BillerOffering_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(BillerOffering)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+class Currency_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Currency)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
+
+class Biller_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Biller)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
 class Wallet_TransMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Wallet)
     related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Wallet_TransMasterDetailView, "Wallets", icon="fa-folder-open-o", category="Review")
+class TransRoutingThresholds_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(TransRoutingThresholds)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
 class Agent_TransMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Agent)
     related_views = [TransModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Agent_TransMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
+class PaymentCard_TransMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(PaymentCard)
+    related_views = [TransModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
 class Doc_AgentDocLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Doc)
     related_views = [AgentDocLinkModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Doc_AgentDocLinkMasterDetailView, "Docs", icon="fa-folder-open-o", category="Review")
-
 class Agent_AgentDocLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Agent)
     related_views = [AgentDocLinkModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Agent_AgentDocLinkMasterDetailView, "Agents", icon="fa-folder-open-o", category="Review")
-
-class Doc_PersonDocLinkMasterDetailView(MasterDetailView):
-    datamodel = SQLAInterface(Doc)
-    related_views = [PersonDocLinkModelView]
-    show_template = 'appbuilder/general/model/show_cascade.html'
-
-appbuilder.add_view(Doc_PersonDocLinkMasterDetailView, "Docs", icon="fa-folder-open-o", category="Review")
 
 class Person_PersonDocLinkMasterDetailView(MasterDetailView):
     datamodel = SQLAInterface(Person)
     related_views = [PersonDocLinkModelView]
     show_template = 'appbuilder/general/model/show_cascade.html'
 
-appbuilder.add_view(Person_PersonDocLinkMasterDetailView, "People", icon="fa-folder-open-o", category="Review")
-
-class CountryMultipleView(MultipleView):
-    datamodel = SQLAInterface(Country)
-    views = [CountryModelView, AgentModelView, StateModelView, LgaModelView, AgentTierModelView, BankModelView, UserExtModelView]
-
-appbuilder.add_view(CountryMultipleView, "Countrys", icon="fa-folder-open-o", category="Inspect")
+class Doc_PersonDocLinkMasterDetailView(MasterDetailView):
+    datamodel = SQLAInterface(Doc)
+    related_views = [PersonDocLinkModelView]
+    show_template = 'appbuilder/general/model/show_cascade.html'
 
 class UserExtMultipleView(MultipleView):
     datamodel = SQLAInterface(UserExt)
-    views = [StateModelView, LgaModelView, UserExtModelView]
+    views = [StateModelView, AgentTierModelView, BankModelView, CountryModelView, AgentModelView, LgaModelView, UserExtModelView]
 
-appbuilder.add_view(UserExtMultipleView, "UserExts", icon="fa-folder-open-o", category="Inspect")
+class LgaMultipleView(MultipleView):
+    datamodel = SQLAInterface(Lga)
+    views = [StateModelView, LgaModelView, UserExtModelView]
 
 class AgentMultipleView(MultipleView):
     datamodel = SQLAInterface(Agent)
-    views = [PosModelView, AgentModelView]
+    views = [AgentModelView, PosModelView]
 
-appbuilder.add_view(AgentMultipleView, "Agents", icon="fa-folder-open-o", category="Inspect")
-
-class BillerMultipleView(MultipleView):
-    datamodel = SQLAInterface(Biller)
-    views = [AgentModelView, BillerModelView, StateModelView, LgaModelView, BillerOfferingModelView, CustomerSegmentModelView, PromotionModelView, AgentTierModelView, TransTypeModelView]
-
-appbuilder.add_view(BillerMultipleView, "Billers", icon="fa-folder-open-o", category="Inspect")
-
-class DocTypeMultipleView(MultipleView):
-    datamodel = SQLAInterface(DocType)
-    views = [AgentModelView, DocTypeModelView, PersonModelView, MimeTypeModelView]
-
-appbuilder.add_view(DocTypeMultipleView, "DocTypes", icon="fa-folder-open-o", category="Inspect")
+class RiskProfileMultipleView(MultipleView):
+    datamodel = SQLAInterface(RiskProfile)
+    views = [StateModelView, CustomerSegmentModelView, AgentModelView, CurrencyModelView, RiskProfileModelView, BillerOfferingModelView, LgaModelView, TransTypeModelView, PromotionModelView, BillerModelView, AgentTierModelView]
 
 class PersonMultipleView(MultipleView):
     datamodel = SQLAInterface(Person)
-    views = [CountryModelView, PersonModelView]
+    views = [AgentModelView, PersonModelView]
 
-appbuilder.add_view(PersonMultipleView, "People", icon="fa-folder-open-o", category="Inspect")
+class PaymentCardMultipleView(MultipleView):
+    datamodel = SQLAInterface(PaymentCard)
+    views = [PaymentCardModelView, BankModelView, CustomerSegmentModelView, AgentModelView, RiskProfileModelView, CurrencyModelView, TransRoutingThresholdsModelView, CouponModelView, BillerOfferingModelView, PosModelView, WalletModelView, PromotionModelView, BillerModelView, AgentTierModelView]
+
+class DocMultipleView(MultipleView):
+    datamodel = SQLAInterface(Doc)
+    views = [DocModelView, PersonModelView]
+
+
+appbuilder.add_view(AgentTierModelView, "Agent Tier", icon="fa-folder-open-o", category="Operations")
+appbuilder.add_view(AgentModelView, "Agent", icon="fa-folder-open-o", category="Operations")
+appbuilder.add_view(CommissionModelView, "Commission", icon="fa-folder-open-o", category="Operations")
+appbuilder.add_view(WalletModelView, "Wallet", icon="fa-folder-open-o", category="Operations")
+appbuilder.add_separator("Operations")
+
+appbuilder.add_view(BillerCategoryModelView, "Biller Category", icon="fa-folder-open-o", category="Setup")
+appbuilder.add_view(ContactTypeModelView, "Contact Type", icon="fa-folder-open-o", category="Setup")
+appbuilder.add_view(CurrencyModelView, "Currency", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(CountryModelView, "Country", icon="fa-folder-open-o", category="Setup")
+appbuilder.add_view(StateModelView, "State", icon="fa-folder-open-o", category="Setup")
+appbuilder.add_view(LgaModelView, "Lga", icon="fa-folder-open-o", category="Setup")
+appbuilder.add_view(BankModelView, "Bank", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(CouponModelView, "Coupon", icon="fa-folder-open-o", category="Operations")
+appbuilder.add_view(PaymentCardModelView, "Payment Card", icon="fa-folder-open-o", category="Operations")
+appbuilder.add_view(TransTypeModelView, "Trans Type", icon="fa-folder-open-o", category="Operations")
+appbuilder.add_view(TransRoutingThresholdsModelView, "Trans Routing Thresholds", icon="fa-folder-open-o", category="Operations")
+appbuilder.add_view(BillerOfferingModelView, "Biller Offering", icon="fa-folder-open-o", category="Operations")
+
+
+
+
+appbuilder.add_view(CustomerSegmentModelView, "Customer Segment", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(DocTypeModelView, "Doc Type", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(MimeTypeModelView, "Mime Type", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(MimeTypeMapModelView, "Mime Type Map", icon="fa-folder-open-o", category="Setup")
+
+
+
+appbuilder.add_view(PromotionModelView, "Promotion", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(RiskProfileModelView, "Risk Profile", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(TechparamsModelView, "Techparams", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(TokenProviderModelView, "Token Provider", icon="fa-folder-open-o", category="Setup")
+
+
+
+
+appbuilder.add_view(UserExtModelView, "User Ext", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(BillerModelView, "Biller", icon="fa-folder-open-o", category="Setup")
+
+
+
+appbuilder.add_view(TokenModelView, "Token", icon="fa-folder-open-o", category="Setup")
+
+
+
+
+
+
+
+appbuilder.add_view(PosModelView, "Pos", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(AgentPosLinkModelView, "Agent Pos Link", icon="fa-folder-open-o", category="Setup")
+
+
+
+appbuilder.add_view(PersonModelView, "Person", icon="fa-folder-open-o", category="Setup")
+
+
+
+appbuilder.add_view(AgentPersonLinkModelView, "Agent Person Link", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(ContactModelView, "Contact", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(DocModelView, "Doc", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(PersonAdminDataModelView, "Person Admin Data", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(TransModelView, "Trans", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(AgentDocLinkModelView, "Agent Doc Link", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(PersonDocLinkModelView, "Person Doc Link", icon="fa-folder-open-o", category="Setup")
+
+appbuilder.add_view(UserExt_UserExtMasterDetailView, "User Ext", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(BillerCategory_BillerMasterDetailView, "Biller Category", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Country_StateMasterDetailView, "Country", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(TokenProvider_TokenMasterDetailView, "Token Provider", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Biller_BillerOfferingMasterDetailView, "Biller", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(State_LgaMasterDetailView, "State", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Bank_AgentMasterDetailView, "Bank", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Country_AgentMasterDetailView, "Country", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(UserExt_AgentMasterDetailView, "User Ext", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Lga_AgentMasterDetailView, "Lga", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(State_AgentMasterDetailView, "State", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Agent_AgentMasterDetailView, "Agent", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(AgentTier_AgentMasterDetailView, "Agent Tier", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(UserExt_PosMasterDetailView, "User Ext", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(State_PosMasterDetailView, "State", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Lga_PosMasterDetailView, "Lga", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Pos_AgentPosLinkMasterDetailView, "Pos", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Agent_AgentPosLinkMasterDetailView, "Agent", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(State_CommissionMasterDetailView, "State", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(TransType_CommissionMasterDetailView, "Trans Type", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Agent_CommissionMasterDetailView, "Agent", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Currency_CommissionMasterDetailView, "Currency", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(BillerOffering_CommissionMasterDetailView, "Biller Offering", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Biller_CommissionMasterDetailView, "Biller", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(CustomerSegment_CommissionMasterDetailView, "Customer Segment", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Lga_CommissionMasterDetailView, "Lga", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Promotion_CommissionMasterDetailView, "Promotion", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(AgentTier_CommissionMasterDetailView, "Agent Tier", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(RiskProfile_CommissionMasterDetailView, "Risk Profile", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Agent_PersonMasterDetailView, "Agent", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Person_PersonMasterDetailView, "Person", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Pos_WalletMasterDetailView, "Pos", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Agent_WalletMasterDetailView, "Agent", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Person_AgentPersonLinkMasterDetailView, "Person", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Agent_AgentPersonLinkMasterDetailView, "Agent", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Agent_ContactMasterDetailView, "Agent", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(ContactType_ContactMasterDetailView, "Contact Type", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Person_ContactMasterDetailView, "Person", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(MimeType_DocMasterDetailView, "Mime Type", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(DocType_DocMasterDetailView, "Doc Type", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Person_DocMasterDetailView, "Person", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Agent_DocMasterDetailView, "Agent", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Person_PersonAdminDataMasterDetailView, "Person", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Bank_TransMasterDetailView, "Bank", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Pos_TransMasterDetailView, "Pos", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Promotion_TransMasterDetailView, "Promotion", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Coupon_TransMasterDetailView, "Coupon", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(CustomerSegment_TransMasterDetailView, "Customer Segment", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(RiskProfile_TransMasterDetailView, "Risk Profile", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(AgentTier_TransMasterDetailView, "Agent Tier", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(BillerOffering_TransMasterDetailView, "Biller Offering", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Currency_TransMasterDetailView, "Currency", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Biller_TransMasterDetailView, "Biller", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Wallet_TransMasterDetailView, "Wallet", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(TransRoutingThresholds_TransMasterDetailView, "Trans Routing Thresholds", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Agent_TransMasterDetailView, "Agent", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(PaymentCard_TransMasterDetailView, "Payment Card", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Doc_AgentDocLinkMasterDetailView, "Doc", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Agent_AgentDocLinkMasterDetailView, "Agent", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Person_PersonDocLinkMasterDetailView, "Person", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(Doc_PersonDocLinkMasterDetailView, "Doc", icon="fa-folder-open-o", category="Review")
+
+appbuilder.add_view(UserExtMultipleView, "User Ext", icon="fa-folder-open-o", category="Inspect")
+
+appbuilder.add_view(LgaMultipleView, "Lga", icon="fa-folder-open-o", category="Inspect")
+
+appbuilder.add_view(AgentMultipleView, "Agent", icon="fa-folder-open-o", category="Inspect")
+
+appbuilder.add_view(RiskProfileMultipleView, "Risk Profile", icon="fa-folder-open-o", category="Inspect")
+
+appbuilder.add_view(PersonMultipleView, "Person", icon="fa-folder-open-o", category="Inspect")
+
+appbuilder.add_view(PaymentCardMultipleView, "Payment Card", icon="fa-folder-open-o", category="Inspect")
+
+appbuilder.add_view(DocMultipleView, "Doc", icon="fa-folder-open-o", category="Inspect")
 
 
 appbuilder.add_link("rest_api", href="/swagger/v1", icon="fa-sliders", label="REST Api", category="Utilities")
 appbuilder.add_link("graphql", href="/graphql", icon="fa-wrench", label="GraphQL", category="Utilities")
+
 
 #appbuilder.add_separator("Setup")
 #appbuilder.add_separator("My Views")
@@ -2247,3 +2248,4 @@ def page_not_found(e):
 
 
 db.create_all()
+appbuilder.security_cleanup()

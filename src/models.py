@@ -39,6 +39,7 @@ from sqlalchemy.dialects.postgresql import (
 
 from flask_appbuilder import Model
 from flask_appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn, UserExtensionMixin
+from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder.filemanager import ImageManager
 
 from flask_appbuilder.models.decorators import renders
@@ -48,7 +49,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 
 from flask_appbuilder.security.sqla.models import User
 from geoalchemy2 import Geometry
-
+from flask_mail import Mail, Message  # Requires Flask-Mail
 # To create GraphSQL API
 # import graphene
 # from graphene_sqlalchemy import SQLAlchemyObjectType
@@ -106,6 +107,13 @@ class t_card_trans_type(enum.Enum):
    CARD_VERIFICATION = 'card_verification'
    TRANSACTION = 'transaction'
    SETTLEMENT = 'settlement'
+   SETTLEMENT_BATCH_UPLOAD = 'settlement_batch_upload'
+   WITHDRAWAL = 'withdrawal'
+   DEPOSIT = 'deposit'
+   TRANSFER = 'transfer'
+   BILL_PAYMENT = 'bill_payment'
+   CASH_DEPOSIT = 'cash_deposit'
+   CARD_ACTIVATION = 'card_activation'
 
 class t_date_macro(enum.Enum):
    ALL = 'All'
@@ -287,6 +295,7 @@ class t_person_role(enum.Enum):
    CUSTOMER = 'customer'
    REFEREE = 'referee'
    SUPERVISOR = 'supervisor'
+   AGENT = 'agent'
 
 class t_severity_level(enum.Enum):
    INSIGNIFICANT = 'Insignificant'
@@ -466,6 +475,7 @@ class Person_role(enum.Enum):
    CUSTOMER = 'customer'
    REFEREE = 'referee'
    SUPERVISOR = 'supervisor'
+   AGENT = 'agent'
 
 
 
@@ -475,9 +485,6 @@ class Gender(enum.Enum):
    NON_BINARY = 'Non_Binary'
    PREFER_NOT_TO_SAY = 'Prefer_Not_to_Say'
    OTHER = 'Other'
-
-
-
 
 
 
@@ -528,6 +535,13 @@ class Card_trans_type(enum.Enum):
    CARD_VERIFICATION = 'card_verification'
    TRANSACTION = 'transaction'
    SETTLEMENT = 'settlement'
+   SETTLEMENT_BATCH_UPLOAD = 'settlement_batch_upload'
+   WITHDRAWAL = 'withdrawal'
+   DEPOSIT = 'deposit'
+   TRANSFER = 'transfer'
+   BILL_PAYMENT = 'bill_payment'
+   CASH_DEPOSIT = 'cash_deposit'
+   CARD_ACTIVATION = 'card_activation'
 
 
 
@@ -674,9 +688,15 @@ class Trans_dest(enum.Enum):
 
 class AgentTier(Model):
     __tablename__ = "agent_tier"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=True)
-    notes = Column(Text, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Agent Tier"
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Identity column - Unique identifier for the agent tier.")
+    name = Column(String, nullable=True
+		, comment="Name of the agent tier - Descriptive name or title of the agent tier.")
+    notes = Column(Text, nullable=True
+		, comment="Additional notes or remarks about the agent tier, if necessary.")
 
     def __repr__(self):
        return self.name
@@ -686,20 +706,28 @@ class AgentTier(Model):
 
 class Bank(Model):
     __tablename__ = "bank"
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the bank.")
     code = Column(String
-		, comment="NIBSS institutionCode")
-    name = Column(String)
+		, comment="NIBSS institutionCode, a unique code identifying the bank.")
+    name = Column(String
+		, comment="Name of the Bank.")
     category = Column(Integer, nullable=True
-		, comment="category")
-    swift_code = Column(String, nullable=True)
-    sort_code = Column(String, nullable=True)
-    iban = Column(String, nullable=True)
-    cust_care_phone = Column(String, nullable=True)
-    cust_care_email = Column(String, nullable=True)
-    escalation_contact = Column(Text, nullable=True)
-    created_on = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    updated_on = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
+		, comment="Bank Category, representing the category of the bank.")
+    swift_code = Column(String, nullable=True
+		, comment="SWIFT Code, a unique international bank identifier.")
+    sort_code = Column(String, nullable=True
+		, comment="SORT Code, a unique bank sorting code.")
+    iban = Column(String, nullable=True
+		, comment="IBAN Code, a unique international bank account number.")
+    cust_care_phone = Column(String, nullable=True
+		, comment="Contact phone number for customer care.")
+    cust_care_email = Column(String, nullable=True
+		, comment="Contact email for customer care.")
+    escalation_contact = Column(Text, nullable=True
+		, comment="Contact information for escalation purposes.")
 
     def __repr__(self):
        return self.name
@@ -709,9 +737,15 @@ class Bank(Model):
 
 class BillerCategory(Model):
     __tablename__ = "biller_category"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=True)
-    notes = Column(Text, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Category of Biller"
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the biller category.")
+    name = Column(String, nullable=True
+		, comment="Name or title of the biller category.")
+    notes = Column(Text, nullable=True
+		, comment="Additional notes or remarks about the biller category.")
 
     def __repr__(self):
        return self.name
@@ -721,7 +755,9 @@ class BillerCategory(Model):
 
 class ContactType(Model):
     __tablename__ = "contact_type"
+    # __table_args__ = ( ) # tuple
     __doc__ = " phone, mobile, email, messaging, whatsapp, viber, instagram, website, etc"
+    # class_permission_name = "view"
     id = Column(Integer, primary_key=True, autoincrement=True
 		, comment="Unique identifier for the address type.")
     name = Column(String
@@ -749,6 +785,9 @@ class ContactType(Model):
 
 class Country(Model):
     __tablename__ = "country"
+    # __table_args__ = ( ) # tuple
+    __doc__ = "List of Countries"
+    # class_permission_name = "view"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=True
 		, comment=" Country Name")
@@ -765,42 +804,73 @@ class Country(Model):
 
 class Coupon(Model):
     __tablename__ = "coupon"
-    __doc__ = " A coupon can be shared electronically and redeemed at any agent"
-    coupon_id = Column(Integer, primary_key=True, autoincrement=True)
-    coupon_value = Column(Numeric, nullable=True)
-    active = Column(Boolean, nullable=True)
-    used = Column(Boolean, default=False, nullable=True)
-    used_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    primary_scan_code_label = Column(String, nullable=True)
-    is_return_coupon = Column(Boolean, nullable=True)
-    expiration_date = Column(Date, nullable=True)
-    generation_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    activation_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    secondary_scan_code_label = Column(String, nullable=True)
-    scan_code_img = Column(String, nullable=True)
-    coupon_code = Column(String, nullable=True)
-    return_coupon_reason = Column(String, nullable=True)
-    is_valid = Column(Boolean, default=True, nullable=True)
-    coupon_status = Column(String, nullable=True)
-    discount_percentage = Column(Integer, nullable=True)
-    coupon_count = Column(Integer, nullable=True)
-    payment_method_status = Column(String)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "A coupon can be shared electronically and redeemed at any agent."
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the coupon.")
+    value = Column(Numeric, nullable=True
+		, comment="The monetary value of the coupon.")
+    serial_no = Column(String, nullable=True
+		, comment="Serial number or code associated with the coupon.")
+    active = Column(Boolean, nullable=True
+		, comment="Indicates whether the coupon is active.")
+    used = Column(Boolean, default=False, nullable=True
+		, comment="Indicates whether the coupon has been used.")
+    used_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Date and time when the coupon was used.")
+    primary_scan_code_label = Column(String, nullable=True
+		, comment="Primary scan code label associated with the coupon.")
+    is_return_coupon = Column(Boolean, nullable=True
+		, comment="Indicates whether the coupon is a return coupon.")
+    expiration_date = Column(Date, nullable=True
+		, comment="Date when the coupon expires.")
+    generation_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Date and time when the coupon was generated.")
+    activation_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Date and time when the coupon was activated.")
+    secondary_scan_code_label = Column(String, nullable=True
+		, comment="Secondary scan code label associated with the coupon.")
+    scan_code_img = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))
+    coupon_code = Column(String, nullable=True
+		, comment="Code associated with the coupon.")
+    return_coupon_reason = Column(String, nullable=True
+		, comment="Reason for returning the coupon.")
+    is_valid = Column(Boolean, default=True, nullable=True
+		, comment="Indicates whether the coupon is valid.")
+    coupon_status = Column(String, nullable=True
+		, comment="Status of the coupon.")
+    discount_percentage = Column(Integer, nullable=True
+		, comment="Percentage discount offered by the coupon.")
+    coupon_count = Column(Integer, nullable=True
+		, comment="Number of coupons available.")
+    payment_method_status = Column(String
+		, comment="Status of the payment method associated with the coupon.")
 
     def __repr__(self):
-       return self.coupon_id
+       return self.id
 
  ### 
 
 
 class Currency(Model):
     __tablename__ = "currency"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=True)
-    symbol = Column(String, nullable=True)
-    numeric_code = Column(String, nullable=True)
-    full_name = Column(String, nullable=True)
-    decimal_places = Column(SmallInteger, nullable=True)
-    internationalized_name_code = Column(String, nullable=True)
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the currency.")
+    name = Column(String, nullable=True
+		, comment="Short name or code of the currency.")
+    symbol = Column(String, nullable=True
+		, comment="Symbol representing the currency.")
+    numeric_code = Column(String, nullable=True
+		, comment="Numeric code for the currency.")
+    full_name = Column(String, nullable=True
+		, comment="Full name or description of the currency.")
+    decimal_places = Column(SmallInteger, nullable=True
+		, comment="Number of decimal places for the currency.")
+    internationalized_name_code = Column(String, nullable=True
+		, comment="Code for the internationalized name of the currency.")
 
     def __repr__(self):
        return self.name
@@ -810,18 +880,25 @@ class Currency(Model):
 
 class CustomerSegment(Model):
     __tablename__ = "customer_segment"
-    cs_id = Column(Integer, primary_key=True, autoincrement=True)
-    cs_name = Column(String, nullable=True)
-    cs_notes = Column(Text, nullable=True)
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the customer segment.")
+    name = Column(String, nullable=True
+		, comment="Name or title of the customer segment.")
+    notes = Column(Text, nullable=True
+		, comment="Additional notes or descriptions related to the customer segment.")
 
     def __repr__(self):
-       return self.cs_name
+       return self.name
 
  ### 
 
 
 class DocType(Model):
     __tablename__ = "doc_type"
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
     id = Column(Integer, primary_key=True, autoincrement=True
 		, comment="Unique identifier for the document type.")
     name = Column(String, nullable=True
@@ -831,9 +908,12 @@ class DocType(Model):
 		, comment="Any additional remarks or details about the document type.")
     required_information = Column(Text, nullable=True
 		, comment="List or description of required fields/information for this document type.")
-    is_serialized = Column(Boolean, default=False, nullable=True)
-    serial_length = Column(Integer, nullable=True)
-    expires = Column(Boolean, default=False, nullable=True)
+    is_serialized = Column(Boolean, default=False, nullable=True
+		, comment="Does this document type have a serial number")
+    serial_length = Column(Integer, nullable=True
+		, comment="Typical length of a serial number for this document type")
+    expires = Column(Boolean, default=False, nullable=True
+		, comment="Does this type of document expire")
     validity_period = Column(Integer, nullable=True
 		, comment="Standard validity duration of this type of document in days.")
     renewal_frequency = Column(Integer, nullable=True
@@ -859,11 +939,15 @@ class DocType(Model):
 
 class MimeType(Model):
     __tablename__ = "mime_type"
+    # __table_args__ = ( ) # tuple
     __doc__ = "Standard MIME types recognized by the content management system."
+    # class_permission_name = "view"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    label = Column(String, nullable=True)
+    label = Column(String, nullable=True
+		, comment="Label of this mime type")
     mime_type = Column(String, nullable=True)
-    file_extension = Column(String, nullable=True)
+    file_extension = Column(String, nullable=True
+		, comment="File extensions for this mime type")
 
     def __repr__(self):
        return self.label
@@ -873,10 +957,15 @@ class MimeType(Model):
 
 class MimeTypeMap(Model):
     __tablename__ = "mime_type_map"
-    __doc__ = "Maps extesions to mime types"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    extension = Column(String, nullable=True)
-    mime_type = Column(String, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Maps extensions to mime types"
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the MIME type mapping.")
+    extension = Column(String, nullable=True
+		, comment="File extension, such as jpg or pdf")
+    mime_type = Column(String, nullable=True
+		, comment="MIME type associated with the file extension.")
 
     def __repr__(self):
        return self.id
@@ -886,35 +975,61 @@ class MimeTypeMap(Model):
 
 class PaymentCard(Model):
     __tablename__ = "payment_card"
-    __doc__ = "We want to store as little data as possible about peoples cards"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    bin = Column(String, nullable=True)
-    pan = Column(String, nullable=True)
-    credit_card_expired = Column(Boolean, default=False)
-    card_token = Column(String)
-    issue_number = Column(String)
-    bill_to_city = Column(String, nullable=True)
-    masked_number = Column(String)
-    name = Column(String)
-    company_name = Column(String, nullable=True)
-    card_holder_name = Column(String)
-    number_last_digits = Column(String)
-    payment_card_type = Column(String)
-    derived_card_type_code = Column(String, nullable=True)
-    expiration_year = Column(Integer, nullable=True)
-    expiration_month = Column(Integer, nullable=True)
-    bill_to_street = Column(String, nullable=True)
-    bill_to_street2 = Column(String, nullable=True)
-    bill_to_first_name = Column(String, nullable=True)
-    bill_to_last_name = Column(String, nullable=True)
-    payment_method_status = Column(String, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "We want to store as little data as possible about peoples cards."
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the payment card.")
+    bin = Column(String, nullable=True
+		, comment="Bank Identification Number (BIN) of the card.")
+    pan = Column(String, nullable=True
+		, comment="Primary Account Number (PAN) of the card.")
+    credit_card_expired = Column(Boolean, default=False
+		, comment="Indicates whether the credit card has expired.")
+    card_token = Column(String
+		, comment="Tokenized representation of the card.")
+    issue_number = Column(String
+		, comment="Issue number of the card.")
+    bill_to_city = Column(String, nullable=True
+		, comment="City associated with the billing address.")
+    masked_number = Column(String
+		, comment="Masked version of the card number.")
+    name = Column(String
+		, comment="Name associated with the card.")
+    company_name = Column(String, nullable=True
+		, comment="Company name associated with the card.")
+    card_holder_name = Column(String
+		, comment="Name of the cardholder.")
+    number_last_digits = Column(String
+		, comment="Last digits of the card number.")
+    payment_card_type = Column(String
+		, comment="Type of payment card (e.g., Visa, Mastercard).")
+    derived_card_type_code = Column(String, nullable=True
+		, comment="Derived card type code.")
+    expiration_year = Column(Integer, nullable=True
+		, comment="Year of card expiration.")
+    expiration_month = Column(Integer, nullable=True
+		, comment="Month of card expiration.")
+    bill_to_street = Column(String, nullable=True
+		, comment="Street address associated with the billing address.")
+    bill_to_street2 = Column(String, nullable=True
+		, comment="Additional street address information.")
+    bill_to_first_name = Column(String, nullable=True
+		, comment="First name associated with the billing address.")
+    bill_to_last_name = Column(String, nullable=True
+		, comment="Last name associated with the billing address.")
+    payment_method_status = Column(String, nullable=True
+		, comment="Status of the payment method.")
     card_number = Column(String, nullable=True
-		, comment="Mask this number")
-    cardholder_name = Column(String, nullable=True)
-    card_expiration = Column(String, nullable=True)
-    service_code = Column(String, nullable=True)
+		, comment="Masked version of the card number.")
+    cardholder_name = Column(String, nullable=True
+		, comment="Name of the cardholder.")
+    card_expiration = Column(String, nullable=True
+		, comment="Expiration date of the card (stored as MM/YY format).")
+    service_code = Column(String, nullable=True
+		, comment="Service code associated with the card.")
     cvv = Column(String, nullable=True
-		, comment="mask or hash the cvv")
+		, comment="Masked or hashed version of the CVV (Card Verification Value).")
 
     def __repr__(self):
        return self.name
@@ -924,25 +1039,80 @@ class PaymentCard(Model):
 
 class Promotion(Model):
     __tablename__ = "promotion"
-    promo_id = Column(Integer, primary_key=True, autoincrement=True)
-    promo_name = Column(String, nullable=True)
-    promo_notes = Column(Text, nullable=True)
-    promo_start_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    promo_end_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the promotion.")
+    name = Column(String, nullable=True
+		, comment="Name or title of the promotion.")
+    notes = Column(Text, nullable=True
+		, comment="Additional remarks or details about the promotion.")
+    start_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Start date of the promotion.")
+    end_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="End date of the promotion.")
 
     def __repr__(self):
-       return self.promo_name
+       return self.name
+
+ ### 
+
+
+class RiskProfile(Model):
+    __tablename__ = "risk_profile"
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Risk associated with financial transactions"
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True
+		, comment="Unique identifier for each risk profile")
+    name = Column(String, nullable=True
+		, comment="Name of the risk profile")
+    description = Column(Text, nullable=True
+		, comment="Detailed description of the risk profile")
+    risk_score = Column(Integer, nullable=True
+		, comment="Quantitative measure of risk, often based on a specific scoring system")
+    risk_category = Column(String, nullable=True
+		, comment="Categorization of risk (e.g., Low, Moderate, High)")
+    max_acceptable_loss = Column(Numeric, nullable=True
+		, comment="Maximum financial loss that is acceptable for this risk profile, usually a percentage or monetary value")
+    probability_of_loss = Column(Numeric, nullable=True
+		, comment="Likelihood of incurring a loss, often expressed as a percentage")
+    historical_volatility = Column(Numeric, nullable=True
+		, comment="Measure of the variation in the price of the asset over time")
+    liquidity_rating = Column(Integer, nullable=True
+		, comment="Rating representing the ease of converting the asset to cash without significant loss of value")
+    regulatory_compliance = Column(String, nullable=True
+		, comment="Indication of any specific regulatory compliance considerations relevant to the risk profile")
+    market_sensitivity = Column(Numeric, nullable=True
+		, comment="Measure of how sensitive the asset is to market fluctuations")
+    credit_rating = Column(String, nullable=True
+		, comment="Creditworthiness of a debtor, particularly relevant in the context of credit risk")
+    investment_horizon = Column(String, nullable=True
+		, comment="Expected duration for holding the investment")
+    sector_exposure = Column(String, nullable=True
+		, comment="Indicates the sectors to which the investment is exposed")
+    geographic_exposure = Column(String, nullable=True
+		, comment="Highlights the geographical regions involved in the transaction")
+
+    def __repr__(self):
+       return self.name
 
  ### 
 
 
 class Techparams(Model):
     __tablename__ = "techparams"
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    tp_key = Column(String, nullable=True)
-    tp_value = Column(Text, nullable=True)
-    enabled = Column(Boolean, default=True, nullable=True)
-    notes = Column(Text, nullable=True)
+    tp_key = Column(String, nullable=True
+		, comment="Tech Param Key")
+    tp_value = Column(Text, nullable=True
+		, comment="Tech Param Value")
+    enabled = Column(Boolean, default=True, nullable=True
+		, comment="Is this param used")
+    notes = Column(Text, nullable=True
+		, comment="Notes on this parameter")
 
     def __repr__(self):
        return self.id
@@ -952,32 +1122,54 @@ class Techparams(Model):
 
 class TokenProvider(Model):
     __tablename__ = "token_provider"
-    token_provider_id = Column(Integer, primary_key=True, autoincrement=True)
-    token_provider_name = Column(String)
-    token_provioder_notes = Column(Text, nullable=True)
-    token_provider_priv_key = Column(Text, nullable=True)
-    token_provider_pub_key = Column(Text, nullable=True)
-    token_provider_endpoint = Column(Text, nullable=True)
-    token_provider_protocol = Column(Text, nullable=True)
-    token_provider_auth = Column(Text, nullable=True)
-    token_provider_ssl = Column(Text, nullable=True)
-    token_provider_ip_whitelist = Column(Text, nullable=True)
-    token_provider_password = Column(String, nullable=True)
-    enabled = Column(Boolean, default=False, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Connection parameters for differnt providers"
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the token provider.")
+    name = Column(String
+		, comment="Name of the token provider.")
+    notes = Column(Text, nullable=True
+		, comment="Additional notes or remarks about the token provider.")
+    priv_key = Column(Text, nullable=True
+		, comment="Private key used for authentication and encryption.")
+    pub_key = Column(Text, nullable=True
+		, comment="Public key used for authentication and encryption.")
+    endpoint = Column(Text, nullable=True
+		, comment="Endpoint URL for communication with the token provider.")
+    protocol = Column(Text, nullable=True
+		, comment="Communication protocol used with the token provider (e.g., HTTPS).")
+    auth = Column(Text, nullable=True
+		, comment="Authentication mechanism or credentials required for access.")
+    ssl = Column(Text, nullable=True
+		, comment="SSL/TLS configuration or settings for secure communication.")
+    ip_whitelist = Column(Text, nullable=True
+		, comment="List of whitelisted IP addresses for accessing the token provider.")
+    password = Column(String, nullable=True
+		, comment="Password associated with the token provider.")
+    enabled = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if the token provider is enabled or disabled.")
 
     def __repr__(self):
-       return self.token_provider_name
+       return self.name
 
  ### 
 
 
 class TransRoutingThresholds(Model):
     __tablename__ = "trans_routing_thresholds"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=True)
-    min_amount = Column(Numeric, nullable=True)
-    max_amount = Column(Numeric, nullable=True)
-    priority = Column(Integer, nullable=True)
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the threshold.")
+    name = Column(String, nullable=True
+		, comment="Name or description of the threshold.")
+    min_amount = Column(Numeric, nullable=True
+		, comment="Minimum transaction amount that triggers this threshold.")
+    max_amount = Column(Numeric, nullable=True
+		, comment="Maximum transaction amount that triggers this threshold.")
+    priority = Column(Integer, nullable=True
+		, comment="Priority level for this threshold.")
 
     def __repr__(self):
        return self.name
@@ -987,45 +1179,66 @@ class TransRoutingThresholds(Model):
 
 class TransType(Model):
     __tablename__ = "trans_type"
-    tt_id = Column(Integer, primary_key=True, autoincrement=True)
-    tt_name = Column(String, nullable=True
-		, comment="Deposit, Withdrawal, Transfer, Bill Payment, etc")
-    tt_notes = Column(Text, nullable=True)
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the transaction type.")
+    name = Column(String, nullable=True
+		, comment="Name or title of the transaction type, e.g., Deposit, Withdrawal, Transfer, Bill Payment, etc.")
+    notes = Column(Text, nullable=True
+		, comment="Additional notes or descriptions related to the transaction type.")
 
     def __repr__(self):
-       return self.tt_name
+       return self.name
 
  ### 
 
 
 class UserExt(Model):
     __tablename__ = "user_ext"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    manager_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True)
-    first_name = Column(String, nullable=True)
-    middle_name = Column(String, nullable=True)
-    surname = Column(String, nullable=True)
-    employee_number = Column(String, nullable=True)
-    job_title = Column(String, nullable=True)
-    phone_number = Column(String, nullable=True)
-    email = Column(String, nullable=True)
-    user_data = Column(Text, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Additional data for user registration"
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the user.")
+    manager_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True
+		, comment="Manager ID - References the manager of the user, if applicable.")
+    middle_name = Column(String, nullable=True
+		, comment="Middle name of the user, if available.")
+    employee_number = Column(String, nullable=True
+		, comment="Employee number assigned to the user, if applicable.")
+    job_title = Column(String, nullable=True
+		, comment="Job title or position of the user within the organization.")
+    phone_number = Column(String, nullable=True
+		, comment="Phone number for contacting the user.")
+    email = Column(String, nullable=True
+		, comment="Email address of the user, used for communication.")
+    user_data = Column(Text, nullable=True
+		, comment="Additional user data or information, such as user preferences or details.")
     manager = relationship('UserExt', backref='user_exts_manager', primaryjoin='UserExt.manager_id_fk == UserExt.id', remote_side=[id])
 
     def __repr__(self):
-       return self.first_name
+       return self.middle_name
 
  ### 
 
 
 class Biller(Model):
     __tablename__ = "biller"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    category_id_fk = Column(Integer, ForeignKey('biller_category.id'), nullable=True)
-    code = Column(String)
-    name = Column(String, nullable=True)
-    url = Column(String, nullable=True)
-    note = Column(Text, nullable=True)
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the biller.")
+    category_id_fk = Column(Integer, ForeignKey('biller_category.id'), nullable=True
+		, comment="Foreign key referencing the biller category to which this biller belongs.")
+    code = Column(String
+		, comment="Unique code or identifier for the biller.")
+    name = Column(String, nullable=True
+		, comment="Name or title of the biller.")
+    url = Column(String, nullable=True
+		, comment="URL or link associated with the biller.")
+    note = Column(Text, nullable=True
+		, comment="Additional notes or remarks about the biller.")
     category = relationship(BillerCategory, backref='billers_category', primaryjoin='Biller.category_id_fk == BillerCategory.id')
 
     def __repr__(self):
@@ -1036,11 +1249,18 @@ class Biller(Model):
 
 class State(Model):
     __tablename__ = "state"
+    # __table_args__ = ( ) # tuple
+    __doc__ = "List of States"
+    # class_permission_name = "view"
     country_id_fk = Column(Integer, ForeignKey('country.id'), nullable=True)
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    code = Column(String, nullable=True)
-    name = Column(String, nullable=True)
-    desc = Column(Text, nullable=True)
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="ID of this column")
+    code = Column(String, nullable=True
+		, comment="State Code")
+    name = Column(String, nullable=True
+		, comment="Name of the state")
+    description = Column(Text, nullable=True
+		, comment="Brief description of the state")
     country = relationship(Country, backref='states_country', primaryjoin='State.country_id_fk == Country.id')
 
     def __repr__(self):
@@ -1051,20 +1271,35 @@ class State(Model):
 
 class Token(Model):
     __tablename__ = "token"
-    token_id = Column(Integer, primary_key=True, autoincrement=True)
-    token_provider_id_fk = Column(Integer, ForeignKey('token_provider.token_provider_id'), nullable=True)
-    token_name = Column(String, nullable=True)
-    token_issue_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    token_expiry_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    token_validity = Column(Integer, nullable=True)
-    token_expired = Column(Boolean, default=False, nullable=True)
-    token_value = Column(String, nullable=True)
-    token_username = Column(String, nullable=True)
-    token_password = Column(String, nullable=True)
-    token_notes = Column(Text, nullable=True)
-    token_client_secret = Column(Text, nullable=True)
-    enabled = Column(Boolean, default=False, nullable=True)
-    token_provider = relationship(TokenProvider, backref='tokens_token_provider', primaryjoin='Token.token_provider_id_fk == TokenProvider.token_provider_id')
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the token.")
+    token_provider_id_fk = Column(Integer, ForeignKey('token_provider.id'), nullable=True
+		, comment="Foreign key referencing the associated token provider.")
+    token_name = Column(String, nullable=True
+		, comment="Name or identifier for the token.")
+    token_issue_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp when the token was issued.")
+    token_expiry_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp when the token expires.")
+    token_validity = Column(Integer, nullable=True
+		, comment="Duration of token validity in seconds.")
+    token_expired = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if the token has expired.")
+    token_value = Column(String, nullable=True
+		, comment="Actual token value or token string.")
+    token_username = Column(String, nullable=True
+		, comment="Username associated with the token.")
+    token_password = Column(String, nullable=True
+		, comment="Password associated with the token.")
+    token_notes = Column(Text, nullable=True
+		, comment="Additional notes or remarks about the token.")
+    token_client_secret = Column(Text, nullable=True
+		, comment="Client secret associated with the token.")
+    enabled = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if the token is enabled or disabled.")
+    token_provider = relationship(TokenProvider, backref='tokens_token_provider', primaryjoin='Token.token_provider_id_fk == TokenProvider.id')
 
     def __repr__(self):
        return self.token_name
@@ -1074,25 +1309,39 @@ class Token(Model):
 
 class BillerOffering(Model):
     __tablename__ = "biller_offering"
-    biller_id_fk = Column(Integer, ForeignKey('biller.id'), nullable=True)
-    offering_id = Column(Integer, primary_key=True, autoincrement=True)
-    offering_name = Column(String, nullable=True)
-    offering_description = Column(Text, nullable=True)
-    offering_price = Column(Numeric, nullable=True)
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
+    biller_id_fk = Column(Integer, ForeignKey('biller.id'), nullable=True
+		, comment="Foreign key referencing the biller to which this offering belongs.")
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the biller offering.")
+    name = Column(String, nullable=True
+		, comment="Name or title of the biller offering.")
+    description = Column(Text, nullable=True
+		, comment="Description of the biller offering.")
+    price = Column(Numeric, nullable=True
+		, comment="Price or cost associated with the biller offering.")
     biller = relationship(Biller, backref='biller_offerings_biller', primaryjoin='BillerOffering.biller_id_fk == Biller.id')
 
     def __repr__(self):
-       return self.offering_name
+       return self.name
 
  ### 
 
 
 class Lga(Model):
     __tablename__ = "lga"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    state_id_fk = Column(Integer, ForeignKey('state.id'), nullable=True)
-    code = Column(String, nullable=True)
-    lga_name = Column(String, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Local Government Area"
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="ID of this column")
+    state_id_fk = Column(Integer, ForeignKey('state.id'), nullable=True
+		, comment="Foreign Key of the state")
+    code = Column(String, nullable=True
+		, comment="Local Government Code")
+    lga_name = Column(String, nullable=True
+		, comment="LGA Name")
     state = relationship(State, backref='lgas_state', primaryjoin='Lga.state_id_fk == State.id')
 
     def __repr__(self):
@@ -1103,80 +1352,146 @@ class Lga(Model):
 
 class Agent(Model):
     __tablename__ = "agent"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    aggregator_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True)
-    is_aggregator = Column(Boolean, default=False, nullable=True)
-    became_aggregator_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    assigned_pos_count = Column(Integer)
-    aggregator_pos_threshold = Column(Integer, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Agent Registration"
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the agent.")
+    aggregator_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True
+		, comment="References the aggregator agent if applicable.")
+    is_aggregator = Column(Boolean, default=False, nullable=True
+		, comment="Indicates whether the agent is an aggregator.")
+    became_aggregator_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp when the agent became an aggregator, if applicable.")
+    assigned_pos_count = Column(Integer
+		, comment="Count of assigned point-of-sale (POS) devices.")
+    aggregator_pos_threshold = Column(Integer, nullable=True
+		, comment="Threshold for becoming an aggregator based on POS device count.")
     verification_status = Column(Enum(t_verification_status), nullable=False)
-    verification_status_notes = Column(Text, nullable=True)
+    verification_status_notes = Column(Text, nullable=True
+		, comment="Additional notes or remarks about the agents verification status.")
     agent_type = Column(Enum(t_org_type), nullable=False)
     agent_role = Column(Enum(t_agent_role), nullable=False)
-    agent_tier_id_fk = Column(Integer, ForeignKey('agent_tier.id'), nullable=True)
-    account_manager_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True)
-    agent_name = Column(String, nullable=True)
+    agent_tier_id_fk = Column(Integer, ForeignKey('agent_tier.id'), nullable=True
+		, comment="References the agents tier.")
+    account_manager_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True
+		, comment="References the account manager responsible for this agent.")
+    agent_name = Column(String, nullable=True
+		, comment="Name of the agent.")
     alias = Column(String, nullable=True
-		, comment="Use this for reports if available")
-    phone_country_id_fk = Column(Integer, ForeignKey('country.id'), nullable=True)
-    phone = Column(String)
-    phone_ext = Column(String, nullable=True)
-    alt_phone_country_id_fk = Column(Integer, ForeignKey('country.id'), nullable=True)
-    alt_phone = Column(String, nullable=True)
-    alt_phone_ext = Column(String, nullable=True)
-    email = Column(String, nullable=True)
-    alt_email = Column(String, nullable=True)
-    bvn = Column(String, nullable=True)
-    bvn_verified = Column(Boolean, default=False, nullable=True)
-    bvn_verification_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    bvn_verification_code = Column(Text, nullable=True)
-    tax_id = Column(String, nullable=True)
-    bank_id_fk = Column(Integer, ForeignKey('bank.id'), nullable=True)
+		, comment="Alias or alternate name for reporting purposes, if available.")
+    phone_country_id_fk = Column(Integer, ForeignKey('country.id'), nullable=True
+		, comment="References the country of the agents phone number.")
+    phone = Column(String
+		, comment="Primary phone number of the agent.")
+    phone_ext = Column(String, nullable=True
+		, comment="Extension for the primary phone number.")
+    alt_phone_country_id_fk = Column(Integer, ForeignKey('country.id'), nullable=True
+		, comment="References the country of the alternate phone number.")
+    alt_phone = Column(String, nullable=True
+		, comment="Alternate phone number for the agent.")
+    alt_phone_ext = Column(String, nullable=True
+		, comment="Extension for the alternate phone number.")
+    email = Column(String, nullable=True
+		, comment="Email address of the agent.")
+    alt_email = Column(String, nullable=True
+		, comment="Alternate email address for the agent.")
+    bvn = Column(String, nullable=True
+		, comment="Bank Verification Number (BVN) of the agent.")
+    bvn_verified = Column(Boolean, default=False, nullable=True
+		, comment="Indicates whether the BVN is verified.")
+    bvn_verification_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp of BVN verification.")
+    bvn_verification_code = Column(Text, nullable=True
+		, comment="Verification code for BVN.")
+    tax_id = Column(String, nullable=True
+		, comment="Tax identification number of the agent.")
+    bank_id_fk = Column(Integer, ForeignKey('bank.id'), nullable=True
+		, comment="References the bank where the agent has an account.")
     bank_acc_no = Column(String, nullable=True
-		, comment="Transactions to this bank are free?")
-    biz_name = Column(String, nullable=True)
-    biz_state_id_fk = Column(Integer, ForeignKey('state.id'), nullable=True)
-    biz_lga_id_fk = Column(Integer, ForeignKey('lga.id'), nullable=True)
-    biz_city = Column(String, nullable=True)
-    biz_city_area = Column(String, nullable=True)
-    biz_street = Column(String, nullable=True)
-    biz_building = Column(String, nullable=True)
-    biz_address = Column(Text, nullable=True)
-    biz_poa_img = Column(String, nullable=True)
-    biz_poa_desc = Column(String, nullable=True)
-    biz_poa_valid = Column(Boolean, default=False, nullable=True)
-    biz_lat = Column(Float, nullable=True)
-    biz_lon = Column(Float, nullable=True)
-    biz_loc = Column(Text, nullable=True)
-    biz_ggl_code = Column(String, nullable=True)
-    company_name = Column(String, nullable=True)
-    cac_number = Column(String, nullable=True)
-    cac_reg_date = Column(Date, nullable=True)
-    cac_cert_img = Column(String, nullable=True)
-    cac_cert_no = Column(String, nullable=True)
-    ref_code = Column(String, nullable=True)
-    access_pin = Column(String, nullable=True)
-    registered_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True)
-    registration_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    reviewed_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True)
-    review_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    approved_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True)
-    approval_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    approval_narrative = Column(Text, nullable=True)
-    kyc_submit_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
+		, comment="Agent bank account number.")
+    biz_name = Column(String, nullable=True
+		, comment="Name of the agents business, if applicable.")
+    biz_state_id_fk = Column(Integer, ForeignKey('state.id'), nullable=True
+		, comment="References the state where the business is located.")
+    biz_lga_id_fk = Column(Integer, ForeignKey('lga.id'), nullable=True
+		, comment="References the LGA where the business is located.")
+    biz_city = Column(String, nullable=True
+		, comment="City where the business is located.")
+    biz_city_area = Column(String, nullable=True
+		, comment="Specific area within the city where the business is located.")
+    biz_street = Column(String, nullable=True
+		, comment="Street address of the business.")
+    biz_building = Column(String, nullable=True
+		, comment="Building name or number of the business location.")
+    biz_address = Column(Text, nullable=True
+		, comment="Detailed address information for the business.")
+    biz_poa_img = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))
+    biz_poa_desc = Column(String, nullable=True
+		, comment="Description of the Proof of Address document.")
+    biz_poa_valid = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if the Proof of Address is valid.")
+    biz_lat = Column(Float, nullable=True
+		, comment="Latitude coordinates of the business location.")
+    biz_lon = Column(Float, nullable=True
+		, comment="Longitude coordinates of the business location.")
+    biz_loc = Column(Text, nullable=True
+		, comment="Location description of the business.")
+    biz_ggl_code = Column(String, nullable=True
+		, comment="Google Maps code for the business location.")
+    company_name = Column(String, nullable=True
+		, comment="Name of the company associated with the agent.")
+    cac_number = Column(String, nullable=True
+		, comment="Corporate Affairs Commission (CAC) registration number.")
+    cac_reg_date = Column(Date, nullable=True
+		, comment="Date of CAC registration.")
+    cac_cert_img = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))
+    cac_cert_no = Column(String, nullable=True
+		, comment="Certificate number issued by CAC.")
+    ref_code = Column(String, nullable=True
+		, comment="Reference code associated with the agent.")
+    access_pin = Column(String, nullable=True
+		, comment="Access PIN for agent transactions.")
+    registered_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True
+		, comment="References the user who registered the agent.")
+    registration_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp of agent registration.")
+    reviewed_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True
+		, comment="References the user who reviewed the agent.")
+    review_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp of agent review.")
+    approved_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True
+		, comment="References the user who approved the agent.")
+    approval_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp of agent approval.")
+    approval_narrative = Column(Text, nullable=True
+		, comment="Narrative or notes related to agent approval.")
+    kyc_submit_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp of KYC document submission.")
     kyc_verification_status = Column(Enum(t_verification_status), nullable=False)
-    kyc_approval_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    kyc_ref_code = Column(String, nullable=True)
-    kyc_rejection_narrative = Column(Text, nullable=True)
-    kyc_rejection_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True)
-    rejection_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    rejection_narrative = Column(Text, nullable=True)
-    rejected_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True)
-    face_matrix = Column(Text, nullable=True)
-    finger_print_img = Column(Text, nullable=True)
-    agent_public_key = Column(Text, nullable=True)
-    agent_pj_expiry = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    agent_history = Column(Text, nullable=True)
+    kyc_approval_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp of KYC document approval.")
+    kyc_ref_code = Column(String, nullable=True
+		, comment="Reference code associated with KYC.")
+    kyc_rejection_narrative = Column(Text, nullable=True
+		, comment="Narrative or notes related to KYC rejection.")
+    kyc_rejection_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True
+		, comment="References the user who rejected KYC.")
+    rejection_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp of agent rejection.")
+    rejection_narrative = Column(Text, nullable=True
+		, comment="Narrative or notes related to agent rejection.")
+    rejected_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True
+		, comment="References the user who rejected the agent.")
+    face_matrix = Column(Text, nullable=True
+		, comment="Biometric data for face recognition.")
+    finger_print_img = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))
+    agent_public_key = Column(Text, nullable=True
+		, comment="Public key for cryptographic operations.")
+    agent_pj_expiry = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp of public key expiration.")
+    agent_history = Column(Text, nullable=True
+		, comment="Textual history of agent-related events.")
     account_manager = relationship(UserExt, backref='agents_account_manager', primaryjoin='Agent.account_manager_id_fk == UserExt.id')
     agent_tier = relationship(AgentTier, backref='agents_agent_tier', primaryjoin='Agent.agent_tier_id_fk == AgentTier.id')
     aggregator = relationship('Agent', backref='agents_aggregator', primaryjoin='Agent.aggregator_id_fk == Agent.id', remote_side=[id])
@@ -1199,44 +1514,83 @@ class Agent(Model):
 
 class Pos(Model):
     __tablename__ = "pos"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    serial_no = Column(String, nullable=True)
-    imei = Column(String, nullable=True)
-    mac_addr = Column(String, nullable=True)
-    device_model = Column(String, nullable=True)
-    device_make = Column(String, nullable=True)
-    device_mfg = Column(String, nullable=True)
-    os_version = Column(String, nullable=True)
-    device_color = Column(String, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Points-of-Sale"
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the Point of Sale (PoS).")
+    serial_no = Column(String, nullable=True
+		, comment="Unique serial number for the PoS.")
+    imei = Column(String, nullable=True
+		, comment="IMEI number of the PoS, if applicable.")
+    mac_addr = Column(String, nullable=True
+		, comment="MAC address of the PoS.")
+    device_model = Column(String, nullable=True
+		, comment="Model of the PoS device.")
+    device_make = Column(String, nullable=True
+		, comment="Make or manufacturer of the PoS device.")
+    device_mfg = Column(String, nullable=True
+		, comment="Manufacturer of the PoS device.")
+    os_version = Column(String, nullable=True
+		, comment="Operating system version of the PoS.")
+    device_color = Column(String, nullable=True
+		, comment="Color of the PoS device.")
     device_condition = Column(String, nullable=True
-		, comment="working, irreparrable, repaired")
-    status = Column(String, nullable=True)
-    owner_type = Column(String, nullable=True)
-    registration_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    assigned = Column(Boolean, default=False, nullable=True)
-    assigned_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    assigned_narrative = Column(Text, nullable=True)
-    active = Column(Boolean, default=False, nullable=True)
-    activation_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    last_active = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    deployed = Column(Boolean, default=False, nullable=True)
-    deploy_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    deploy_narrative = Column(Text, nullable=True)
-    returned = Column(Boolean, default=False, nullable=True)
-    return_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    return_narrative = Column(Text, nullable=True)
-    return_received_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    return_received_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True)
-    state_id_fk = Column(Integer, ForeignKey('state.id'), nullable=True)
-    lga_id_fk = Column(Integer, ForeignKey('lga.id'), nullable=True)
-    street_address = Column(String, nullable=True)
-    building_name = Column(String, nullable=True)
-    contact_phone_num = Column(String, nullable=True)
-    pos_user = Column(String, nullable=True)
-    crypt_priv_key = Column(Text, nullable=True)
-    crypt_pub_key = Column(Text, nullable=True)
-    crypt_password = Column(Text, nullable=True)
-    override_key = Column(Text, nullable=True)
+		, comment="Condition of the PoS device (e.g., working, irreparable, repaired).")
+    status = Column(String, nullable=True
+		, comment="Current status of the PoS.")
+    owner_type = Column(String, nullable=True
+		, comment="Type of owner of the PoS.")
+    registration_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp when the PoS was registered.")
+    assigned = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if the PoS is assigned.")
+    assigned_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp when the PoS was assigned.")
+    assigned_narrative = Column(Text, nullable=True
+		, comment="Narrative or description of the assignment.")
+    active = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if the PoS is active.")
+    activation_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp when the PoS was activated.")
+    last_active = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp of the last activity.")
+    deployed = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if the PoS is deployed.")
+    deploy_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp when the PoS was deployed.")
+    deploy_narrative = Column(Text, nullable=True
+		, comment="Narrative or description of the deployment.")
+    returned = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if the PoS was returned.")
+    return_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp when the PoS was returned.")
+    return_narrative = Column(Text, nullable=True
+		, comment="Narrative or description of the return.")
+    return_received_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp when the return was received.")
+    return_received_by_id_fk = Column(Integer, ForeignKey('user_ext.id'), nullable=True
+		, comment="Reference to the user who received the return.")
+    state_id_fk = Column(Integer, ForeignKey('state.id'), nullable=True
+		, comment="Reference to the state where the PoS is deployed.")
+    lga_id_fk = Column(Integer, ForeignKey('lga.id'), nullable=True
+		, comment="Reference to the local government area where the PoS is deployed.")
+    street_address = Column(String, nullable=True
+		, comment="Street address of the PoS deployment location.")
+    building_name = Column(String, nullable=True
+		, comment="Name of the building where the PoS is deployed.")
+    contact_phone_num = Column(String, nullable=True
+		, comment="Contact phone number for the PoS deployment location.")
+    pos_user = Column(String, nullable=True
+		, comment="User associated with the PoS.")
+    crypt_priv_key = Column(Text, nullable=True
+		, comment="Private key for cryptographic operations.")
+    crypt_pub_key = Column(Text, nullable=True
+		, comment="Public key for cryptographic operations.")
+    crypt_password = Column(Text, nullable=True
+		, comment="Password for cryptographic operations.")
+    override_key = Column(Text, nullable=True
+		, comment="Override key for cryptographic operations.")
     lga = relationship(Lga, backref='poss_lga', primaryjoin='Pos.lga_id_fk == Lga.id')
     return_received_by = relationship(UserExt, backref='poss_return_received_by', primaryjoin='Pos.return_received_by_id_fk == UserExt.id')
     state = relationship(State, backref='poss_state', primaryjoin='Pos.state_id_fk == State.id')
@@ -1249,23 +1603,41 @@ class Pos(Model):
 
 class AgentPosLink(Model):
     __tablename__ = "agent_pos_link"
-    agent_id_fk = Column(Integer, ForeignKey('agent.id'), primary_key=True)
-    pos_id_fk = Column(Integer, ForeignKey('pos.id'), primary_key=True)
-    assigned_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Records the assignment of a Point of Sale (PoS) to an agent."
+    # class_permission_name = "view"
+    agent_id_fk = Column(Integer, ForeignKey('agent.id'), primary_key=True
+		, comment="Foreign key reference to the agent to whom the PoS is assigned.")
+    pos_id_fk = Column(Integer, ForeignKey('pos.id'), primary_key=True
+		, comment="Foreign key reference to the Point of Sale (PoS) being assigned.")
+    assigned_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp when the PoS is assigned.")
     assigned_by = Column(String, nullable=True
-		, comment="user")
-    received_by = Column(String, nullable=True)
-    received_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    received_location = Column(String, nullable=True)
-    delivery_note = Column(Text, nullable=True)
-    delivery_note_printed = Column(Boolean, default=False, nullable=True)
-    activated = Column(Boolean, default=False, nullable=True)
-    activation_date = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    activation_otp = Column(String, nullable=True)
-    otp_sent = Column(Boolean, default=False, nullable=True)
-    otp_sent_time = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    otp_used = Column(Boolean, default=False, nullable=True)
-    history = Column(Text, nullable=True)
+		, comment="User who assigned the PoS to the agent.")
+    received_by = Column(String, nullable=True
+		, comment="User who received the PoS.")
+    received_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp when the PoS is received by the agent.")
+    received_location = Column(String, nullable=True
+		, comment="Location where the PoS is received.")
+    delivery_note = Column(Text, nullable=True
+		, comment="Delivery note associated with the PoS assignment.")
+    delivery_note_printed = Column(Boolean, default=False, nullable=True
+		, comment="Indicates whether the delivery note has been printed.")
+    activated = Column(Boolean, default=False, nullable=True
+		, comment="Indicates whether the PoS has been activated.")
+    activation_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp when the PoS is activated.")
+    activation_otp = Column(String, nullable=True
+		, comment="One-Time Password (OTP) used for activation.")
+    otp_sent = Column(Boolean, default=False, nullable=True
+		, comment="Indicates whether the OTP has been sent.")
+    otp_sent_time = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp when the OTP is sent.")
+    otp_used = Column(Boolean, default=False, nullable=True
+		, comment="Indicates whether the OTP has been used for activation.")
+    history = Column(Text, nullable=True
+		, comment="Text field to store the history or additional information about the PoS assignment.")
     agent = relationship(Agent, backref='agent_pos_links_agent', primaryjoin='AgentPosLink.agent_id_fk == Agent.id')
     pos = relationship(Pos, backref='agent_pos_links_pos', primaryjoin='AgentPosLink.pos_id_fk == Pos.id')
 
@@ -1275,74 +1647,119 @@ class AgentPosLink(Model):
  ### 
 
 
-class CommRef(Model):
-    __tablename__ = "comm_ref"
-    cr_id = Column(Integer, primary_key=True, autoincrement=True)
+class Commission(Model):
+    __tablename__ = "commission"
+    # __table_args__ = ( ) # tuple
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the commission reference.")
     agent_type = Column(Enum(t_org_type), nullable=False)
-    agent_tier_level_id_fk = Column(Integer, ForeignKey('agent_tier.id'), nullable=True)
-    agent_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True)
-    state_id_fk = Column(Integer, ForeignKey('state.id'), nullable=True)
-    lga_id_fk = Column(Integer, ForeignKey('lga.id'), nullable=True)
-    biller_id_fk = Column(Integer, ForeignKey('biller.id'), nullable=True)
-    biller_offering_id_fk = Column(Integer, ForeignKey('biller_offering.offering_id'), nullable=True)
-    transaction_type_id_fk = Column(Integer, ForeignKey('trans_type.tt_id'), nullable=True)
-    customer_segment_id_fk = Column(Integer, ForeignKey('customer_segment.cs_id'), nullable=True
-		, comment="Customer Segment")
-    special_promotion_id_fk = Column(Integer, ForeignKey('promotion.promo_id'), nullable=True)
-    min_trans_amount = Column(Numeric, nullable=True)
-    max_trans_amount = Column(Numeric, nullable=True)
-    min_max_step = Column(Integer, nullable=True)
-    min_comm_amount = Column(Numeric, nullable=True)
-    max_comm_amount = Column(Numeric, nullable=True)
-    commission_rate = Column(Numeric, nullable=True)
-    start_time = Column(Time, nullable=True
-		, comment="Start Time of Commission Rate Validity")
-    end_time = Column(Time, nullable=True
-		, comment="End Time of Commission Rate Validity")
-    start_date = Column(Date, nullable=True
-		, comment="In case this commission rate is only valid for a period")
-    end_date = Column(Date, nullable=True)
-    agent = relationship(Agent, backref='comm_refs_agent', primaryjoin='CommRef.agent_id_fk == Agent.id')
-    agent_tier_level = relationship(AgentTier, backref='comm_refs_agent_tier_level', primaryjoin='CommRef.agent_tier_level_id_fk == AgentTier.id')
-    biller = relationship(Biller, backref='comm_refs_biller', primaryjoin='CommRef.biller_id_fk == Biller.id')
-    biller_offering = relationship(BillerOffering, backref='comm_refs_biller_offering', primaryjoin='CommRef.biller_offering_id_fk == BillerOffering.offering_id')
-    customer_segment = relationship(CustomerSegment, backref='comm_refs_customer_segment', primaryjoin='CommRef.customer_segment_id_fk == CustomerSegment.cs_id')
-    lga = relationship(Lga, backref='comm_refs_lga', primaryjoin='CommRef.lga_id_fk == Lga.id')
-    special_promotion = relationship(Promotion, backref='comm_refs_special_promotion', primaryjoin='CommRef.special_promotion_id_fk == Promotion.promo_id')
-    state = relationship(State, backref='comm_refs_state', primaryjoin='CommRef.state_id_fk == State.id')
-    transaction_type = relationship(TransType, backref='comm_refs_transaction_type', primaryjoin='CommRef.transaction_type_id_fk == TransType.tt_id')
+    agent_tier_level_id_fk = Column(Integer, ForeignKey('agent_tier.id'), nullable=True
+		, comment="Foreign key to the agent tier level if applicable.")
+    agent_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True
+		, comment="Foreign key to the agent associated with this commission reference.")
+    state_id_fk = Column(Integer, ForeignKey('state.id'), nullable=True
+		, comment="Foreign key to the state if applicable.")
+    lga_id_fk = Column(Integer, ForeignKey('lga.id'), nullable=True
+		, comment="Foreign key to the local government area if applicable.")
+    currency_id_fk = Column(Integer, ForeignKey('currency.id'), nullable=True
+		, comment="Commission of specfic currencies, defaults to NGN")
+    risk_profile_id_fk = Column(Integer, ForeignKey('risk_profile.id'), nullable=True
+		, comment="Risk associated with financial transactions")
+    biller_id_fk = Column(Integer, ForeignKey('biller.id'), nullable=True
+		, comment="Foreign key to the biller associated with this commission reference.")
+    biller_offering_id_fk = Column(Integer, ForeignKey('biller_offering.id'), nullable=True
+		, comment="Foreign key to the biller offering associated with this commission reference.")
+    transaction_type_id_fk = Column(Integer, ForeignKey('trans_type.id'), nullable=True
+		, comment="Foreign key to the transaction type if applicable.")
+    customer_segment_id_fk = Column(Integer, ForeignKey('customer_segment.id'), nullable=True
+		, comment="Foreign key to the customer segment.")
+    special_promotion_id_fk = Column(Integer, ForeignKey('promotion.id'), nullable=True
+		, comment="Foreign key to the special promotion if applicable.")
+    min_trans_amount = Column(Numeric, nullable=True
+		, comment="Minimum transaction amount for commission calculation.")
+    max_trans_amount = Column(Numeric, nullable=True
+		, comment="Maximum transaction amount for commission calculation.")
+    min_max_step = Column(Integer, nullable=True
+		, comment="Step value for minimum and maximum transaction amounts.")
+    min_comm_amount = Column(Numeric, nullable=True
+		, comment="Minimum commission amount.")
+    max_comm_amount = Column(Numeric, nullable=True
+		, comment="Maximum commission amount.")
+    commission_rate = Column(Numeric, nullable=True
+		, comment="Commission rate in percentage.")
+    start_time = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Start time of commission rate validity.")
+    end_time = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="End time of commission rate validity.")
+    start_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Start date of commission rate validity (if applicable).")
+    end_date = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="End date of commission rate validity (if applicable).")
+    agent = relationship(Agent, backref='commissions_agent', primaryjoin='Commission.agent_id_fk == Agent.id')
+    agent_tier_level = relationship(AgentTier, backref='commissions_agent_tier_level', primaryjoin='Commission.agent_tier_level_id_fk == AgentTier.id')
+    biller = relationship(Biller, backref='commissions_biller', primaryjoin='Commission.biller_id_fk == Biller.id')
+    biller_offering = relationship(BillerOffering, backref='commissions_biller_offering', primaryjoin='Commission.biller_offering_id_fk == BillerOffering.id')
+    currency = relationship(Currency, backref='commissions_currency', primaryjoin='Commission.currency_id_fk == Currency.id')
+    customer_segment = relationship(CustomerSegment, backref='commissions_customer_segment', primaryjoin='Commission.customer_segment_id_fk == CustomerSegment.id')
+    lga = relationship(Lga, backref='commissions_lga', primaryjoin='Commission.lga_id_fk == Lga.id')
+    risk_profile = relationship(RiskProfile, backref='commissions_risk_profile', primaryjoin='Commission.risk_profile_id_fk == RiskProfile.id')
+    special_promotion = relationship(Promotion, backref='commissions_special_promotion', primaryjoin='Commission.special_promotion_id_fk == Promotion.id')
+    state = relationship(State, backref='commissions_state', primaryjoin='Commission.state_id_fk == State.id')
+    transaction_type = relationship(TransType, backref='commissions_transaction_type', primaryjoin='Commission.transaction_type_id_fk == TransType.id')
 
     def __repr__(self):
-       return self.cr_id
+       return self.id
 
  ### 
 
 
 class Person(Model):
     __tablename__ = "person"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    agent_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True)
-    next_of_kin_id_fk = Column(Integer, ForeignKey('person.id'), nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "People who work for an Agent, Bank or Others"
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the person.")
+    agent_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True
+		, comment="References the associated agent if applicable.")
+    next_of_kin_id_fk = Column(Integer, ForeignKey('person.id'), nullable=True
+		, comment="References the next of kin for this person, if applicable.")
     person_role = Column(Enum(t_person_role), nullable=False)
-    first_name = Column(String, nullable=True)
-    middle_name = Column(String, nullable=True)
-    surname = Column(String, nullable=True)
-    nick_name = Column(String, nullable=True)
+    first_name = Column(String, nullable=True
+		, comment="First name of the person.")
+    middle_name = Column(String, nullable=True
+		, comment="Middle name of the person.")
+    surname = Column(String, nullable=True
+		, comment="Last name or surname of the person.")
+    nick_name = Column(String, nullable=True
+		, comment="Nickname or alias of the person.")
     gender = Column(Enum(t_gender), nullable=False)
-    photo_img = Column(String, nullable=True)
-    signature_img = Column(String, nullable=True)
-    bvn_no = Column(String, nullable=True)
-    bvn_verified = Column(Boolean, default=False, nullable=True)
-    bvn_verification_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    bvn_verification_code = Column(Text, nullable=True)
-    tax_id = Column(String, nullable=True)
-    home_poa_img = Column(String, nullable=True)
-    home_poa_desc = Column(String, nullable=True)
-    home_poa_valid = Column(Boolean, default=False, nullable=True)
-    home_lat = Column(Float, nullable=True)
-    home_lon = Column(Float, nullable=True)
-    home_loc = Column(Text, nullable=True)
-    home_ggl_code = Column(String, nullable=True)
+    photo_img = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))
+    signature_img = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))
+    bvn_no = Column(String, nullable=True
+		, comment="Bank Verification Number (BVN) of the person.")
+    bvn_verified = Column(Boolean, default=False, nullable=True
+		, comment="Indicates whether the BVN is verified.")
+    bvn_verification_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp of BVN verification.")
+    bvn_verification_code = Column(Text, nullable=True
+		, comment="Verification code for BVN.")
+    tax_id = Column(String, nullable=True
+		, comment="Tax identification number of the person.")
+    home_poa_img = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))
+    home_poa_desc = Column(String, nullable=True
+		, comment="Description of the Proof of Address document for the home address.")
+    home_poa_valid = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if the Proof of Address for the home is valid.")
+    home_lat = Column(Float, nullable=True
+		, comment="Latitude coordinates of the home address.")
+    home_lon = Column(Float, nullable=True
+		, comment="Longitude coordinates of the home address.")
+    home_loc = Column(Text, nullable=True
+		, comment="Location description of the home address.")
+    home_ggl_code = Column(String, nullable=True
+		, comment="Google Maps code for the home address.")
     agent = relationship(Agent, backref='persons_agent', primaryjoin='Person.agent_id_fk == Agent.id')
     next_of_kin = relationship('Person', backref='persons_next_of_kin', primaryjoin='Person.next_of_kin_id_fk == Person.id', remote_side=[id])
 
@@ -1354,17 +1771,29 @@ class Person(Model):
 
 class Wallet(Model):
     __tablename__ = "wallet"
-    __doc__ = " Each Pos has an individual wallet"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    agent_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True)
-    pos_id_fk = Column(Integer, ForeignKey('pos.id'), nullable=True)
-    wallet_name = Column(String, nullable=True)
-    wallet_balance = Column(Numeric, nullable=True)
-    wallet_locked = Column(Boolean, default=False, nullable=True)
-    wallet_active = Column(Boolean, default=True, nullable=True)
-    wallet_code = Column(String, nullable=True)
-    wallet_crypt = Column(Text, nullable=True)
-    wallet_narrative = Column(Text, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Each Point of Sale (PoS) has an individual wallet."
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the wallet.")
+    agent_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True
+		, comment="Foreign key reference to the agent associated with the wallet.")
+    pos_id_fk = Column(Integer, ForeignKey('pos.id'), nullable=True
+		, comment="Foreign key reference to the Point of Sale (PoS) associated with the wallet.")
+    wallet_name = Column(String, nullable=True
+		, comment="Name of the wallet.")
+    wallet_balance = Column(Numeric, nullable=True
+		, comment="The balance or amount of funds in the wallet.")
+    wallet_locked = Column(Boolean, default=False, nullable=True
+		, comment="Indicates whether the wallet is locked.")
+    wallet_active = Column(Boolean, default=True, nullable=True
+		, comment="Indicates whether the wallet is active.")
+    wallet_code = Column(String, nullable=True
+		, comment="Code or identifier associated with the wallet for security purposes.")
+    wallet_crypt = Column(Text, nullable=True
+		, comment="Cryptographic information related to the wallet.")
+    wallet_narrative = Column(Text, nullable=True
+		, comment="Narrative or additional information about the wallet.")
     agent = relationship(Agent, backref='wallets_agent', primaryjoin='Wallet.agent_id_fk == Agent.id')
     pos = relationship(Pos, backref='wallets_pos', primaryjoin='Wallet.pos_id_fk == Pos.id')
 
@@ -1376,8 +1805,13 @@ class Wallet(Model):
 
 class AgentPersonLink(Model):
     __tablename__ = "agent_person_link"
-    person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True)
-    agent_id_fk = Column(Integer, ForeignKey('agent.id'), primary_key=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "People associated with an Agent"
+    # class_permission_name = "view"
+    person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True
+		, comment="Foreign key reference to the person linked to the agent.")
+    agent_id_fk = Column(Integer, ForeignKey('agent.id'), primary_key=True
+		, comment="Foreign key reference to the agent linked to the person.")
     agent = relationship(Agent, backref='agent_person_links_agent', primaryjoin='AgentPersonLink.agent_id_fk == Agent.id')
     person = relationship(Person, backref='agent_person_links_person', primaryjoin='AgentPersonLink.person_id_fk == Person.id')
 
@@ -1389,6 +1823,9 @@ class AgentPersonLink(Model):
 
 class Contact(Model):
     __tablename__ = "contact"
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Agent or person contacts"
+    # class_permission_name = "view"
     id = Column(Integer, primary_key=True, autoincrement=True
 		, comment="Unique identifier for the contact.")
     person_id_fk = Column(Integer, ForeignKey('person.id'), nullable=True
@@ -1435,6 +1872,9 @@ class Contact(Model):
 
 class Doc(Model):
     __tablename__ = "doc"
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Document Archives"
+    # class_permission_name = "view"
     id = Column(Integer, primary_key=True, autoincrement=True
 		, comment="Unique identifier for the document.")
     doc_type_id_fk = Column(Integer, ForeignKey('doc_type.id'), nullable=True
@@ -1443,11 +1883,12 @@ class Doc(Model):
 		, comment="The person to whom the document belongs.")
     agent_id_fk = Column(Integer, ForeignKey('agent.id'), nullable=True
 		, comment="The organization associated with the document.")
+    doc_front_img = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))
+    doc_back_img = Column(ImageColumn(size=(300, 300, True), thumbnail_size=(30, 30, True)))
     doc_name = Column(String, nullable=True
 		, comment="Name or title of the document.")
     doc_content_type_id_fk = Column(Integer, ForeignKey('mime_type.id'), nullable=True
 		, comment="MIME type of the document content e.g. application/pdf, image/jpeg.")
-    doc_binary = Column(Text, nullable=True)
     doc_url = Column(Text, nullable=True
 		, comment="Actual doc in pdf or other format")
     doc_length = Column(Integer, nullable=True
@@ -1472,7 +1913,7 @@ class Doc(Model):
 		, comment="Place or location where the document was issued.")
     expires_on = Column(Date, nullable=True
 		, comment="Expiration date of the document.")
-    expired = Column(Boolean, default=False, nullable=True
+    is_expired = Column(Boolean, default=False, nullable=True
 		, comment="Flag to indicate if the document has expired.")
     verified = Column(Boolean, default=False, nullable=True)
     verification_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
@@ -1493,82 +1934,85 @@ class Doc(Model):
  ### 
 
 
-class PersonAdditionalData(Model):
-    __tablename__ = "person_additional_data"
-    person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True)
-    gender = Column(Enum(t_gender), nullable=False)
-    religion = Column(String, nullable=True)
-    ethnicity = Column(String, nullable=True)
-    consumer_credit_score = Column(Integer, nullable=True)
-    is_home_owner = Column(Boolean, nullable=True)
-    person_height = Column(Integer, nullable=True)
-    person_weight = Column(Integer, nullable=True)
-    person_height_unit_of_measure = Column(String, nullable=True)
-    person_weight_unit_of_measure = Column(String, nullable=True)
-    highest_education_level = Column(String, nullable=True)
-    person_life_stage = Column(String, nullable=True)
-    mothers_maiden_name = Column(String, nullable=True)
-    Marital_Status_cd = Column(Integer, nullable=True)
-    citizenship_id_fk = Column(Integer, ForeignKey('country.id'), nullable=True)
-    From_whom = Column(String, nullable=True)
-    Amount = Column(Numeric, nullable=True)
-    Interest_rate_pa = Column(Numeric, nullable=True)
-    Number_of_people_depending_on_overal_income = Column(Integer, nullable=True)
-    YesNo_cd_Bank_account = Column(Integer, nullable=True)
-    YesNo_cd_Business_plan_provided = Column(Integer, nullable=True)
-    YesNo_cd_Access_to_internet = Column(Integer, nullable=True)
-    Introduced_by = Column(String, nullable=True)
-    Known_to_introducer_since = Column(String, nullable=True)
-    Last_visited_by = Column(String, nullable=True)
-    Last_visited_on = Column(Date)
-    citizenship = relationship(Country, backref='person_additional_datas_citizenship', primaryjoin='PersonAdditionalData.citizenship_id_fk == Country.id')
-    person = relationship(Person, backref='person_additional_datas_person', primaryjoin='PersonAdditionalData.person_id_fk == Person.id')
-
-    def __repr__(self):
-       return self.mothers_maiden_name
-
- ### 
-
-
 class PersonAdminData(Model):
     __tablename__ = "person_admin_data"
-    person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True)
-    creation_time = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    failed_login_count = Column(Integer, nullable=True)
-    failed_login_timestamp = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    password_last_set_time = Column(DateTime, server_default=text('NOW()'), nullable=True)
-    profile_picture = Column(String, nullable=True)
-    awatar = Column(String, nullable=True)
-    screen_name = Column(String, nullable=True)
-    user_priv_cert = Column(Text, nullable=True)
-    user_pub_cert = Column(Text, nullable=True)
-    alt_security_identities = Column(Text, nullable=True)
-    generated_UID = Column(UUID, nullable=True)
-    do_not_email = Column(Boolean, default=False, nullable=True)
-    do_not_phone = Column(Boolean, default=False, nullable=True)
-    do_not_mail = Column(Boolean, default=False, nullable=True)
-    do_not_sms = Column(Boolean, default=False, nullable=True)
-    do_not_trade = Column(Boolean, default=False, nullable=True)
-    opted_out = Column(Boolean, default=False, nullable=True)
-    do_not_track_update_date = Column(Date, nullable=True)
-    do_not_process_from_update_date = Column(Date, nullable=True)
-    do_not_market_from_update_date = Column(Date, nullable=True)
-    do_not_track_location_update_date = Column(Date, nullable=True)
-    do_not_profile_from_update_date = Column(Date, nullable=True)
-    do_forget_me_from_update_date = Column(Date, nullable=True)
-    do_not_process_reason = Column(String, nullable=True)
-    no_merge_reason = Column(String, nullable=True)
-    do_extract_my_data_update_date = Column(Date, nullable=True)
-    should_forget = Column(Boolean, nullable=True)
-    consumer_credit_score_provider_name = Column(String, nullable=True)
-    web_site_url = Column(String, nullable=True)
-    ordering_name = Column(String, nullable=True)
-    hospitalizations_last5_years_count = Column(Integer, nullable=True)
-    surgeries_last5_years_count = Column(Integer, nullable=True)
-    dependent_count = Column(Integer, nullable=True)
-    account_locked = Column(Boolean, default=False, nullable=True)
-    send_individual_data = Column(Boolean, nullable=True)
-    influencer_rating = Column(Integer, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Additional information on How to communicate and handle a persons data"
+    # class_permission_name = "view"
+    person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True
+		, comment="References the associated person.")
+    creation_time = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp when the data was created.")
+    failed_login_count = Column(Integer, nullable=True
+		, comment="Count of failed login attempts.")
+    failed_login_timestamp = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp of the last failed login attempt.")
+    password_last_set_time = Column(DateTime, server_default=text('NOW()'), nullable=True
+		, comment="Timestamp when the password was last set.")
+    profile_picture = Column(String, nullable=True
+		, comment="URL or path to the profile picture.")
+    awatar = Column(String, nullable=True
+		, comment="URL or path to the avatar.")
+    screen_name = Column(String, nullable=True
+		, comment="Screen name or username.")
+    user_priv_cert = Column(Text, nullable=True
+		, comment="Users private certificate.")
+    user_pub_cert = Column(Text, nullable=True
+		, comment="Users public certificate.")
+    alt_security_identities = Column(Text, nullable=True
+		, comment="Alternate security identities.")
+    generated_UID = Column(UUID, nullable=True
+		, comment="Generated unique identifier.")
+    do_not_email = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if email communication is prohibited.")
+    do_not_phone = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if phone communication is prohibited.")
+    do_not_mail = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if physical mail communication is prohibited.")
+    do_not_sms = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if SMS communication is prohibited.")
+    do_not_trade = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if trading is prohibited.")
+    opted_out = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if the user has opted out of certain activities.")
+    do_not_track_update_date = Column(Date, nullable=True
+		, comment="Date when tracking was disabled.")
+    do_not_process_from_update_date = Column(Date, nullable=True
+		, comment="Date when processing was disabled.")
+    do_not_market_from_update_date = Column(Date, nullable=True
+		, comment="Date when marketing was disabled.")
+    do_not_track_location_update_date = Column(Date, nullable=True
+		, comment="Date when location tracking was disabled.")
+    do_not_profile_from_update_date = Column(Date, nullable=True
+		, comment="Date when profiling was disabled.")
+    do_forget_me_from_update_date = Column(Date, nullable=True
+		, comment="Date when -forget me- request was processed.")
+    do_not_process_reason = Column(String, nullable=True
+		, comment="Reason for not processing data.")
+    no_merge_reason = Column(String, nullable=True
+		, comment="Reason for not merging data.")
+    do_extract_my_data_update_date = Column(Date, nullable=True
+		, comment="Date when data extraction request was processed.")
+    should_forget = Column(Boolean, nullable=True
+		, comment="Indicates if data should be forgotten.")
+    consumer_credit_score_provider_name = Column(String, nullable=True
+		, comment="Name of the consumer credit score provider.")
+    web_site_url = Column(String, nullable=True
+		, comment="URL of the website.")
+    ordering_name = Column(String, nullable=True
+		, comment="Name used for ordering.")
+    hospitalizations_last5_years_count = Column(Integer, nullable=True
+		, comment="Count of hospitalizations in the last 5 years.")
+    surgeries_last5_years_count = Column(Integer, nullable=True
+		, comment="Count of surgeries in the last 5 years.")
+    dependent_count = Column(Integer, nullable=True
+		, comment="Count of dependents.")
+    account_locked = Column(Boolean, default=False, nullable=True
+		, comment="Indicates if the account is locked.")
+    send_individual_data = Column(Boolean, nullable=True
+		, comment="Indicates if individual data should be sent.")
+    influencer_rating = Column(Integer, nullable=True
+		, comment="Influencer rating.")
     person = relationship(Person, backref='person_admin_datas_person', primaryjoin='PersonAdminData.person_id_fk == Person.id')
 
     def __repr__(self):
@@ -1579,112 +2023,183 @@ class PersonAdminData(Model):
 
 class Trans(Model):
     __tablename__ = "trans"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    coupon_id_fk = Column(Integer, ForeignKey('coupon.coupon_id'), nullable=True)
-    customer_name = Column(String, nullable=True)
-    trans_purpose = Column(Text, nullable=True)
-    customer_id = Column(String, nullable=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "Table of Transactions"
+    # class_permission_name = "view"
+    id = Column(Integer, primary_key=True, autoincrement=True
+		, comment="Unique identifier for the transaction.")
+    coupon_id_fk = Column(Integer, ForeignKey('coupon.id'), nullable=True
+		, comment="Reference to the associated coupon, if applicable.")
+    customer_name = Column(String, nullable=True
+		, comment="Name of the customer involved in the transaction.")
+    trans_purpose = Column(Text, nullable=True
+		, comment="Description of the transaction purpose.")
+    customer_id = Column(String, nullable=True
+		, comment="Identifier for the customer.")
     transaction_type = Column(Enum(t_payment_method), nullable=False)
     card_trans_type = Column(Enum(t_card_trans_type), nullable=False)
-    agent_id_fk = Column(Integer, ForeignKey('agent.id'))
-    payment_card_id_fk = Column(Integer, ForeignKey('payment_card.id'), nullable=True)
-    pos_id_fk = Column(Integer, ForeignKey('pos.id'), nullable=True)
-    wallet_id_fk = Column(Integer, ForeignKey('wallet.id'), nullable=True)
-    biller_id_fk = Column(Integer, ForeignKey('biller.id'), nullable=True)
-    biller_offering_id_fk = Column(Integer, ForeignKey('biller_offering.offering_id'), nullable=True)
-    trans_time = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    currency_id_fk = Column(Integer, ForeignKey('currency.id'), nullable=True)
+    agent_id_fk = Column(Integer, ForeignKey('agent.id')
+		, comment="Merchant ID.")
+    payment_card_id_fk = Column(Integer, ForeignKey('payment_card.id'), nullable=True
+		, comment="Reference to the payment card used.")
+    pos_id_fk = Column(Integer, ForeignKey('pos.id'), nullable=True
+		, comment="Point of Sale (PoS) ID.")
+    wallet_id_fk = Column(Integer, ForeignKey('wallet.id'), nullable=True
+		, comment="Reference to the wallet used.")
+    biller_id_fk = Column(Integer, ForeignKey('biller.id'), nullable=True
+		, comment="Reference to the biller involved.")
+    biller_offering_id_fk = Column(Integer, ForeignKey('biller_offering.id'), nullable=True
+		, comment="Reference to the biller offering used.")
+    trans_time = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp of the transaction.")
+    currency_id_fk = Column(Integer, ForeignKey('currency.id'), nullable=True
+		, comment="Reference to the currency used.")
     trans_status = Column(Enum(t_transaction_status), nullable=False)
-    trans_route_id_fk = Column(Integer, ForeignKey('trans_routing_thresholds.id'), nullable=True)
+    trans_route_id_fk = Column(Integer, ForeignKey('trans_routing_thresholds.id'), nullable=True
+		, comment="Reference to the routing threshold used.")
     origin_source = Column(Enum(t_payment_method), nullable=False)
-    origin_ref_code = Column(String, nullable=True)
-    origin_trans_notes = Column(Text, nullable=True)
-    origin_bank_id_fk = Column(Integer, ForeignKey('bank.id'), nullable=True)
-    origin_institution_code = Column(String, nullable=True)
-    origin_account_num = Column(String, nullable=True)
-    origin_account_name = Column(String, nullable=True)
-    origin_KYC_Level = Column(Integer, nullable=True)
-    origin_Bank_Verification_Number = Column(String, nullable=True)
+    origin_ref_code = Column(String, nullable=True
+		, comment="Reference code associated with the origin of the transaction.")
+    origin_trans_notes = Column(Text, nullable=True
+		, comment="Additional notes about the origin of the transaction.")
+    origin_bank_id_fk = Column(Integer, ForeignKey('bank.id'), nullable=True
+		, comment="Reference to the originating bank, if applicable.")
+    origin_institution_code = Column(String, nullable=True
+		, comment="Institution code for the origin.")
+    origin_account_num = Column(String, nullable=True
+		, comment="Account number associated with the origin.")
+    origin_account_name = Column(String, nullable=True
+		, comment="Account name associated with the origin.")
+    origin_KYC_Level = Column(Integer, nullable=True
+		, comment="KYC (Know Your Customer) level of the origin.")
+    origin_Bank_Verification_Number = Column(String, nullable=True
+		, comment="Bank Verification Number associated with the origin.")
     origin_bvn = Column(String, nullable=True
-		, comment="used for check balance")
-    session_ref = Column(String, nullable=True)
-    transaction_ref = Column(String, nullable=True)
-    channelCode = Column(Integer, nullable=True)
-    name_enquiry_ref = Column(String, nullable=True)
-    api_transactionid = Column(String, nullable=True)
-    receipt_no = Column(String, nullable=True)
-    pin_based = Column(Boolean, default=False, nullable=True)
-    pin_code = Column(String, nullable=True)
-    pin_option = Column(String, nullable=True)
-    authorization_code = Column(String, nullable=True)
-    acquirer_name = Column(String, nullable=True)
-    currency = Column(String, nullable=True)
-    transaction_location = Column(String, nullable=True)
-    payment_reference = Column(String, nullable=True)
-    response_code = Column(String, nullable=True)
+		, comment="Used for checking balance of the origin.")
+    session_ref = Column(String, nullable=True
+		, comment="Reference to the session related to the transaction.")
+    transaction_ref = Column(String, nullable=True
+		, comment="Reference code for the transaction.")
+    channelCode = Column(Integer, nullable=True
+		, comment="Code identifying the transaction channel.")
+    name_enquiry_ref = Column(String, nullable=True
+		, comment="Reference code for name inquiry related to the transaction.")
+    api_transactionid = Column(String, nullable=True
+		, comment="API transaction ID.")
+    receipt_no = Column(String, nullable=True
+		, comment="Receipt number associated with the transaction.")
+    pin_based = Column(Boolean, default=False, nullable=True
+		, comment="Whether the transaction is PIN-based.")
+    pin_code = Column(String, nullable=True
+		, comment="PIN code associated with the transaction.")
+    pin_option = Column(String, nullable=True
+		, comment="PIN option for the transaction.")
+    authorization_code = Column(String, nullable=True
+		, comment="Authorization code for the transaction.")
+    acquirer_name = Column(String, nullable=True
+		, comment="Name of the acquirer.")
+    currency = Column(String, nullable=True
+		, comment="Currency used for the transaction.")
+    transaction_location = Column(String, nullable=True
+		, comment="Location where the transaction occurred.")
+    payment_reference = Column(String, nullable=True
+		, comment="Reference code for the payment.")
+    response_code = Column(String, nullable=True
+		, comment="Response code related to the transaction.")
     trans_dest = Column(Enum(t_payment_method), nullable=False)
-    bene_ref_code = Column(String, nullable=True)
-    bene_trans_notes = Column(Text, nullable=True)
-    bene_bank_id_fk = Column(Integer, ForeignKey('bank.id'), nullable=True)
-    bene_account_num = Column(String, nullable=True)
-    bene_institution_code = Column(String, nullable=True)
-    bene_bank_verification_number = Column(String, nullable=True)
-    bene_KYC_Level = Column(Integer, nullable=True)
-    bene_account_name = Column(String, nullable=True)
-    bene_phone_number = Column(String, nullable=True)
-    bene_phone_denom = Column(String, nullable=True)
-    bene_phone_product = Column(String, nullable=True)
+    bene_ref_code = Column(String, nullable=True
+		, comment="Reference code associated with the beneficiary.")
+    bene_trans_notes = Column(Text, nullable=True
+		, comment="Additional notes about the beneficiary.")
+    bene_bank_id_fk = Column(Integer, ForeignKey('bank.id'), nullable=True
+		, comment="Reference to the beneficiary bank, if applicable.")
+    bene_account_num = Column(String, nullable=True
+		, comment="Account number associated with the beneficiary.")
+    bene_institution_code = Column(String, nullable=True
+		, comment="Institution code for the beneficiary.")
+    bene_bank_verification_number = Column(String, nullable=True
+		, comment="Bank Verification Number associated with the beneficiary.")
+    bene_KYC_Level = Column(Integer, nullable=True
+		, comment="KYC (Know Your Customer) level of the beneficiary.")
+    bene_account_name = Column(String, nullable=True
+		, comment="Account name associated with the beneficiary.")
+    bene_phone_number = Column(String, nullable=True
+		, comment="Phone number associated with the beneficiary.")
+    bene_phone_denom = Column(String, nullable=True
+		, comment="Denomination of the beneficiary phone.")
+    bene_phone_product = Column(String, nullable=True
+		, comment="Product associated with the beneficiary phone.")
     transaction_amount = Column(Numeric, nullable=True
-		, comment="topup_amount or bank transfer amount")
-    available_balance = Column(Numeric, nullable=True)
+		, comment="Amount of the transaction.")
+    available_balance = Column(Numeric, nullable=True
+		, comment="Available balance for the transaction.")
     svc_fees = Column(Numeric, nullable=True
-		, comment="service fees")
-    comm_total = Column(Numeric, nullable=True)
-    comm_agent = Column(Numeric, nullable=True)
-    comm_aggr = Column(Numeric, nullable=True)
-    comm_ours = Column(Numeric, nullable=True)
+		, comment="Service fees associated with the transaction.")
+    comm_total = Column(Numeric, nullable=True
+		, comment="Total commission amount for the transaction.")
+    comm_agent = Column(Numeric, nullable=True
+		, comment="Commission amount for the agent.")
+    comm_aggr = Column(Numeric, nullable=True
+		, comment="Commission amount for the aggregator.")
+    comm_ours = Column(Numeric, nullable=True
+		, comment="Commission amount for us.")
     comm_other = Column(Numeric, nullable=True
-		, comment="payments to others")
-    comm_net_pct = Column(Float, nullable=True)
-    tax = Column(Numeric, nullable=True)
-    excise_duty = Column(Numeric, nullable=True)
-    vat = Column(Numeric, nullable=True)
-    transmit_amount = Column(Numeric, nullable=True)
+		, comment="Payments to others associated with the transaction.")
+    comm_net_pct = Column(Float, nullable=True
+		, comment="Net commission percentage.")
+    tax = Column(Numeric, nullable=True
+		, comment="Tax amount associated with the transaction.")
+    excise_duty = Column(Numeric, nullable=True
+		, comment="Excise duty amount.")
+    vat = Column(Numeric, nullable=True
+		, comment="Value-added tax (VAT) amount.")
+    transmit_amount = Column(Numeric, nullable=True
+		, comment="Transmit amount for the transaction.")
     comm_narration = Column(Text, nullable=True
-		, comment="how the commision was calculated")
-    trans_currency = Column(String, nullable=True)
-    trans_convert_currency = Column(String, nullable=True)
-    trans_currency_exchange_rate = Column(Numeric, nullable=True)
-    trans_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    customer_segment_id_fk = Column(Integer, ForeignKey('customer_segment.cs_id'), nullable=True)
-    agent_tier_level_id_fk = Column(Integer, ForeignKey('agent_tier.id'), nullable=True)
-    special_promotions_id_fk = Column(Integer, ForeignKey('promotion.promo_id'), nullable=True)
+		, comment="Narration describing how the commission was calculated.")
+    trans_currency = Column(String, nullable=True
+		, comment="Currency code for the transaction.")
+    trans_convert_currency = Column(String, nullable=True
+		, comment="Currency for currency conversion, if applicable.")
+    trans_currency_exchange_rate = Column(Numeric, nullable=True
+		, comment="Exchange rate for currency conversion.")
+    trans_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp of the transaction date.")
+    customer_segment_id_fk = Column(Integer, ForeignKey('customer_segment.id'), nullable=True
+		, comment="Reference to the customer segment.")
+    agent_tier_level_id_fk = Column(Integer, ForeignKey('agent_tier.id'), nullable=True
+		, comment="Reference to the agent tier level.")
+    special_promotions_id_fk = Column(Integer, ForeignKey('promotion.id'), nullable=True
+		, comment="Reference to special promotions associated with the transaction.")
+    risk_profile_id_fk = Column(Integer, ForeignKey('risk_profile.id'), nullable=True
+		, comment="Risk associated with financial transactions")
     fraud_marker = Column(Boolean, default=False, nullable=True
-		, comment="fraudulent transaction")
+		, comment="Indicates whether the transaction is marked as fraudulent.")
     fraud_eval_outcome = Column(String, nullable=True
-		, comment="returned by as Fraud, Not Fraud, Unknown")
+		, comment="Outcome of fraud evaluation (e.g., Fraud, Not Fraud, Unknown).")
     fraud_risk_score = Column(Float, nullable=True
-		, comment="values 1-1000")
+		, comment="Fraud risk score (values 1-1000).")
     fraud_prediction_explanations = Column(Text, nullable=True
-		, comment=" list of explanations for how each event variable impacted the fraud prediction score.")
+		, comment="List of explanations for how each event variable impacted the fraud prediction score.")
     fraud_rule_evaluations = Column(Text, nullable=True
-		, comment="evaluations of the rules that were included in the detector version")
+		, comment="Evaluations of the rules that were included in the detector version.")
     fraud_event_num = Column(String, nullable=True
-		, comment=" returned by AWS Fraud Detector")
+		, comment="Event number returned by AWS Fraud Detector.")
     trans_narration = Column(Text, nullable=True
-		, comment="we track and store very event that happens")
+		, comment="Narration containing details about the transaction.")
     agent = relationship(Agent, backref='transs_agent', primaryjoin='Trans.agent_id_fk == Agent.id')
     agent_tier_level = relationship(AgentTier, backref='transs_agent_tier_level', primaryjoin='Trans.agent_tier_level_id_fk == AgentTier.id')
     bene_bank = relationship(Bank, backref='transs_bene_bank', primaryjoin='Trans.bene_bank_id_fk == Bank.id')
     biller = relationship(Biller, backref='transs_biller', primaryjoin='Trans.biller_id_fk == Biller.id')
-    biller_offering = relationship(BillerOffering, backref='transs_biller_offering', primaryjoin='Trans.biller_offering_id_fk == BillerOffering.offering_id')
-    coupon = relationship(Coupon, backref='transs_coupon', primaryjoin='Trans.coupon_id_fk == Coupon.coupon_id')
+    biller_offering = relationship(BillerOffering, backref='transs_biller_offering', primaryjoin='Trans.biller_offering_id_fk == BillerOffering.id')
+    coupon = relationship(Coupon, backref='transs_coupon', primaryjoin='Trans.coupon_id_fk == Coupon.id')
     currency = relationship(Currency, backref='transs_currency', primaryjoin='Trans.currency_id_fk == Currency.id')
-    customer_segment = relationship(CustomerSegment, backref='transs_customer_segment', primaryjoin='Trans.customer_segment_id_fk == CustomerSegment.cs_id')
+    customer_segment = relationship(CustomerSegment, backref='transs_customer_segment', primaryjoin='Trans.customer_segment_id_fk == CustomerSegment.id')
     origin_bank = relationship(Bank, backref='transs_origin_bank', primaryjoin='Trans.origin_bank_id_fk == Bank.id')
     payment_card = relationship(PaymentCard, backref='transs_payment_card', primaryjoin='Trans.payment_card_id_fk == PaymentCard.id')
     pos = relationship(Pos, backref='transs_pos', primaryjoin='Trans.pos_id_fk == Pos.id')
-    special_promotions = relationship(Promotion, backref='transs_special_promotions', primaryjoin='Trans.special_promotions_id_fk == Promotion.promo_id')
+    risk_profile = relationship(RiskProfile, backref='transs_risk_profile', primaryjoin='Trans.risk_profile_id_fk == RiskProfile.id')
+    special_promotions = relationship(Promotion, backref='transs_special_promotions', primaryjoin='Trans.special_promotions_id_fk == Promotion.id')
     trans_route = relationship(TransRoutingThresholds, backref='transs_trans_route', primaryjoin='Trans.trans_route_id_fk == TransRoutingThresholds.id')
     wallet = relationship(Wallet, backref='transs_wallet', primaryjoin='Trans.wallet_id_fk == Wallet.id')
 
@@ -1696,11 +2211,18 @@ class Trans(Model):
 
 class AgentDocLink(Model):
     __tablename__ = "agent_doc_link"
-    agent_id_fk = Column(Integer, ForeignKey('agent.id'), primary_key=True)
-    doc_id_fk = Column(Integer, ForeignKey('doc.id'), primary_key=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "An Agents Documents"
+    # class_permission_name = "view"
+    agent_id_fk = Column(Integer, ForeignKey('agent.id'), primary_key=True
+		, comment="Foreign key reference to the agent whose document is linked.")
+    doc_id_fk = Column(Integer, ForeignKey('doc.id'), primary_key=True
+		, comment="Foreign key reference to the document being linked.")
     verification_status = Column(Enum(t_verification_status), nullable=False)
-    submit_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
-    notes = Column(Text, nullable=True)
+    submit_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp when the document is submitted, with a default value of the current timestamp.")
+    notes = Column(Text, nullable=True
+		, comment="Additional notes or comments related to the document link.")
     agent = relationship(Agent, backref='agent_doc_links_agent', primaryjoin='AgentDocLink.agent_id_fk == Agent.id')
     doc = relationship(Doc, backref='agent_doc_links_doc', primaryjoin='AgentDocLink.doc_id_fk == Doc.id')
 
@@ -1712,10 +2234,16 @@ class AgentDocLink(Model):
 
 class PersonDocLink(Model):
     __tablename__ = "person_doc_link"
-    person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True)
-    doc_id_fk = Column(Integer, ForeignKey('doc.id'), primary_key=True)
+    # __table_args__ = ( ) # tuple
+    __doc__ = "A Persons Documents"
+    # class_permission_name = "view"
+    person_id_fk = Column(Integer, ForeignKey('person.id'), primary_key=True
+		, comment="Foreign key reference to the person whose document is linked.")
+    doc_id_fk = Column(Integer, ForeignKey('doc.id'), primary_key=True
+		, comment="Foreign key reference to the document being linked.")
     verification_status = Column(Enum(t_verification_status), nullable=False)
-    submit_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True)
+    submit_date = Column(DateTime, server_default=text('NOW()'), default=func.now(), nullable=True
+		, comment="Timestamp when the document is submitted, with a default value of the current timestamp.")
     doc = relationship(Doc, backref='person_doc_links_doc', primaryjoin='PersonDocLink.doc_id_fk == Doc.id')
     person = relationship(Person, backref='person_doc_links_person', primaryjoin='PersonDocLink.person_id_fk == Person.id')
 

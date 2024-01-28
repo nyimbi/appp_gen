@@ -9,6 +9,7 @@
 /docs/_build/
 /data/
 /archive/
+/tmp/
 /src/*.egg-info/
 __pycache__/
 # Byte-compiled / optimized / DLL files

@@ -1,6 +1,6 @@
 import os
 from app.assets import app_css, app_js, vendor_css, vendor_js
-from config import config as Config
+from py_templates.config import config as Config
 from flask import Flask
 from flask_assets import Environment
 from flask_compress import Compress

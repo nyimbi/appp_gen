@@ -7,14 +7,12 @@
 #   - relationships will always have the foreign key name without the _id_fk
 #   - Comments on fields are used to give descriptions in the UI
 #
-from sqlalchemy.types import Enum
-from sqlalchemy import create_engine, inspect, MetaData
 import inflect
 p = inflect.engine()
 
 from db_utils  import *
 import headers
-from utils import *
+from py_templates.utils import *
 
 
 def inspect_metadata(database_uri):
@@ -113,15 +111,17 @@ def gen_models(metadata, inspector):
 
         table_class = snake_to_pascal(table)
         # If the model is an extension of the user
-        if table.startswith('user_'):
-            model_code.append(f"class {table_class}(User):")
-            model_code.append(f'    __tablename__ = "ab_user"')
-        else:   # This is the normal path
-            model_code.append(f"class {table_class}(Model):")
-            model_code.append(f'    __tablename__ = "{table}"')
-
+        # if table.startswith('user_'):
+        #     model_code.append(f"class {table_class}(User):")
+        #     model_code.append(f'    __tablename__ = "ab_user"')
+        # else:   # This is the normal path
+        model_code.append(f"class {table_class}(Model):")
+        model_code.append(f'    __tablename__ = "{table}"')
+        model_code.append(f'    # __table_args__ = ( ) # tuple')
         if t_comment['text']:
             model_code.append(f'    __doc__ = "{t_comment["text"]}"')  # Use the table comment in the docstring
+
+        model_code.append(f'    # class_permission_name = "view"')
         # Put check constraints
         # __table_args__ = ( )
 
@@ -255,6 +255,7 @@ def gen_models(metadata, inspector):
 
 def gen_views(metadata, inspector):
     views = []
+    view_regs = []
     views.extend(headers.gen_view_header())
 
     def gen_col_names(table):
@@ -269,6 +270,9 @@ def gen_views(metadata, inspector):
                 col_names.append(f"'{s}'")
                 continue
             col_names.append(f"'{s}'")
+        # if "name" in col_names:
+        #     col_names.remove("name")
+        #     col_names.insert(0, "name")
         c = ', '.join(col_names)
         return c
 
@@ -279,10 +283,6 @@ def gen_views(metadata, inspector):
             if col.name == 'id': continue
             if s.endswith('_id_fk'):
                 s = col.name[:-6]  # .split('_id')[0]
-            # if s.endswith('_id'):
-            #     s = s[:-3]
-                label_names.append(f"'{s}'")
-                continue
             label_names.append(f"'{s}':'{snake_to_words(s)}'")
         c = ', '.join(label_names)
         return '{' + c + '}'
@@ -296,7 +296,7 @@ def gen_views(metadata, inspector):
         return desc
     def gen_titles(table):
         titles = []
-        titles.append(f"    list_title = 'List {snake_to_words(table.name)}'")
+        titles.append(f"    list_title = 'List {snake_to_words(table.name)}'") # title()
         titles.append(f"    show_title = 'Show {snake_to_words(table.name)}'")
         titles.append(f"    edit_title = 'Edit {snake_to_words(table.name)}'")
         titles.append(f"    add_title  = 'Add {snake_to_words(table.name)}'")
@@ -305,7 +305,7 @@ def gen_views(metadata, inspector):
         titles.append(f"    # show_columns = [{gen_col_names(table)}]")
         titles.append(f"    # edit_columns = [{gen_col_names(table)}]")
         titles.append(f"    add_columns = [{gen_col_names(table)}]")
-        titles.append(f"    search_columns = [{gen_col_names(table)}]")
+        titles.append(f"    # search_columns = [{gen_col_names(table)}]")
         titles.extend(gen_descriptions(table))
 
         titles.append(f"    # list_exclude_columns = [{gen_col_names(table)}]")
@@ -319,7 +319,7 @@ def gen_views(metadata, inspector):
         titles.append(f"    # add_columns = [{gen_col_names(table)}]")
         titles.append(f"    # add_columns = [{gen_col_names(table)}]")
         titles.append(f"    ")
-        titles.append(f"    # label_columns = {gen_labels(table)}")
+        titles.append(f"    label_columns = {gen_labels(table)}")
         # titles.append(f"    ")
         # titles.append(f"    ")
         # titles.append(f"    ")
@@ -346,8 +346,8 @@ def gen_views(metadata, inspector):
         c = gen_col_names(table)
         views.extend(gen_titles(table))
         views.append(f'#    list_columns = [{c}]')
-        views.append(
-                f'appbuilder.add_view({model_name}ModelView, "{p.plural(model_name)}", icon="fa-folder-open-o", category="Setup")\n')
+        view_regs.append(
+                f'appbuilder.add_view({model_name}ModelView, "{pascal_to_words(model_name)}", icon="fa-folder-open-o", category="Setup")\n')
 
     # Generate MasterDetailView for tables with foreign keys
     for table in metadata.sorted_tables:
@@ -366,8 +366,8 @@ def gen_views(metadata, inspector):
                 views.append(f'    related_views = [{detail_view_name}]')
                 views.append(f"    show_template = 'appbuilder/general/model/show_cascade.html'")
                 views.append('')
-                views.append(
-                f'appbuilder.add_view({master_detail_view_name}, "{p.plural_noun(parent_model_name)}", icon="fa-folder-open-o", category="Review")\n')
+                view_regs.append(
+                f'appbuilder.add_view({master_detail_view_name}, "{pascal_to_words(parent_model_name)}", icon="fa-folder-open-o", category="Review")\n')
                 mviews.add(master_detail_view_name)
 
     # Generate MultipleViews for tables that have multiple Foreign Keys
@@ -392,11 +392,11 @@ def gen_views(metadata, inspector):
                 views.append(f'    views = [{", ".join(related_views)}]')
                 views.append('')
                 # view_regs.append(
-                views.append(
-                f'appbuilder.add_view({multiple_view_name}, "{p.plural(parent_model_name)}", icon="fa-folder-open-o", category="Inspect")\n')
+                view_regs.append(
+                f'appbuilder.add_view({multiple_view_name}, "{pascal_to_words(parent_model_name)}", icon="fa-folder-open-o", category="Inspect")\n')
                 mviews.add(multiple_view_name)
 
-    # views.extend(view_regs)
+    views.extend(view_regs)
     views.append(headers.VIEW_FILE_FOOTER)
     return views
 
@@ -418,12 +418,18 @@ def gen_api(metadata, inspector):
 def gen_graphql(metadata, inspector):
     gql_code = []
     gql_hdr = []
-    gql_code.append
+    gql_code.append('')
     query_code = []
+
     query_code.append(headers.GQL_QUERY_HDR)
     for t in metadata.sorted_tables:
+        exclude_fields = []
         table = t.name
-        gql_code.append(headers.gen_gql_class(snake_to_pascal(table)))
+        # Find excluded fields
+        for col in inspector.get_columns(table):
+            if col["name"].endswith('_img'):
+                exclude_fields.append('"' + col["name"]+ '"')
+        gql_code.append(headers.gen_gql_class(snake_to_pascal(table), ', '.join(exclude_fields)))
         query_code.append(headers.gen_gql_query(table))
         cols = inspector.get_columns(table)
         for col in cols:
@@ -436,6 +442,7 @@ def gen_graphql(metadata, inspector):
                 gql_hdr.append(
                     f"{enum_name}_gql = graphene.Enum.from_enum({enum_name})"
                 )
+
     gql =[]
     gql.append(headers.gen_gql_header())
     gql.extend(gql_hdr)
@@ -454,7 +461,6 @@ def gen_dbml(metadata, inspector):
     pass
 
 def gen_kivy(metadata, inspector):
-    pass
     kivy_code = []
 
     for table_name, table in metadata.tables.items():
@@ -485,8 +491,8 @@ if __name__ == '__main__':
     write_file('models.py', gen_models(metadata, inspector))
 
     # a = gen_api(metadata, inspector)
-    write_file('apis.py', gen_api(metadata, inspector))
+    write_file('py_templates/apis.py', gen_api(metadata, inspector))
 
     # v = gen_views(metadata, inspector)
     write_file('views.py', gen_views(metadata, inspector))
-    write_file('gql.py', gen_graphql(metadata, inspector))
+    write_file('py_templates/gql.py', gen_graphql(metadata, inspector))

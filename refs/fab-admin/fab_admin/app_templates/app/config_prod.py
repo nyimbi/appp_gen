@@ -5,7 +5,7 @@ Created on {* now *}
 """
 import os
 import version
-from config import config_local
+from py_templates.config import config_local
 db_user = os.environ.get('DB_USER', 'admin')
 db_password = os.environ.get('DB_PWD', '***')
 db_host = os.environ.get('DB_HOST', '127.0.0.1:3306')

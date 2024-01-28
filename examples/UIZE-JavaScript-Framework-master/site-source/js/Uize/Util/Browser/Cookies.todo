@@ -1,5 +1,0 @@
-This is a TO DO document for the =Uize.Util.Browser.Cookies= module.
-
-getCookies
-	Add a =getCookies= method that returns the values of all the cookies as a hash.
-

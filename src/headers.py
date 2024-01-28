@@ -1,5 +1,5 @@
 from datetime import date
-from utils import *
+from py_templates.utils import *
 
 
 
@@ -64,7 +64,7 @@ from flask import g
 from . import appbuilder, db
 
 from .models import *
-from .view_mixins import *
+# from .view_mixins import *
 from .apis import *
 
 ##########
@@ -541,6 +541,7 @@ VIEW_FILE_FOOTER = """
 appbuilder.add_link("rest_api", href="/swagger/v1", icon="fa-sliders", label="REST Api", category="Utilities")
 appbuilder.add_link("graphql", href="/graphql", icon="fa-wrench", label="GraphQL", category="Utilities")
 
+
 #appbuilder.add_separator("Setup")
 #appbuilder.add_separator("My Views")
 #appbuilder.add_link(name, href, icon='', label='', category='', category_icon='', category_label='', baseview=None)
@@ -560,6 +561,7 @@ def page_not_found(e):
 
 
 db.create_all()
+appbuilder.security_cleanup()
 """
 
 API_BODY = """
@@ -705,7 +707,7 @@ GQL_SEC_IMPORT = "from flask_appbuilder.security.sqla.models import {0} as {0}Mo
 
 
 # https://github.com/graphql-python/graphene-sqlalchemy
-def gen_gql_class(table):
+def gen_gql_class(table, exclusions):
     GQL_CLASS = f"""
 class {table}Gql(SQLAlchemyObjectType):
     class Meta:
@@ -714,9 +716,11 @@ class {table}Gql(SQLAlchemyObjectType):
         # use `only_fields` to only expose specific fields ie "name"
         # only_fields = ("name",)
         # use `exclude_fields` to exclude specific fields ie "last_name"
-        # exclude_fields = ("last_name",)
+        # exclude_fields = ({exclusions},)
         
 """
+    if len(exclusions) > 1:
+        GQL_CLASS = GQL_CLASS +'\n' +f"        exclude_fields = ({exclusions},)"
     return GQL_CLASS
 
 GQL_QUERY_HDR = f"""

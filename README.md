@@ -17,7 +17,7 @@
 [python version]: https://pypi.org/project/appgen
 [read the docs]: https://appgen.readthedocs.io/
 [tests]: https://github.com/nyimbi/appgen/actions?workflow=Tests
-[codecov]: https://app.codecov.io/gh/nyimbi/appgen
+[codecov]: https://app.codecov.io/gh/nyimbi/apppgen
 [pre-commit]: https://github.com/pre-commit/pre-commit
 [black]: https://github.com/psf/black
 
@@ -34,13 +34,14 @@ foreign keys, and MultipleViews if a parent table has multiple foreign keys. The
 also generates a db schema viewer to allow end users to visualize the structure of the
 database.
 
-`appgen` is built on top of Flask-AppBuilder, SQLAlchemY, and PostgreSQL Rolw Level
-Security services, and makes heavy use of stored procedures and functiions for data
+`appgen` is built on top of Flask-AppBuilder, SQLAlchemy, It supports and integrates PostgreSQL Row Level
+Security (RLS) services, and makes heavy use of stored procedures and functions for data
 manipulaTIon and validation. We strongly recommend using PostgreSQL as your database
 engine, but `appgen` should work with other SQL databases supported by SQLAlchemY.
 
 ### Installation
 ---------------
+TODO: Note pushed to pypi yet, still a WIP
 
 To install `appgen`, run the following command:
 ```
