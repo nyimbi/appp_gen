@@ -66,3 +66,25 @@ appgen postgresql://hackedthensa
 ## Wrap Up
 
 Appgen is here to disrupt the Flask app space with its no-nonsense, straight-to-the-point app generation. It don't mess around. Now go forth and build yourself a custom admin dashboard on that PostgreSQL db you have lying around. Live the dream!
+
+### Conclusion
+-------------
+
+`appgen` is a powerful Python package that simplifies the process of creating
+Flask-AppBuilder applications based on PostgreSQL databases. By using `appgen`, you can
+quickly generate a fully functional web application that includes views for each table,
+MasterDetailViews for foreign keys, and Multipl
+## Contributing
+
+Contributions are very welcome.
+To learn more, see the [Contributor Guide].
+
+## License
+
+Distributed under the terms of the [MIT license][license],
+_Appgen_ is free and open source software.
+
+## Issues
+
+If you encounter any problems,
+please [file an issue] along with a detailed description.

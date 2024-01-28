@@ -9,7 +9,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="beef659a-f4de-45e7-80c5-ef056e8b7ba6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/old-README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
@@ -67,8 +66,8 @@
       <recent name="$PROJECT_DIR$/gen" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/../apg/doc" />
       <recent name="$PROJECT_DIR$/../tmp" />
+      <recent name="$PROJECT_DIR$/../apg/doc" />
       <recent name="$PROJECT_DIR$/src/db" />
       <recent name="$PROJECT_DIR$/tests" />
       <recent name="$PROJECT_DIR$/src/scripts" />
